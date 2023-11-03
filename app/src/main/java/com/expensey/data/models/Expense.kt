@@ -3,6 +3,7 @@ package com.expensey.data.models
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.Date
 
@@ -33,6 +34,12 @@ import java.util.Date
 			childColumns = ["category_id"],
 			onDelete = ForeignKey.CASCADE
 		)
+	],
+	indices = [
+		Index("bank_account_id"),
+		Index("credit_card_id"),
+		Index("cash_id"),
+		Index("category_id")
 	]
 )
 data class Expense (

@@ -9,7 +9,7 @@ class ExpenseyApplication : Application() {
 	override fun onCreate() {
 		super.onCreate()
 
-		val database = Room.databaseBuilder(this, ExpenseyDatabase::class.java, "expensey_database").build()
+		database = Room.databaseBuilder(this, ExpenseyDatabase::class.java, "expensey_database").build()
 	}
 
 	override fun onTerminate() {

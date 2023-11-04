@@ -18,8 +18,15 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
 	init {
 		val expenseyApplication = application as ExpenseyApplication
 		val categoryDao =expenseyApplication.database.categoryDao()
-		categoryRepository = CategoryRepository(categoryDao)
+		categoryRepository = CategoryRepository(categoryDao, expenseyApplication.baseContext)
+		populateDefaultCategories()
 		categoryLiveDataList = categoryRepository.categoryLiveDataList
+	}
+
+	fun populateDefaultCategories() {
+		viewModelScope.launch {
+			categoryRepository.populateDefaultCategories()
+		}
 	}
 
 	fun addCategory(category : Category) {
@@ -39,4 +46,6 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
 			categoryRepository.deleteCategory(category)
 		}
 	}
+
+
 }

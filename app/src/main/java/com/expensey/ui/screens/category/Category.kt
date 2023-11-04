@@ -4,7 +4,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -72,7 +74,7 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 				imageVector = Icons.Outlined.ArrowBackIos,
 				contentDescription = "Go Back", // Provide a content description as needed
 				modifier = Modifier.clickable {
-					// Handle the icon click action
+					TODO("Implement the Back functionality")
 				} then Modifier
 					.padding(20.dp, 0.dp)
 					.size(25.dp)
@@ -87,51 +89,59 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 			)
 		}
 
-		LazyColumn {
-			items(categoryList?: emptyList()) { category : Category ->
-				Row(
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(20.dp, 15.dp),
-					horizontalArrangement = Arrangement.SpaceBetween
-				) {
-					Text(
-						text = category.categoryName,
-						modifier = Modifier.weight(1f) // Expand the Text to take available space
-					)
-					// Add your icon here
-					Icon(
-						imageVector = Icons.Outlined.Edit,
-						contentDescription = "Edit Category", // Provide a content description as needed
-						modifier = Modifier.clickable {
-							newCategoryText = category.categoryName
-							categoryToEdit = category
-							isDialogVisible = true
-						} then Modifier.padding(20.dp, 0.dp)
-					)
-					Icon(
-						imageVector = Icons.Outlined.Delete,
-						contentDescription = "Delete Category", // Provide a content description as needed
-						modifier = Modifier.clickable {
-							viewModel.deleteCategory(category)
-							Toast.makeText(context, "Delete Successful", Toast.LENGTH_SHORT).show()
-						},
-						tint = Color.Red
-					)
+		Box(
+			modifier = Modifier.fillMaxSize()
+		) {
+			LazyColumn(
+				modifier = Modifier.fillMaxSize(),
+				contentPadding = PaddingValues(bottom = 100.dp)
+			) {
+				items(categoryList ?: emptyList()) { category : Category ->
+					Row(
+						modifier = Modifier
+							.fillMaxWidth()
+							.padding(20.dp, 15.dp),
+						horizontalArrangement = Arrangement.SpaceBetween
+					) {
+						Text(
+							text = category.categoryName,
+							modifier = Modifier.weight(1f) // Expand the Text to take available space
+						)
+						// Add your icon here
+						Icon(
+							imageVector = Icons.Outlined.Edit,
+							contentDescription = "Edit Category", // Provide a content description as needed
+							modifier = Modifier.clickable {
+								newCategoryText = category.categoryName
+								categoryToEdit = category
+								isDialogVisible = true
+							} then Modifier.padding(20.dp, 0.dp)
+						)
+						Icon(
+							imageVector = Icons.Outlined.Delete,
+							contentDescription = "Delete Category", // Provide a content description as needed
+							modifier = Modifier.clickable {
+								viewModel.deleteCategory(category)
+								Toast.makeText(context, "Delete Successful", Toast.LENGTH_SHORT)
+									.show()
+							},
+							tint = Color.Red
+						)
+					}
 				}
 			}
-		}
 
-		FloatingActionButton(
-			onClick = {
-				isDialogVisible = true
-				categoryToEdit = null
-		    },
-			modifier = Modifier
-				.padding(20.dp)
-				.align(Alignment.End)
-		) {
-			Icon(Icons.Filled.Add, "Floating action button.")
+			FloatingActionButton(
+				onClick = {
+					isDialogVisible = true
+					categoryToEdit = null
+				},
+				modifier = Modifier
+					.padding(20.dp)
+					.align(Alignment.BottomEnd)
+			) {
+				Icon(Icons.Filled.Add, "Floating action button.")
+			}
 		}
 
 		if (isDialogVisible) {

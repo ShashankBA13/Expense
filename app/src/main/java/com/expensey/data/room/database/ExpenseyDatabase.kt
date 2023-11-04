@@ -3,7 +3,6 @@ package com.expensey.data.room.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Cash
 import com.expensey.data.models.Category
@@ -35,5 +34,4 @@ abstract class ExpenseyDatabase : RoomDatabase() {
 	abstract fun categoryDao()    : CategoryDao
 	abstract fun creditCardDao()  : CreditCardDao
 	abstract fun expenseDao()     : ExpenseDao
-
 }

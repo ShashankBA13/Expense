@@ -3,7 +3,6 @@ package com.expensey.data.room.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Cash
 import com.expensey.data.models.Category
@@ -14,6 +13,7 @@ import com.expensey.data.room.dao.CashDao
 import com.expensey.data.room.dao.CategoryDao
 import com.expensey.data.room.dao.CreditCardDao
 import com.expensey.data.room.dao.ExpenseDao
+import com.expensey.data.typeconverters.DateConverter
 
 @Database(
 	entities = [
@@ -26,7 +26,7 @@ import com.expensey.data.room.dao.ExpenseDao
 	version = 1,
 	exportSchema = false
 )
-@TypeConverters()
+@TypeConverters(DateConverter::class)
 abstract class ExpenseyDatabase : RoomDatabase() {
 
 	abstract fun bankAccountDao() : BankAccountDao
@@ -34,5 +34,4 @@ abstract class ExpenseyDatabase : RoomDatabase() {
 	abstract fun categoryDao()    : CategoryDao
 	abstract fun creditCardDao()  : CreditCardDao
 	abstract fun expenseDao()     : ExpenseDao
-
 }

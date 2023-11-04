@@ -27,4 +27,16 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
 			categoryRepository.insertCategory(category)
 		}
 	}
+
+	fun updateCategory(category : Category) {
+		viewModelScope.launch {
+			categoryRepository.updateCategory(category)
+		}
+	}
+
+	fun deleteCategory(category : Category) {
+		viewModelScope.launch {
+			categoryRepository.deleteCategory(category)
+		}
+	}
 }

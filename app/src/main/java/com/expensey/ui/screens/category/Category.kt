@@ -1,5 +1,7 @@
 package com.expensey.ui.screens.category
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,11 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,6 +51,10 @@ import com.expensey.ui.theme.ExpenseyTheme
 fun CategoryScreen(onAddCategory: (String) -> Unit) {
 	var isDialogVisible by remember { mutableStateOf(false) }
 	var newCategoryText by remember { mutableStateOf("") }
+	var categoryToEdit by remember { mutableStateOf<Category?>(null) }
+
+	val context = LocalContext.current
+	val TAG = "CateoryScreen"
 
 	val viewModel: CategoryViewModel = viewModel()
 
@@ -98,14 +104,17 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 						imageVector = Icons.Outlined.Edit,
 						contentDescription = "Edit Category", // Provide a content description as needed
 						modifier = Modifier.clickable {
-							// Handle the icon click action
+							newCategoryText = category.categoryName
+							categoryToEdit = category
+							isDialogVisible = true
 						} then Modifier.padding(20.dp, 0.dp)
 					)
 					Icon(
 						imageVector = Icons.Outlined.Delete,
 						contentDescription = "Delete Category", // Provide a content description as needed
 						modifier = Modifier.clickable {
-							// Handle the icon click action
+							viewModel.deleteCategory(category)
+							Toast.makeText(context, "Delete Successful", Toast.LENGTH_SHORT).show()
 						},
 						tint = Color.Red
 					)
@@ -114,7 +123,10 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 		}
 
 		FloatingActionButton(
-			onClick = { isDialogVisible = true  },
+			onClick = {
+				isDialogVisible = true
+				categoryToEdit = null
+		    },
 			modifier = Modifier
 				.padding(20.dp)
 				.align(Alignment.End)
@@ -133,7 +145,8 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 					isDialogVisible = false
 					newCategoryText = ""
 				},
-				viewModel
+				viewModel = viewModel,
+				categoryToEdit = categoryToEdit
 			)
 		}
 	}
@@ -151,9 +164,12 @@ fun CategoryPreview() {
 fun DialogWithInput(
 	onDismissRequest: () -> Unit,
 	onConfirmation: () -> Unit,
-	viewModel: CategoryViewModel
+	viewModel: CategoryViewModel,
+	categoryToEdit: Category?
 ) {
-	var text by rememberSaveable { mutableStateOf("") }
+	val TAG = "CateoryScreen"
+	var text by remember { mutableStateOf(categoryToEdit?.categoryName ?: "") }
+	val context = LocalContext.current
 
 	Dialog(onDismissRequest = { onDismissRequest() }) {
 		// Draw a rectangle shape with rounded corners inside the dialog
@@ -194,7 +210,15 @@ fun DialogWithInput(
 					}
 					TextButton(
 						onClick = {
-							viewModel.addCategory(Category(categoryName = text))
+							categoryToEdit?.let { category ->
+								Log.d(TAG, "Category Id: " + category.categoryId)
+								category.categoryName = text
+								viewModel.updateCategory(category)
+								Toast.makeText(context, "Update Successful", Toast.LENGTH_SHORT).show()
+							} ?: run {
+								viewModel.addCategory(Category(categoryName = text))
+								Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT).show()
+							}
 							onConfirmation()
 					    },
 						modifier = Modifier
@@ -206,22 +230,5 @@ fun DialogWithInput(
 				}
 			}
 		}
-	}
-}
-
-@Preview
-@Composable
-fun PreviewDialog() {
-	var showDialog by remember { mutableStateOf(false) }
-
-	// Get an instance of your view model
-	val viewModel: CategoryViewModel = viewModel()
-
-	ExpenseyTheme {
-		DialogWithInput(
-			onDismissRequest = { showDialog = false },
-			onConfirmation = { showDialog = false },
-			viewModel = viewModel // Pass the view model
-		)
 	}
 }

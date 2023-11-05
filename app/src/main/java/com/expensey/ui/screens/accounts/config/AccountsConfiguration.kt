@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.ArrowForwardIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -40,12 +41,20 @@ fun AccountsConfiguration(navController : NavHostController) {
 				horizontalArrangement = Arrangement.SpaceBetween,
 				verticalAlignment = Alignment.CenterVertically
 			) {
+				Icon(
+					imageVector = Icons.Outlined.ArrowBackIos,
+					contentDescription = "Back", // Provide a content description as needed
+					modifier = Modifier.clickable {
+						navController.popBackStack()
+					} then Modifier.padding(20.dp, end = 0.dp)
+				)
+
 				Text(
 					text = "Accounts",
 					modifier = Modifier
 						.padding(20.dp)
 						.weight(1f),
-					style = Typography.titleLarge
+					style = Typography.headlineLarge
 				)
 				Icon(
 					imageVector = Icons.Outlined.Add,

@@ -14,11 +14,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.expensey.ui.theme.Typography
 
 @Composable
 fun SettingsScreen(navController : NavHostController) {
@@ -27,6 +25,12 @@ fun SettingsScreen(navController : NavHostController) {
     ) {
 
         Column {
+
+            Text (
+                text = "Settings",
+                modifier = Modifier.padding(20.dp),
+                style = Typography.headlineLarge
+            )
 
             Row {
                 Column (
@@ -45,17 +49,14 @@ fun SettingsScreen(navController : NavHostController) {
                         text = "Category",
                         modifier = Modifier
                             .padding(16.dp, 0.dp),
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = Typography.bodyMedium
                     )
                 }
 
                 Column (
                     modifier = Modifier.clickable {
                         navController.navigate("accountsConfiguration")
-                    }
+                    },
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.AccountBalance,
@@ -68,10 +69,7 @@ fun SettingsScreen(navController : NavHostController) {
                         text = "Accounts",
                         modifier = Modifier
                             .padding(16.dp, 0.dp),
-                        style = TextStyle(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = Typography.bodyMedium
                     )
                 }
             }

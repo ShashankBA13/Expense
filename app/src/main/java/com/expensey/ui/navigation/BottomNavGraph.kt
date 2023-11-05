@@ -31,7 +31,7 @@ fun BottomNavGraph(navController: NavHostController) {
         }
 
         composable("category") {
-            CategoryScreen()
+            CategoryScreen(navController)
         }
 
         composable("cash") {

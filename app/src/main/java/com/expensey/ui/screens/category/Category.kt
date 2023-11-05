@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
@@ -36,17 +37,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.expensey.data.models.Category
-import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 
 
 @Composable
-fun CategoryScreen() {
+fun CategoryScreen(navController : NavHostController) {
 	var isDialogVisible by remember { mutableStateOf(false) }
 	var newCategoryText by remember { mutableStateOf("") }
 	var categoryToEdit by remember { mutableStateOf<Category?>(null) }
@@ -63,12 +63,21 @@ fun CategoryScreen() {
 	) {
 
 		Row (
-			modifier = Modifier.padding(20.dp),
+			modifier = Modifier.padding(start = 10.dp, top = 20.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
+			Icon(
+				imageVector = Icons.Outlined.ArrowBackIos,
+				contentDescription = "Back", // Provide a content description as needed
+				modifier = Modifier.clickable {
+					navController.popBackStack()
+				} then Modifier.padding(bottom = 20.dp)
+			)
 			Text(
 				text = "Category",
-				modifier = Modifier.weight(1f),
+				modifier = Modifier
+					.weight(1f)
+					.padding(start = 10.dp, bottom = 20.dp),
 				style = Typography.headlineLarge
 			)
 		}
@@ -141,14 +150,6 @@ fun CategoryScreen() {
 				categoryToEdit = categoryToEdit
 			)
 		}
-	}
-}
-
-@Preview
-@Composable
-fun CategoryPreview() {
-	ExpenseyTheme {
-		CategoryScreen()
 	}
 }
 

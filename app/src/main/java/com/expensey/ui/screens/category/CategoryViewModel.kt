@@ -17,7 +17,7 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
 
 	init {
 		val expenseyApplication = application as ExpenseyApplication
-		val categoryDao =expenseyApplication.database.categoryDao()
+		val categoryDao = expenseyApplication.database.categoryDao()
 		categoryRepository = CategoryRepository(categoryDao, expenseyApplication.baseContext)
 		populateDefaultCategories()
 		categoryLiveDataList = categoryRepository.categoryLiveDataList

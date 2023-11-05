@@ -36,15 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.expensey.data.models.Category
 import com.expensey.ui.theme.ExpenseyTheme
+import com.expensey.ui.theme.Typography
 
 
 @Composable
@@ -68,14 +66,10 @@ fun CategoryScreen() {
 			modifier = Modifier.padding(20.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-
 			Text(
 				text = "Category",
 				modifier = Modifier.weight(1f),
-				style = TextStyle(
-					fontSize = 20.sp,
-					fontWeight = FontWeight.Bold
-				)
+				style = Typography.headlineLarge
 			)
 		}
 

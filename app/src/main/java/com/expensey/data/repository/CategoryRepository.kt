@@ -5,8 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.LiveData
+import com.expensey.ExpenseyApplication
+import com.expensey.ExpenseyApplication.Companion.dataStore
 import com.expensey.data.models.Category
 import com.expensey.data.room.dao.CategoryDao
 import kotlinx.coroutines.flow.Flow
@@ -17,11 +18,11 @@ class CategoryRepository(private val categoryDao : CategoryDao, private val cont
 
 	val categoryLiveDataList : LiveData<List<Category>> = categoryDao.fetchAllCategories()
 
-	val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "isCategoriesPopulated")
+	private val dataStore: DataStore<Preferences> = (context.applicationContext as ExpenseyApplication).dataStore
 
 	val IS_CATEGORIES_POPULATED = booleanPreferencesKey("is_categories_populated")
 
-	val isCategoriesPopulatedFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
+	val isCategoriesPopulatedFlow: Flow<Boolean> = dataStore.data.map { preferences ->
 		preferences[IS_CATEGORIES_POPULATED] ?: false
 	}
 
@@ -63,7 +64,7 @@ class CategoryRepository(private val categoryDao : CategoryDao, private val cont
 	}
 
 	private suspend fun setIsDataPopulated(value: Boolean) {
-		context.dataStore.edit { settings ->
+		dataStore.edit { settings ->
 			settings[IS_CATEGORIES_POPULATED] = value
 		}
 	}

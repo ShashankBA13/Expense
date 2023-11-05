@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.expensey.ui.screens.accounts.AccountsScreen
+import com.expensey.ui.screens.category.CategoryScreen
 import com.expensey.ui.screens.home.HomeScreen
 import com.expensey.ui.screens.settings.SettingsScreen
 
@@ -24,7 +25,11 @@ fun BottomNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(navController)
+        }
+
+        composable("category") {
+            CategoryScreen()
         }
     }
 }

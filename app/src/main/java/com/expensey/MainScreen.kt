@@ -49,27 +49,32 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             // Create the BottomNavigation composable
-            BottomNavigation {
-                // Loop through the screen items and create a BottomNavigationItem for each
-                screens.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = {
-                            // Use the current screen's icon, either filled or outlined
-                            val icon = if (currentDestination?.hierarchy?.any { it.route == screen.route } == true) {
-                                screen.iconFilled
-                            } else {
-                                screen.iconOutlined
+            if(currentDestination?.route == BottomBarScreen.Home.route ||
+                currentDestination?.route == BottomBarScreen.Accounts.route ||
+                currentDestination?.route == BottomBarScreen.Settings.route) {
+                BottomNavigation {
+                    // Loop through the screen items and create a BottomNavigationItem for each
+                    screens.forEach { screen ->
+                        BottomNavigationItem(
+                            icon = {
+                                // Use the current screen's icon, either filled or outlined
+                                val icon =
+                                    if (currentDestination.hierarchy.any { it.route == screen.route }) {
+                                        screen.iconFilled
+                                    } else {
+                                        screen.iconOutlined
+                                    }
+                                Icon(imageVector = icon, contentDescription = null)
+                            },
+                            label = { Text(text = screen.title) }
+                        ) {
+                            // Navigate to the selected screen's route
+                            navController.navigate(screen.route) {
+                                // Pop up to the start destination when reselecting the current tab
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected tab
+                                restoreState = true
                             }
-                            Icon(imageVector = icon, contentDescription = null)
-                        },
-                        label = { Text(text = screen.title) }
-                    ) {
-                        // Navigate to the selected screen's route
-                        navController.navigate(screen.route) {
-                            // Pop up to the start destination when reselecting the current tab
-                            launchSingleTop = true
-                            // Restore state when reselecting a previously selected tab
-                            restoreState = true
                         }
                     }
                 }

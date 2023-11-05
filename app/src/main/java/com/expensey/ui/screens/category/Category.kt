@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
@@ -50,13 +48,13 @@ import com.expensey.ui.theme.ExpenseyTheme
 
 
 @Composable
-fun CategoryScreen(onAddCategory: (String) -> Unit) {
+fun CategoryScreen() {
 	var isDialogVisible by remember { mutableStateOf(false) }
 	var newCategoryText by remember { mutableStateOf("") }
 	var categoryToEdit by remember { mutableStateOf<Category?>(null) }
 
 	val context = LocalContext.current
-	val TAG = "CateoryScreen"
+	val TAG = "CategoryScreen"
 
 	val viewModel: CategoryViewModel = viewModel()
 
@@ -67,18 +65,10 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 	) {
 
 		Row (
-			modifier = Modifier.padding(0.dp, 20.dp),
+			modifier = Modifier.padding(20.dp),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			Icon(
-				imageVector = Icons.Outlined.ArrowBackIos,
-				contentDescription = "Go Back", // Provide a content description as needed
-				modifier = Modifier.clickable {
-					TODO("Implement the Back functionality")
-				} then Modifier
-					.padding(20.dp, 0.dp)
-					.size(25.dp)
-			)
+
 			Text(
 				text = "Category",
 				modifier = Modifier.weight(1f),
@@ -149,9 +139,7 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 				onDismissRequest = { isDialogVisible = false },
 				onConfirmation = {
 					// Handle the confirmation action, e.g., save the new category
-					if (newCategoryText.isNotBlank()) {
-						onAddCategory(newCategoryText)
-					}
+
 					isDialogVisible = false
 					newCategoryText = ""
 				},
@@ -166,7 +154,7 @@ fun CategoryScreen(onAddCategory: (String) -> Unit) {
 @Composable
 fun CategoryPreview() {
 	ExpenseyTheme {
-		CategoryScreen() {}
+		CategoryScreen()
 	}
 }
 
@@ -177,7 +165,7 @@ fun DialogWithInput(
 	viewModel: CategoryViewModel,
 	categoryToEdit: Category?
 ) {
-	val TAG = "CateoryScreen"
+	val TAG = "CategoryScreen"
 	var text by remember { mutableStateOf(categoryToEdit?.categoryName ?: "") }
 	val context = LocalContext.current
 

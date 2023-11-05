@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.ui.screens.accounts.AccountsViewModel
+import com.expensey.ui.theme.Typography
 
 @Composable
 fun AccountsConfiguration(navController : NavHostController) {
@@ -43,7 +44,8 @@ fun AccountsConfiguration(navController : NavHostController) {
 					text = "Accounts",
 					modifier = Modifier
 						.padding(20.dp)
-						.weight(1f)
+						.weight(1f),
+					style = Typography.titleLarge
 				)
 				Icon(
 					imageVector = Icons.Outlined.Add,

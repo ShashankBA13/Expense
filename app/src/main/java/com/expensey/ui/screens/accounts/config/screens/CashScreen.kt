@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.data.models.Cash
 import com.expensey.ui.screens.accounts.AccountsViewModel
+import com.expensey.ui.theme.Typography
 
 @Composable
 fun CashScreen(navHostController: NavHostController) {
@@ -45,7 +46,8 @@ fun CashScreen(navHostController: NavHostController) {
 					.padding(start = 20.dp, top = 20.dp)
 			) {
 				Text(
-					text = "Cash"
+					text = "Cash",
+					style = Typography.titleLarge
 				)
 			}
 
@@ -59,7 +61,8 @@ fun CashScreen(navHostController: NavHostController) {
 			)
 
 			Row(
-				modifier = Modifier.fillMaxWidth()
+				modifier = Modifier
+					.fillMaxWidth()
 					.padding(20.dp),
 				horizontalArrangement = Arrangement.SpaceEvenly
 			) {

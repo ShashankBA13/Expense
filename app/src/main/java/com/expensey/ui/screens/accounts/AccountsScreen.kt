@@ -26,12 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+
 import com.expensey.ui.theme.ExpenseyTheme
+import com.expensey.ui.theme.Typography
 
 @Composable
 fun AccountsScreen() {
@@ -56,7 +59,8 @@ fun AccountsScreen() {
                     text = "Accounts",
                     modifier = Modifier
                         .padding(20.dp)
-                        .weight(1f)
+                        .weight(1f),
+                    style = Typography.headlineLarge
                 )
                 Icon(
                     imageVector = Icons.Outlined.MoreVert,
@@ -76,17 +80,16 @@ fun AccountsScreen() {
                 Row (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .padding(10.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     Column (
-                        modifier = Modifier
-                            .weight(1f)
                     ) {
                         Text(
                             text = "Assets",
                             modifier = Modifier
-                                .padding(10.dp)
+                                .padding(10.dp),
+                            style = Typography.bodyLarge
                         )
                         Text (
                             text = assetsValue.toString(),
@@ -94,19 +97,19 @@ fun AccountsScreen() {
                                 .padding(start = 10.dp, top = 0.dp, bottom = 5.dp),
                             style = TextStyle(
                                 fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = FontFamily.Monospace,
                                 color = Color.Blue
                             )
                         )
                     }
                     Column (
-                        modifier = Modifier
-                            .weight(1f)
                     ) {
                         Text(
                             text = "Liabilities",
                             modifier = Modifier
-                                .padding(10.dp)
+                                .padding(10.dp),
+                            style = Typography.bodyLarge
                         )
                         Text (
                             text = liabilitiesValue.toString(),
@@ -114,28 +117,29 @@ fun AccountsScreen() {
                                 .padding(start = 10.dp, top = 0.dp, bottom = 5.dp),
                             style = TextStyle(
                                 fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = FontFamily.Monospace,
                                 color = Color.Red
                             )
                         )
                     }
 
                     Column (
-                        modifier = Modifier
-                            .weight(1f)
                     ) {
                         Text(
                             text = "Net Worth",
                             modifier = Modifier
-                                .padding(10.dp)
+                                .padding(8.dp),
+                            style = Typography.bodyLarge
                         )
                         Text (
                             text = netWorth.toString(),
                             modifier = Modifier
                                 .padding(start = 10.dp, top = 0.dp, bottom = 5.dp),
                             style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = FontFamily.Monospace,
                                 color = textColor
                             )
                         )
@@ -168,7 +172,6 @@ fun Cash() {
         text = cashLiveData !!.amount.toString()
     }
 
-
     Column {
         Row (
             modifier = Modifier
@@ -181,11 +184,18 @@ fun Cash() {
         ) {
             Text (
                 text = "Cash",
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                style = Typography.bodyLarge
             )
             Text (
                 text = text,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = Color.Black
+                )
             )
         }
     }
@@ -207,11 +217,18 @@ fun Accounts() {
         ) {
             Text (
                 text = "Accounts",
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                style = Typography.bodyLarge
             )
             Text (
                 text = cash.toString(),
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily.Monospace,
+                    color = Color.Black
+                )
             )
         }
     }
@@ -237,19 +254,23 @@ fun CreditCards() {
             Column {
                 Text(
                     text = "Credit Cards",
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = Typography.bodyLarge
                 )
                 Text(
                     text = "Total Limit",
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = Typography.bodyMedium
                 )
                 Text(
                     text = "Available Limit",
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = Typography.bodyMedium
                 )
                 Text(
                     text = "Total Payable",
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = Typography.bodyMedium
                 )
             }
             Column {
@@ -259,15 +280,33 @@ fun CreditCards() {
                 )
                 Text(
                     text = totalLimit.toString(),
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily.Monospace,
+                        color = Color.Black
+                    )
                 )
                 Text(
                     text = availableLimit.toString(),
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily.Monospace,
+                        color = Color.Black
+                    )
                 )
                 Text(
                     text = totalPayable.toString(),
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily.Monospace,
+                        color = Color.Black
+                    )
                 )
             }
         }

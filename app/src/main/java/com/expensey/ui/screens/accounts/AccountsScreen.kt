@@ -17,6 +17,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,7 +60,7 @@ fun AccountsScreen() {
                 )
                 Icon(
                     imageVector = Icons.Outlined.MoreVert,
-                    contentDescription = "Delete Category", // Provide a content description as needed
+                    contentDescription = "Hamburger Icon", // Provide a content description as needed
                     modifier = Modifier.clickable {
                         // Handle the icon click here
                     } then Modifier
@@ -155,7 +160,14 @@ fun AccountsScreenPreview() {
 
 @Composable
 fun Cash() {
-    val cash = 0
+    val viewModel: AccountsViewModel = viewModel()
+    val cashLiveData by viewModel.cashLiveData.observeAsState()
+
+    var text by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "") }
+    if (cashLiveData != null) {
+        text = cashLiveData !!.amount.toString()
+    }
+
 
     Column {
         Row (
@@ -172,7 +184,7 @@ fun Cash() {
                 modifier = Modifier.padding(10.dp)
             )
             Text (
-                text = cash.toString(),
+                text = text,
                 modifier = Modifier.padding(10.dp)
             )
         }

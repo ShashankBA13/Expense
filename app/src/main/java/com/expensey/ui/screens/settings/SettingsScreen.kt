@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -42,6 +43,29 @@ fun SettingsScreen(navController : NavHostController) {
                     )
                     Text(
                         text = "Category",
+                        modifier = Modifier
+                            .padding(16.dp, 0.dp),
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+
+                Column (
+                    modifier = Modifier.clickable {
+                        navController.navigate("accountsConfiguration")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountBalance,
+                        contentDescription = "Edit Category", // Provide a content description as needed
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 0.dp, top = 20.dp, bottom = 5.dp)
+                            .size(40.dp)
+                    )
+                    Text(
+                        text = "Accounts",
                         modifier = Modifier
                             .padding(16.dp, 0.dp),
                         style = TextStyle(

@@ -24,7 +24,8 @@ class ExpenseyApplication : Application() {
 		super.onCreate()
 		Log.d(TAG, "onCreate Method Called")
 		database =
-			Room.databaseBuilder(this, ExpenseyDatabase::class.java, "expensey_database").build()
+			Room.databaseBuilder(this, ExpenseyDatabase::class.java, "expensey_database")
+				.build()
 
 		val applicationScope = CoroutineScope(Dispatchers.Default)
 		applicationScope.launch {
@@ -37,4 +38,5 @@ class ExpenseyApplication : Application() {
 		Log.d(TAG, "onTerminate Method Called")
 		database.close()
 	}
+
 }

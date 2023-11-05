@@ -23,7 +23,7 @@ import com.expensey.data.typeconverters.DateConverter
 		CreditCard  :: class,
 		Expense     :: class
 	],
-	version = 1,
+	version = 2,
 	exportSchema = false
 )
 @TypeConverters(DateConverter::class)

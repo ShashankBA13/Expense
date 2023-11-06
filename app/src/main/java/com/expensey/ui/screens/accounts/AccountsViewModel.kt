@@ -20,6 +20,8 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 
 	val totalBalance: LiveData<Double>
 
+	val bankAccountLiveDataList : LiveData<List<BankAccount>>
+
 	init {
 		val expenseyApplication = application as ExpenseyApplication
 
@@ -31,6 +33,7 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 
 		cashLiveData = cashRepository.cashLiveData
 		totalBalance = bankAccountRepository.totalBalance
+		bankAccountLiveDataList = bankAccountRepository.bankAccountLiveDataList
 	}
 
 	fun insertCash(cash : Cash) {
@@ -45,16 +48,22 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 		}
 	}
 
-	suspend fun insertBankAccount(bankAccount: BankAccount) {
-		bankAccountRepository.insertBankAccount(bankAccount)
+	fun insertBankAccount(bankAccount: BankAccount) {
+		viewModelScope.launch {
+			bankAccountRepository.insertBankAccount(bankAccount)
+		}
 	}
 
-	suspend fun updateBankAccount(bankAccount: BankAccount) {
-		bankAccountRepository.updateBankAccount(bankAccount)
+	fun updateBankAccount(bankAccount: BankAccount) {
+		viewModelScope.launch {
+			bankAccountRepository.updateBankAccount(bankAccount)
+		}
 	}
 
-	suspend fun deleteBankAccount(bankAccount: BankAccount) {
-		bankAccountRepository.deleteBankAccount(bankAccount)
+	fun deleteBankAccount(bankAccount: BankAccount) {
+		viewModelScope.launch {
+			bankAccountRepository.deleteBankAccount(bankAccount)
+		}
 	}
 
 	fun getBankAccountById(accountId: Int): LiveData<BankAccount> {

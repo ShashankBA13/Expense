@@ -1,5 +1,6 @@
 package com.expensey.ui.screens.accounts.config
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,12 +19,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.expensey.data.models.BankAccount
 import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.theme.Typography
 
@@ -103,6 +108,19 @@ fun Cash(navController : NavHostController) {
 
 @Composable
 fun Account(navController : NavHostController) {
+
+	val TAG = "AccountsConfiguration"
+
+	val viewModel: AccountsViewModel = viewModel()
+
+	val bankAccountLiveDataList : LiveData<List<BankAccount>> = viewModel.bankAccountLiveDataList
+
+	val bankAccounts by bankAccountLiveDataList.observeAsState(emptyList())
+
+	bankAccounts.forEach { bankAccount ->
+		Log.d(TAG, "BankAccountName: ${bankAccount.accountName}")
+	}
+
 	Column {
 		Row (
 			modifier = Modifier
@@ -117,13 +135,23 @@ fun Account(navController : NavHostController) {
 				text = "Accounts",
 				modifier = Modifier.padding(10.dp)
 			)
-			Icon(
-				imageVector = Icons.Outlined.ArrowForwardIos,
-				contentDescription = "Go to Accounts",
-				modifier = Modifier.clickable {
-					navController.navigate("bankAccount")
-				} then Modifier.padding(end = 10.dp)
-			)
+		}
+
+		Column {
+			bankAccounts.forEach{bankAccount ->
+				Text(
+					text = bankAccount.accountName,
+					modifier = Modifier.padding(10.dp)
+				)
+
+				Icon(
+					imageVector = Icons.Outlined.ArrowForwardIos,
+					contentDescription = "Go to Accounts",
+					modifier = Modifier.clickable {
+						navController.navigate("bankAccount")
+					} then Modifier.padding(end = 10.dp)
+				)
+			}
 		}
 	}
 }

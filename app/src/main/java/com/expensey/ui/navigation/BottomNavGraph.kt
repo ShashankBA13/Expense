@@ -44,8 +44,9 @@ fun BottomNavGraph(navController: NavHostController) {
             CashScreen(navController)
         }
 
-        composable("bankAccount") {
-            BankAccountsScreen(navController)
+        composable("bankAccount/{bankAccountId}") { navBackStackEntry ->
+            val bankAccountId : Int? = navBackStackEntry.arguments?.getInt("bankAccountId")
+            BankAccountsScreen(navController, bankAccountId)
         }
 
         composable("creditCard") {

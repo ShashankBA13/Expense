@@ -56,8 +56,8 @@ fun AccountsConfiguration(navController : NavHostController) {
 			}
 
 			Cash(navController)
-			Account()
-			CreditCard()
+			Account(navController)
+			CreditCard(navController)
 		}
 	}
 }
@@ -91,7 +91,7 @@ fun Cash(navController : NavHostController) {
 }
 
 @Composable
-fun Account() {
+fun Account(navController : NavHostController) {
 	Column {
 		Row (
 			modifier = Modifier
@@ -110,7 +110,7 @@ fun Account() {
 				imageVector = Icons.Outlined.ArrowForwardIos,
 				contentDescription = "Go to Accounts",
 				modifier = Modifier.clickable {
-
+					navController.navigate("bankAccount")
 				} then Modifier.padding(end = 10.dp)
 			)
 		}
@@ -118,7 +118,7 @@ fun Account() {
 }
 
 @Composable
-fun CreditCard() {
+fun CreditCard(navController : NavHostController) {
 	Column {
 		Row (
 			modifier = Modifier
@@ -137,7 +137,7 @@ fun CreditCard() {
 				imageVector = Icons.Outlined.ArrowForwardIos,
 				contentDescription = "Go to Credit Card",
 				modifier = Modifier.clickable {
-
+					navController.navigate("creditCard")
 				} then Modifier.padding(end = 10.dp)
 			)
 		}

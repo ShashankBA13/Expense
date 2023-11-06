@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.expensey.ui.screens.accounts.AccountsScreen
 import com.expensey.ui.screens.accounts.config.AccountsConfiguration
+import com.expensey.ui.screens.accounts.config.BankAccountsScreen
 import com.expensey.ui.screens.accounts.config.screens.CashScreen
 import com.expensey.ui.screens.category.CategoryScreen
 import com.expensey.ui.screens.home.HomeScreen
@@ -34,12 +35,21 @@ fun BottomNavGraph(navController: NavHostController) {
             CategoryScreen()
         }
 
+
+        composable("accountsConfiguration") {
+            AccountsConfiguration(navController = navController)
+        }
+
         composable("cash") {
             CashScreen(navController)
         }
-        
-        composable("accountsConfiguration") {
-            AccountsConfiguration(navController = navController)
+
+        composable("bankAccount") {
+            BankAccountsScreen(navController)
+        }
+
+        composable("creditCard") {
+            TODO("Provide the navigation to Credit Card Screen here!!!")
         }
     }
 }

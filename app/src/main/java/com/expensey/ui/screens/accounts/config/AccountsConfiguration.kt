@@ -1,6 +1,5 @@
 package com.expensey.ui.screens.accounts.config
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,16 +14,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.ArrowForwardIos
+import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -36,6 +42,8 @@ import com.expensey.ui.theme.Typography
 fun AccountsConfiguration(navController : NavHostController) {
 
 	val viewModel: AccountsViewModel = viewModel()
+
+	var isDialogVisible by remember { mutableStateOf(false) }
 
 	Surface(
 		modifier = Modifier.fillMaxSize()
@@ -64,16 +72,20 @@ fun AccountsConfiguration(navController : NavHostController) {
 				Icon(
 					imageVector = Icons.Outlined.Add,
 					contentDescription = "Add Icon", // Provide a content description as needed
-					modifier = Modifier.clickable {
-						// Handle the icon click here
-					} then Modifier
-						.padding(end = 20.dp)
+					modifier = Modifier.clickable { isDialogVisible = true } then Modifier.padding(end = 20.dp)
 				)
 			}
 
 			Cash(navController)
 			Account(navController)
 			CreditCard(navController)
+
+			if (isDialogVisible) {
+				AccountsMenuPopUp(
+					onDismiss = { isDialogVisible = false },
+					navController
+				)
+			}
 		}
 	}
 }
@@ -117,28 +129,33 @@ fun Account(navController : NavHostController) {
 
 	val bankAccounts by bankAccountLiveDataList.observeAsState(emptyList())
 
-	bankAccounts.forEach { bankAccount ->
-		Log.d(TAG, "BankAccountName: ${bankAccount.accountName}")
-	}
-
-	Column {
+	Column(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(20.dp)
+			.border(1.dp, Color.Gray, shape = RoundedCornerShape(5.dp)),
+	) {
 		Row (
 			modifier = Modifier
-				.height(100.dp)
 				.fillMaxWidth()
-				.padding(20.dp)
-				.border(1.dp, Color.Gray, shape = RoundedCornerShape(5.dp)),
+				.padding(start = 20.dp, top = 20.dp, bottom = 5.dp),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Text (
 				text = "Accounts",
-				modifier = Modifier.padding(10.dp)
+				style = Typography.headlineSmall
 			)
 		}
 
-		Column {
-			bankAccounts.forEach{bankAccount ->
+		bankAccounts.forEach{bankAccount ->
+			Row(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(10.dp),
+				horizontalArrangement = Arrangement.SpaceBetween,
+				verticalAlignment = Alignment.CenterVertically
+			) {
 				Text(
 					text = bankAccount.accountName,
 					modifier = Modifier.padding(10.dp)
@@ -148,7 +165,7 @@ fun Account(navController : NavHostController) {
 					imageVector = Icons.Outlined.ArrowForwardIos,
 					contentDescription = "Go to Accounts",
 					modifier = Modifier.clickable {
-						navController.navigate("bankAccount")
+						navController.navigate("bankAccount/${bankAccount.accountId}")
 					} then Modifier.padding(end = 10.dp)
 				)
 			}
@@ -178,6 +195,47 @@ fun CreditCard(navController : NavHostController) {
 				modifier = Modifier.clickable {
 					navController.navigate("creditCard")
 				} then Modifier.padding(end = 10.dp)
+			)
+		}
+	}
+}
+
+@Composable
+fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) {
+	Dialog(onDismissRequest = onDismiss) {
+		Card(
+			modifier = Modifier
+				.fillMaxWidth()
+				.height(200.dp)
+				.padding(16.dp),
+			shape = RoundedCornerShape(16.dp),
+		) {
+			Text(
+				text = "Cash",
+				modifier = Modifier.clickable {
+
+				}.padding(20.dp),
+				textAlign = TextAlign.Center,
+			)
+
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp))
+
+			Text(
+				text = "Bank Account",
+				modifier = Modifier.clickable{
+					navController.navigate("bankAccount/0")
+				}.padding(20.dp),
+				textAlign = TextAlign.Center,
+			)
+
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp))
+
+			Text(
+				text = "Credit Card",
+				modifier = Modifier.clickable {
+
+				}.padding(20.dp),
+				textAlign = TextAlign.Center,
 			)
 		}
 	}

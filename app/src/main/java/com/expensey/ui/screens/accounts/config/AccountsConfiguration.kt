@@ -105,7 +105,8 @@ fun Cash(navController : NavHostController) {
 		) {
 			Text (
 				text = "Cash",
-				modifier = Modifier.padding(10.dp)
+				modifier = Modifier.padding(20.dp),
+				style = Typography.headlineSmall
 			)
 			Icon(
 				imageVector = Icons.Outlined.ArrowForwardIos,
@@ -138,7 +139,7 @@ fun Account(navController : NavHostController) {
 		Row (
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(start = 20.dp, top = 20.dp, bottom = 5.dp),
+				.padding(start = 20.dp, top = 20.dp, bottom = 20.dp),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
@@ -187,7 +188,8 @@ fun CreditCard(navController : NavHostController) {
 		) {
 			Text (
 				text = "Credit Cards",
-				modifier = Modifier.padding(10.dp)
+				modifier = Modifier.padding(20.dp),
+				style = Typography.headlineSmall
 			)
 			Icon(
 				imageVector = Icons.Outlined.ArrowForwardIos,
@@ -214,7 +216,9 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				text = "Cash",
 				modifier = Modifier.clickable {
 
-				}.padding(20.dp),
+				}
+					.padding(20.dp)
+					.fillMaxWidth(),
 				textAlign = TextAlign.Center,
 			)
 
@@ -224,7 +228,9 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				text = "Bank Account",
 				modifier = Modifier.clickable{
 					navController.navigate("bankAccount/0")
-				}.padding(20.dp),
+				}
+					.padding(20.dp)
+					.fillMaxWidth(),
 				textAlign = TextAlign.Center,
 			)
 
@@ -234,7 +240,9 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				text = "Credit Card",
 				modifier = Modifier.clickable {
 
-				}.padding(20.dp),
+				}
+					.padding(20.dp)
+					.fillMaxWidth(),
 				textAlign = TextAlign.Center,
 			)
 		}

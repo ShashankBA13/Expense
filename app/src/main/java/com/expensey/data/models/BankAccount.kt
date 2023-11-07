@@ -28,4 +28,9 @@ data class BankAccount (
 
 	@ColumnInfo(name = "account_holder")
 	val accountHolderName : String
-)
+
+) {
+	override fun toString() : String {
+		return "BankAccount(accountId=$accountId, accountName='$accountName', currentBalance=$currentBalance, accountNumber='$accountNumber', accountHolderName='$accountHolderName')"
+	}
+}

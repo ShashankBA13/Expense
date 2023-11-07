@@ -1,5 +1,6 @@
 package com.expensey.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -45,8 +46,12 @@ fun BottomNavGraph(navController: NavHostController) {
         }
 
         composable("bankAccount/{bankAccountId}") { navBackStackEntry ->
-            val bankAccountId : Int? = navBackStackEntry.arguments?.getInt("bankAccountId")
-            BankAccountsScreen(navController, bankAccountId)
+            val bankAccountId : String? = navBackStackEntry.arguments?.getString("bankAccountId")
+
+            if (bankAccountId != null) {
+                Log.d("BottomNavGrap", bankAccountId)
+                BankAccountsScreen(navController, bankAccountId.toInt())
+            }
         }
 
         composable("creditCard") {

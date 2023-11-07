@@ -1,6 +1,7 @@
 package com.expensey.ui.screens.accounts
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 
 	private val cashRepository : CashRepository
 	private val bankAccountRepository : BankAccountRepository
+	private val TAG = "AccountsViewModel"
 
 	val cashLiveData : LiveData<Cash>
 
@@ -67,6 +69,7 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 	}
 
 	fun getBankAccountById(accountId: Int): LiveData<BankAccount> {
+		Log.d(TAG, bankAccountRepository.fetchBankAccountById(accountId).value.toString())
 		return bankAccountRepository.fetchBankAccountById(accountId)
 	}
 

@@ -10,6 +10,7 @@ import com.expensey.ui.screens.accounts.config.AccountsConfiguration
 import com.expensey.ui.screens.accounts.config.screens.BankAccountsScreen
 import com.expensey.ui.screens.accounts.config.screens.CashScreen
 import com.expensey.ui.screens.category.CategoryScreen
+import com.expensey.ui.screens.expense.ExpenseScreen
 import com.expensey.ui.screens.home.HomeScreen
 import com.expensey.ui.screens.settings.SettingsScreen
 
@@ -21,7 +22,7 @@ fun BottomNavGraph(navController: NavHostController) {
         startDestination = BottomBarScreen.Home.route
     ) {
         composable(route = BottomBarScreen.Home.route) {
-            HomeScreen()
+            HomeScreen(navController)
         }
 
         composable(route = BottomBarScreen.Accounts.route) {
@@ -56,6 +57,10 @@ fun BottomNavGraph(navController: NavHostController) {
 
         composable("creditCard") {
             TODO("Provide the navigation to Credit Card Screen here!!!")
+        }
+        
+        composable("expense") {
+            ExpenseScreen(navHostController = navController)
         }
     }
 }

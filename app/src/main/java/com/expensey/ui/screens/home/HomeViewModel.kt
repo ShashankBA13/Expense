@@ -14,7 +14,7 @@ class HomeViewModel(application : Application) : AndroidViewModel(application) {
 
 	private val expenseRepository : ExpenseRepository
 
-	private val expenseFlowList : Flow<List<Expense>>
+	val expenseFlowList : Flow<List<Expense>>
 
 	init {
 		val expenseyApplication = application as ExpenseyApplication

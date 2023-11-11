@@ -28,10 +28,8 @@ import java.util.Date
 @Composable
 fun ExpenseScreen(navHostController: NavHostController) {
 
-	val categoryViewModel : CategoryViewModel = viewModel()
 	val homeViewModel : HomeViewModel = viewModel()
 
-	val categoryLiveDataList : LiveData<List<Category>> = categoryViewModel.categoryLiveDataList
 
 	var descriptionState by remember { mutableStateOf(TextFieldValue("")) }
 	var amountState by remember { mutableStateOf(TextFieldValue("")) }
@@ -90,8 +88,6 @@ fun ExpenseScreen(navHostController: NavHostController) {
 					.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 			)
 
-
-
 			TextField(
 				value = paymentMethodState,
 				onValueChange = {
@@ -139,7 +135,7 @@ fun ExpenseScreen(navHostController: NavHostController) {
 			Button(
 				onClick = {
 					// Handle the form submission here, e.g., save the expense
-					val expense = Expense(
+					val expense = Expense (
 						description = descriptionState.text,
 						amount = amountState.text.toDoubleOrNull() ?: 0.0,
 						categoryId = categoryIdState.text.toIntOrNull(),
@@ -149,7 +145,7 @@ fun ExpenseScreen(navHostController: NavHostController) {
 						creditCardId = creditCardIdState.text.toIntOrNull(),
 						cashId = cashIdState.text.toIntOrNull()
 					)
-					// Save the expense data
+					homeViewModel.insertExpense(expense);
 
 					// Navigate back to the previous screen
 					navHostController.popBackStack()
@@ -158,5 +154,16 @@ fun ExpenseScreen(navHostController: NavHostController) {
 				Text("Save")
 			}
 		}
+	}
+}
+
+@Composable
+fun CategoryPopUp() {
+
+	val categoryViewModel : CategoryViewModel = viewModel()
+	val categoryLiveDataList : LiveData<List<Category>> = categoryViewModel.categoryLiveDataList
+
+	Surface {
+		
 	}
 }

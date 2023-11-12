@@ -13,10 +13,10 @@ import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -102,7 +102,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 			Column(
 				modifier = Modifier.fillMaxWidth()
 			) {
-				TextField(
+				OutlinedTextField(
 					value = accountName,
 					onValueChange = { accountName = it
 						Log.d("TextField", "Value changed: $it")
@@ -113,7 +113,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
-				TextField(
+				OutlinedTextField(
 					value = currentBalance,
 					onValueChange = { currentBalance = it },
 					label = { Text("Current Balance") },
@@ -122,7 +122,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
-				TextField(
+				OutlinedTextField(
 					value = accountNumber,
 					onValueChange = { accountNumber = it },
 					label = { Text("Account Number") },
@@ -131,7 +131,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
-				TextField(
+				OutlinedTextField(
 					value = accountHolderName,
 					onValueChange = { accountHolderName = it },
 					label = { Text("Account Holder Name") },

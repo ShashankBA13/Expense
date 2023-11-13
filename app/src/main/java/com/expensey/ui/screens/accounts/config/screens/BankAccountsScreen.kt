@@ -1,6 +1,5 @@
 package com.expensey.ui.screens.accounts.config.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,10 +12,10 @@ import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+
 import com.expensey.data.models.BankAccount
 import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.theme.ExpenseyTheme
@@ -37,31 +37,43 @@ import com.expensey.ui.theme.Typography
 
 @Composable
 fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) {
+
 	val TAG = "BankAccountsScreen"
-	val viewModel: AccountsViewModel = viewModel()
+	val viewModel : AccountsViewModel = viewModel()
+
+	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
+
 	val bankAccountLiveData = if (accountId != null && accountId != 0) {
 		viewModel.getBankAccountById(accountId)
 	} else {
 		null
 	}
 
-	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
-
 	bankAccountLiveData?.observeAsState()?.value?.let { bankAccount = it }
 
-	Log.d(TAG, bankAccount.toString())
+	var accountName by remember {
+		mutableStateOf(bankAccount?.accountName.orEmpty())
+	}
 
-	var accountIdd = bankAccount?.accountId
-	var accountName = bankAccount?.accountName.orEmpty()
-	var currentBalance by remember { mutableStateOf(bankAccount?.currentBalance.toString()) }
-	var accountNumber by remember { mutableStateOf(bankAccount?.accountNumber.orEmpty()) }
-	var accountHolderName by remember { mutableStateOf(bankAccount?.accountHolderName.orEmpty()) }
+	var currentBalance by remember {
+		mutableStateOf(bankAccountLiveData?.value?.currentBalance?.toString() ?: "")
+	}
 
-	Log.d(TAG, "AccountName: $accountName")
-	Log.d(TAG, "CurrentBalance: $currentBalance")
-	Log.d(TAG, "accountNumber: $accountNumber")
-	Log.d(TAG, "accountHolderName: $accountHolderName")
-	Log.d(TAG, "accountId: $accountIdd")
+	var accountNumber by remember {
+		mutableStateOf(bankAccountLiveData?.value?.accountNumber.orEmpty())
+	}
+
+	var accountHolderName by remember {
+		mutableStateOf(bankAccountLiveData?.value?.accountHolderName.orEmpty())
+	}
+
+	if(bankAccountLiveData != null) {
+		accountName = bankAccount?.accountName.toString()
+		currentBalance = bankAccount?.currentBalance.toString()
+		accountNumber = bankAccount?.accountNumber.toString()
+		accountHolderName = bankAccount?.accountHolderName.toString()
+	}
+
 
 	Surface(
 		modifier = Modifier.fillMaxSize()
@@ -86,7 +98,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					style = Typography.headlineLarge
 				)
 
-				if (accountId != null) {
+				if (accountId != null && accountId != 0) {
 					Icon(
 						imageVector = Icons.Outlined.Delete,
 						contentDescription = "Back",
@@ -102,10 +114,11 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 			Column(
 				modifier = Modifier.fillMaxWidth()
 			) {
-				TextField(
+
+				OutlinedTextField(
 					value = accountName,
-					onValueChange = { accountName = it
-						Log.d("TextField", "Value changed: $it")
+					onValueChange = {
+						accountName = it
 					},
 					label = { Text("Account Name") },
 					modifier = Modifier
@@ -113,7 +126,8 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
-				TextField(
+
+				OutlinedTextField(
 					value = currentBalance,
 					onValueChange = { currentBalance = it },
 					label = { Text("Current Balance") },
@@ -122,7 +136,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
-				TextField(
+				OutlinedTextField(
 					value = accountNumber,
 					onValueChange = { accountNumber = it },
 					label = { Text("Account Number") },
@@ -131,7 +145,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
-				TextField(
+				OutlinedTextField(
 					value = accountHolderName,
 					onValueChange = { accountHolderName = it },
 					label = { Text("Account Holder Name") },
@@ -160,8 +174,6 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					onClick = {
 
 						if (bankAccount?.accountId != null && accountId != null) {
-
-							Log.d(TAG, "Inside the if block")
 							val oldBankAccount = BankAccount(
 								accountId = accountId,
 								accountName = accountName,
@@ -170,10 +182,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 								accountHolderName = accountHolderName
 							)
 							viewModel.updateBankAccount(oldBankAccount)
-
 						} else {
-
-							Log.d(TAG, "Inside the else block")
 							val newBankAccount = BankAccount(
 								accountName = accountName,
 								currentBalance = currentBalance.toDouble(),
@@ -187,7 +196,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					},
 					modifier = Modifier.weight(1f)
 				) {
-					Text(if (accountId != null) "Update" else "Save")
+					Text(if(accountId != null && accountId != 0) "Update" else "Save")
 				}
 			}
 		}
@@ -197,7 +206,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 @Preview
 @Composable
 fun PreviewBankAccount() {
-	val navHostController: NavHostController = rememberNavController()
+	val navHostController : NavHostController = rememberNavController()
 	ExpenseyTheme {
 		BankAccountsScreen(navHostController = navHostController, 1)
 	}

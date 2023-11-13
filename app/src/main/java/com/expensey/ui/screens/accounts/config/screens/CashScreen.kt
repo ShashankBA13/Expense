@@ -32,6 +32,7 @@ fun CashScreen(navHostController: NavHostController) {
 	val cashLiveData by viewModel.cashLiveData.observeAsState()
 
 	var text by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "") }
+
 	if (cashLiveData != null) {
 		text = cashLiveData !!.amount.toString()
 	}

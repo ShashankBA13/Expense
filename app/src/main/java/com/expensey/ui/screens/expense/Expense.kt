@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,11 +14,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.outlined.ArrowBackIos
 import androidx.compose.material.icons.outlined.AttachMoney
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -128,6 +131,19 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 						.weight(1f),
 					style = Typography.headlineLarge
 				)
+
+				if (expenseId != null && expenseId != 0) {
+					Icon(
+						imageVector = Icons.Outlined.Delete,
+						contentDescription = "Delete Bank Account",
+						modifier = Modifier.clickable {
+							expense?.let { homeViewModel.deleteExpense(it) }
+							Toast.makeText(context, "Expense Deleted", Toast.LENGTH_SHORT).show()
+							navHostController.popBackStack()
+						} then Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
+						tint = Color.Red
+					)
+				}
 			}
 
 			Column(modifier = Modifier.fillMaxWidth()) {

@@ -40,8 +40,10 @@ class HomeViewModel(application : Application) : AndroidViewModel(application) {
 		return expenseRepository.getExpenseById(expenseId)
 	}
 
-	suspend fun deleteExpense(expense : Expense) {
-		expenseRepository.deleteExpense(expense)
+	fun deleteExpense(expense : Expense) {
+		viewModelScope.launch {
+			expenseRepository.deleteExpense(expense)
+		}
 	}
 
 	fun getExpensesByPaymentMethod(paymentMethod: String): Flow<List<Expense>> {

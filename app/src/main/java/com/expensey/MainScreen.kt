@@ -1,6 +1,8 @@
 package com.expensey
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.expensey.ui.navigation.BottomBarScreen
 import com.expensey.ui.navigation.BottomNavGraph
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
@@ -59,9 +62,9 @@ fun MainScreen() {
                                     } else {
                                         screen.iconOutlined
                                     }
-                                Icon(imageVector = icon, contentDescription = null)
+                                Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                             },
-                            label = { Text(text = screen.title) }
+                            label = { Text(text = screen.title, color = MaterialTheme.colorScheme.primary) }
                         ) {
                             // Navigate to the selected screen's route
                             navController.navigate(screen.route) {

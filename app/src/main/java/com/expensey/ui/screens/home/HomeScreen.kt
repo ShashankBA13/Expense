@@ -1,5 +1,7 @@
 package com.expensey.ui.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,7 +34,10 @@ import com.expensey.data.models.Expense
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 import kotlinx.coroutines.flow.Flow
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(navController : NavHostController) {
 
@@ -63,17 +69,17 @@ fun HomeScreen(navController : NavHostController) {
 				modifier = Modifier.weight(1f)
 			) {
 				items(expenseList) { expense ->
-					ExpenseCard(expense = expense)
+					ExpenseCard(expense = expense, navController)
 				}
 			}
 
 			FloatingActionButton(
 				onClick = {
-					navController.navigate("expense")
+					navController.navigate("expense/0")
 				},
 				modifier = Modifier
 					.padding(bottom = 100.dp)
-                    .align(Alignment.CenterHorizontally)
+					.align(Alignment.CenterHorizontally)
 			) {
 				Icon(Icons.Filled.Add, "Floating action button.")
 			}
@@ -82,6 +88,7 @@ fun HomeScreen(navController : NavHostController) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun HomeScreenPreview() {
@@ -91,30 +98,41 @@ fun HomeScreenPreview() {
 	}
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ExpenseCard(expense : Expense) {
+fun ExpenseCard(expense : Expense, navController : NavHostController) {
 	ElevatedCard(
 		modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp, top = 10.dp, end = 16.dp),
+			.fillMaxWidth()
+			.padding(16.dp, top = 10.dp, end = 16.dp),
 		elevation = CardDefaults.cardElevation(
 			defaultElevation = 6.dp
 		)
 	) {
-		Column(
+		Row(
 			modifier = Modifier.clickable {
-
+				navController.navigate("expense/${expense.expenseId}")
 			} then Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+				.fillMaxWidth()
+				.padding(16.dp),
+			horizontalArrangement = Arrangement.SpaceBetween,
 		) {
+			Column {
+				Text(
+					text = expense.description,
+					style = Typography.bodyLarge
+				)
+				Text(
+					text = DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm").format(
+						expense.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+					),
+					style = Typography.bodySmall
+				)
+			}
 			Text(
-				text = expense.description,
-				style = Typography.bodyLarge
-			)
-			Text(
-				text = "Amount: ${expense.amount}",
-				style = Typography.bodySmall
+				text = "${expense.amount}",
+				style = Typography.bodyLarge,
+				textAlign = TextAlign.End
 			)
 		}
 	}

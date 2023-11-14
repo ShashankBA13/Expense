@@ -1,6 +1,7 @@
 package com.expensey.ui.navigation
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,7 @@ import com.expensey.ui.screens.expense.ExpenseScreen
 import com.expensey.ui.screens.home.HomeScreen
 import com.expensey.ui.screens.settings.SettingsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
     
@@ -50,7 +52,6 @@ fun BottomNavGraph(navController: NavHostController) {
             val bankAccountId : String? = navBackStackEntry.arguments?.getString("bankAccountId")
 
             if (bankAccountId != null) {
-                Log.d("BottomNavGrap", bankAccountId)
                 BankAccountsScreen(navController, bankAccountId.toInt())
             }
         }
@@ -59,8 +60,12 @@ fun BottomNavGraph(navController: NavHostController) {
             TODO("Provide the navigation to Credit Card Screen here!!!")
         }
         
-        composable("expense") {
-            ExpenseScreen(navHostController = navController)
+        composable("expense/{expenseId}") {navBackStackEntry ->
+            val expenseId : String? = navBackStackEntry.arguments?.getString("expenseId")
+
+            if (expenseId != null) {
+                ExpenseScreen(navHostController = navController, expenseId.toInt())
+            }
         }
     }
 }

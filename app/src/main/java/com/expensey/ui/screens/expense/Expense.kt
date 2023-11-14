@@ -36,12 +36,26 @@ import java.util.*
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseScreen(navHostController: NavHostController) {
+fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 	val TAG = "Expense"
 
 	val context = LocalContext.current
 	val homeViewModel: HomeViewModel = viewModel()
 	val categoryViewModel: CategoryViewModel = viewModel()
+
+	val expenseFlow = if (expenseId != 0) {
+		homeViewModel.getExpenseById(expenseId)
+	} else {
+		null
+	}
+
+	var expense by remember { mutableStateOf<Expense?>(null) }
+
+	LaunchedEffect(expenseFlow) {
+		expenseFlow?.collect { collectedExpense ->
+			expense = collectedExpense
+		}
+	}
 
 	val pickedDate by remember { mutableStateOf(LocalDateTime.now()) }
 	var descriptionState by remember { mutableStateOf(TextFieldValue("")) }
@@ -51,6 +65,14 @@ fun ExpenseScreen(navHostController: NavHostController) {
 	dateState = remember {
 		val formattedDate = pickedDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm"))
 		TextFieldValue(formattedDate)
+	}
+
+	if(expense != null) {
+		dateState = TextFieldValue(DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm").format(
+			expense !!.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+		))
+		amountState = TextFieldValue(expense?.amount.toString())
+		descriptionState = TextFieldValue(expense?.description.toString())
 	}
 
 	var paymentMethodState by remember { mutableStateOf(TextFieldValue("")) }
@@ -76,7 +98,9 @@ fun ExpenseScreen(navHostController: NavHostController) {
 
 				Text(
 					text = "Expense",
-					modifier = Modifier.padding(20.dp).weight(1f),
+					modifier = Modifier
+						.padding(20.dp)
+						.weight(1f),
 					style = Typography.headlineLarge
 				)
 			}
@@ -88,7 +112,9 @@ fun ExpenseScreen(navHostController: NavHostController) {
 						dateState = it
 					},
 					label = { Text("Date") },
-					modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
 					trailingIcon = {
 						IconButton(
 							onClick = {
@@ -129,7 +155,9 @@ fun ExpenseScreen(navHostController: NavHostController) {
 						descriptionState = it
 					},
 					label = { Text("Description") },
-					modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
 					trailingIcon = {
 						Icon(
 							Icons.Outlined.Description,
@@ -144,7 +172,9 @@ fun ExpenseScreen(navHostController: NavHostController) {
 						paymentMethodState = it
 					},
 					label = { Text("Payment Method") },
-					modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
 				)
 
 				ExposedDropdownMenuBox(
@@ -152,7 +182,9 @@ fun ExpenseScreen(navHostController: NavHostController) {
 					onExpandedChange = {
 						isCategoryMenuExpanded = !isCategoryMenuExpanded
 					},
-					modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp).fillMaxWidth()
+					modifier = Modifier
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+						.fillMaxWidth()
 				) {
 					OutlinedTextField(
 						value = selectedCategory?.categoryName ?: "",
@@ -160,9 +192,12 @@ fun ExpenseScreen(navHostController: NavHostController) {
 						readOnly = true,
 						label = { Text("Category") },
 						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isCategoryMenuExpanded) },
-						modifier = Modifier.fillMaxWidth().clickable {
-							isCategoryMenuExpanded = !isCategoryMenuExpanded
-						}.menuAnchor(),
+						modifier = Modifier
+							.fillMaxWidth()
+							.clickable {
+								isCategoryMenuExpanded = ! isCategoryMenuExpanded
+							}
+							.menuAnchor(),
 						colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
 					)
 
@@ -187,7 +222,9 @@ fun ExpenseScreen(navHostController: NavHostController) {
 				}
 
 				Row(
-					modifier = Modifier.fillMaxWidth().padding(20.dp),
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(20.dp),
 					horizontalArrangement = Arrangement.SpaceEvenly
 				) {
 					TextButton(
@@ -207,23 +244,38 @@ fun ExpenseScreen(navHostController: NavHostController) {
 							)
 							val selectedDate = Date.from(selectedDateTime.atZone(ZoneId.systemDefault()).toInstant())
 
-							val expense = Expense(
-								description = descriptionState.text,
-								amount = amountState.text.toDoubleOrNull() ?: 0.0,
-								categoryId = categoryId,
-								date = selectedDate,
-								paymentMethod = paymentMethodState.text,
-								bankAccountId = bankAccountIdState.text.toIntOrNull(),
-								creditCardId = creditCardIdState.text.toIntOrNull(),
-								cashId = cashIdState.text.toIntOrNull()
-							)
-							homeViewModel.insertExpense(expense)
 
+							if(expenseId != null && expenseId != 0) {
+								val updateExpense = Expense(
+									expenseId = expenseId,
+									description = descriptionState.text,
+									amount = amountState.text.toDoubleOrNull() ?: 0.0,
+									categoryId = categoryId,
+									date = selectedDate,
+									paymentMethod = paymentMethodState.text,
+									bankAccountId = bankAccountIdState.text.toIntOrNull(),
+									creditCardId = creditCardIdState.text.toIntOrNull(),
+									cashId = cashIdState.text.toIntOrNull()
+								)
+								homeViewModel.updateExpense(expense = updateExpense)
+							} else {
+								val newExpense = Expense(
+									description = descriptionState.text,
+									amount = amountState.text.toDoubleOrNull() ?: 0.0,
+									categoryId = categoryId,
+									date = selectedDate,
+									paymentMethod = paymentMethodState.text,
+									bankAccountId = bankAccountIdState.text.toIntOrNull(),
+									creditCardId = creditCardIdState.text.toIntOrNull(),
+									cashId = cashIdState.text.toIntOrNull()
+								)
+								homeViewModel.insertExpense(newExpense)
+							}
 							navHostController.popBackStack()
 						},
 						modifier = Modifier.weight(1f)
 					) {
-						Text("Save")
+						Text(if(expenseId != 0) "Update" else "Save")
 					}
 				}
 			}

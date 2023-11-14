@@ -103,7 +103,8 @@ fun HomeScreen(navController : NavHostController) {
 							style = Typography.headlineSmall,
 							modifier = Modifier
 								.fillMaxWidth()
-								.padding(start = 20.dp, top = 20.dp)
+								.padding(start = 20.dp, top = 20.dp),
+							textAlign = TextAlign.Center
 						)
 					}
 					items(expenses) { expense ->

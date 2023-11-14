@@ -55,4 +55,8 @@ class HomeViewModel(application : Application) : AndroidViewModel(application) {
 	fun getTotalExpensesForCategory(categoryId: Int): Flow<Double> {
 		return expenseRepository.getTotalExpensesForCategory(categoryId)
 	}
+
+	fun getTotalSumOfExpenses() : Flow<Double> {
+		return expenseRepository.getTotalSumOfExpenses()
+	}
 }

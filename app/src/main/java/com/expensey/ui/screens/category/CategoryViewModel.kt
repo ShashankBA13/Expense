@@ -8,12 +8,15 @@ import com.expensey.ExpenseyApplication
 import com.expensey.data.models.Category
 import com.expensey.data.repository.CategoryRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class CategoryViewModel(application: Application) : AndroidViewModel(application){
 
 	val categoryLiveDataList : LiveData<List<Category>>
 	private val categoryRepository : CategoryRepository
+
+	val TAG = "CategoryViewModel"
 
 	init {
 		val expenseyApplication = application as ExpenseyApplication
@@ -47,5 +50,8 @@ class CategoryViewModel(application: Application) : AndroidViewModel(application
 		}
 	}
 
+	fun getCategoryById(categoryId : Int) : Flow<Category> {
+		return categoryRepository.getCategoryById(categoryId)
+	}
 
 }

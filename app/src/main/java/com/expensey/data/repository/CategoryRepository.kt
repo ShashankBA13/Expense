@@ -63,6 +63,10 @@ class CategoryRepository(private val categoryDao : CategoryDao, private val cont
 		categoryDao.delete(category)
 	}
 
+	fun getCategoryById(categoryId : Int) : Flow<Category> {
+		return categoryDao.getCategoryById(categoryId)
+	}
+
 	private suspend fun setIsDataPopulated(value: Boolean) {
 		dataStore.edit { settings ->
 			settings[IS_CATEGORIES_POPULATED] = value

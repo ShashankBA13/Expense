@@ -21,7 +21,7 @@ abstract class ExpenseDao : BaseDao<Expense> {
 	@Query("SELECT * FROM expenses WHERE date BETWEEN :startDate AND :endDate")
 	abstract fun getExpensesByDateRange(startDate: Date, endDate: Date): Flow<List<Expense>>
 
-	@Query("SELECT SUM(amount) FROM expenses WHERE category_id = :categoryId")
+	@Query("SELECT ROUND(SUM(amount), 3) FROM expenses WHERE category_id = :categoryId")
 	abstract fun getTotalExpensesForCategory(categoryId: Int): Flow<Double>
 
 	@Query("SELECT * FROM expenses WHERE id = :expenseId")
@@ -29,4 +29,7 @@ abstract class ExpenseDao : BaseDao<Expense> {
 
 	@Query("DELETE FROM expenses WHERE category_id = :categoryId")
 	abstract suspend fun deleteExpensesByCategory(categoryId: Int)
+
+	@Query(" SELECT ROUND(SUM(amount), 3) FROM expenses")
+	abstract fun totalSumOfExpenses() : Flow<Double>
 }

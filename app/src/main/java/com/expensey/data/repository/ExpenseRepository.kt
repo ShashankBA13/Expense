@@ -37,4 +37,8 @@ class ExpenseRepository(private val expenseDao : ExpenseDao, private val context
 	fun getTotalExpensesForCategory(categoryId: Int): Flow<Double> {
 		return expenseDao.getTotalExpensesForCategory(categoryId)
 	}
+
+	fun getTotalSumOfExpenses() : Flow<Double> {
+		return expenseDao.totalSumOfExpenses()
+	}
 }

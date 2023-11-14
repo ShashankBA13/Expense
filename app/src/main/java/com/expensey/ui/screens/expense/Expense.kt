@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.outlined.ArrowBackIos
@@ -18,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,14 +69,6 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 		TextFieldValue(formattedDate)
 	}
 
-	if(expense != null) {
-		dateState = TextFieldValue(DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm").format(
-			expense !!.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
-		))
-		amountState = TextFieldValue(expense?.amount.toString())
-		descriptionState = TextFieldValue(expense?.description.toString())
-	}
-
 	var paymentMethodState by remember { mutableStateOf(TextFieldValue("")) }
 	var bankAccountIdState by remember { mutableStateOf(TextFieldValue("")) }
 	var creditCardIdState by remember { mutableStateOf(TextFieldValue("")) }
@@ -84,6 +78,37 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 	val categoryListState by categoryViewModel.categoryLiveDataList.observeAsState()
 	val categories = categoryListState ?: emptyList()
 	var selectedCategory by remember { mutableStateOf<Category?>(null) }
+
+
+	if (expense != null) {
+		dateState = TextFieldValue(
+			DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm").format(
+				expense!!.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+			)
+		)
+		amountState = TextFieldValue(expense!!.amount.toString())
+		descriptionState = TextFieldValue(expense!!.description)
+		paymentMethodState = TextFieldValue(expense!!.paymentMethod)
+
+		val categoryIdEdit = expense!!.categoryId
+		val categoryFlow = if(categoryIdEdit != null) {
+			categoryViewModel.getCategoryById(categoryIdEdit)
+		} else {
+			null
+		}
+		var category by remember { mutableStateOf<Category?>(null) }
+
+		LaunchedEffect(categoryFlow) {
+			categoryFlow?.collect { collectedCategory ->
+				category = collectedCategory
+			}
+		}
+
+		if (categoryIdEdit != null) {
+			selectedCategory = category
+			categoryId = categoryIdEdit
+		}
+	}
 
 	Surface(modifier = Modifier.fillMaxSize()) {
 		Column {
@@ -146,7 +171,10 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 							Icons.Outlined.AttachMoney,
 							contentDescription = "Amount"
 						)
-					}
+					},
+					keyboardOptions = KeyboardOptions.Default.copy(
+						keyboardType = KeyboardType.Number
+					)
 				)
 
 				OutlinedTextField(
@@ -245,7 +273,7 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 							val selectedDate = Date.from(selectedDateTime.atZone(ZoneId.systemDefault()).toInstant())
 
 
-							if(expenseId != null && expenseId != 0) {
+							if(expenseId != 0) {
 								val updateExpense = Expense(
 									expenseId = expenseId,
 									description = descriptionState.text,
@@ -273,7 +301,8 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 							}
 							navHostController.popBackStack()
 						},
-						modifier = Modifier.weight(1f)
+						modifier = Modifier.weight(1f),
+						enabled = categoryId != 0 && amountState.text.isNotBlank()
 					) {
 						Text(if(expenseId != 0) "Update" else "Save")
 					}

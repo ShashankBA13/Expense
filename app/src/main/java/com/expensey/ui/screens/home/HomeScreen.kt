@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,8 +35,11 @@ import com.expensey.data.models.Expense
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 import kotlinx.coroutines.flow.Flow
+import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,6 +49,11 @@ fun HomeScreen(navController : NavHostController) {
 
 	val expenseFlowList : Flow<List<Expense>> = viewModel.expenseFlowList
 	val expenseList by expenseFlowList.collectAsState(initial = emptyList())
+
+	val totalExpenseState: State<Double?> = viewModel.getTotalSumOfExpenses().collectAsState(initial = null)
+	val totalExpense: Double? by totalExpenseState
+
+	val greeting = getGreeting()
 
 	Surface(
 		modifier = Modifier.fillMaxSize()
@@ -58,9 +67,15 @@ fun HomeScreen(navController : NavHostController) {
 				verticalAlignment = Alignment.CenterVertically
 			) {
 				Text(
-					text = "Home",
+					text = greeting,
 					modifier = Modifier
 						.padding(20.dp),
+					style = Typography.headlineMedium
+				)
+				Text(
+					text = "₹ " + totalExpense.toString(),
+					textAlign = TextAlign.End,
+					modifier = Modifier.padding(end = 20.dp),
 					style = Typography.headlineLarge
 				)
 			}
@@ -135,5 +150,18 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 				textAlign = TextAlign.End
 			)
 		}
+	}
+}
+
+private fun getGreeting(): String {
+	val currentTime = Calendar.getInstance().time
+	val hourFormat = SimpleDateFormat("HH", Locale.getDefault())
+	val hour = hourFormat.format(currentTime).toInt()
+
+	return when {
+		hour in 6..11 -> "Good Morning"
+		hour in 12..15 -> "Good Afternoon"
+		hour in 16..23 || hour in 0..5 -> "Good Evening"
+		else -> "Hello" // Default greeting
 	}
 }

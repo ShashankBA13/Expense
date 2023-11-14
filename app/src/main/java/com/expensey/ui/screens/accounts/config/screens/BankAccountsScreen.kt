@@ -101,7 +101,7 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 				if (accountId != null && accountId != 0) {
 					Icon(
 						imageVector = Icons.Outlined.Delete,
-						contentDescription = "Back",
+						contentDescription = "Delete Bank Account",
 						modifier = Modifier.clickable {
 							bankAccount?.let { viewModel.deleteBankAccount(it) }
 							navHostController.popBackStack()

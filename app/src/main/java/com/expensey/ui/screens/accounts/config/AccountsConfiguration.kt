@@ -144,7 +144,7 @@ fun Account(navController : NavHostController) {
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Text (
-				text = "Accounts",
+				text = "Bank Account",
 				style = Typography.headlineSmall
 			)
 		}
@@ -187,7 +187,7 @@ fun CreditCard(navController : NavHostController) {
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Text (
-				text = "Credit Cards",
+				text = "Credit Card",
 				modifier = Modifier.padding(20.dp),
 				style = Typography.headlineSmall
 			)
@@ -222,7 +222,7 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				textAlign = TextAlign.Center,
 			)
 
-			Divider(modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp))
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
 
 			Text(
 				text = "Bank Account",
@@ -234,7 +234,7 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				textAlign = TextAlign.Center,
 			)
 
-			Divider(modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp))
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
 
 			Text(
 				text = "Credit Card",

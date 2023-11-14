@@ -1,6 +1,7 @@
 package com.expensey.ui.navigation
 
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,9 +11,11 @@ import com.expensey.ui.screens.accounts.config.AccountsConfiguration
 import com.expensey.ui.screens.accounts.config.screens.BankAccountsScreen
 import com.expensey.ui.screens.accounts.config.screens.CashScreen
 import com.expensey.ui.screens.category.CategoryScreen
+import com.expensey.ui.screens.expense.ExpenseScreen
 import com.expensey.ui.screens.home.HomeScreen
 import com.expensey.ui.screens.settings.SettingsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomNavGraph(navController: NavHostController) {
     
@@ -21,7 +24,7 @@ fun BottomNavGraph(navController: NavHostController) {
         startDestination = BottomBarScreen.Home.route
     ) {
         composable(route = BottomBarScreen.Home.route) {
-            HomeScreen()
+            HomeScreen(navController)
         }
 
         composable(route = BottomBarScreen.Accounts.route) {
@@ -49,13 +52,20 @@ fun BottomNavGraph(navController: NavHostController) {
             val bankAccountId : String? = navBackStackEntry.arguments?.getString("bankAccountId")
 
             if (bankAccountId != null) {
-                Log.d("BottomNavGrap", bankAccountId)
                 BankAccountsScreen(navController, bankAccountId.toInt())
             }
         }
 
         composable("creditCard") {
             TODO("Provide the navigation to Credit Card Screen here!!!")
+        }
+        
+        composable("expense/{expenseId}") {navBackStackEntry ->
+            val expenseId : String? = navBackStackEntry.arguments?.getString("expenseId")
+
+            if (expenseId != null) {
+                ExpenseScreen(navHostController = navController, expenseId.toInt())
+            }
         }
     }
 }

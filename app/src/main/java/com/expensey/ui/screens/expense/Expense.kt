@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -12,7 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.outlined.ArrowBackIos
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Description
@@ -22,13 +23,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Category
 import com.expensey.data.models.Expense
+import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.screens.category.CategoryViewModel
 import com.expensey.ui.screens.home.HomeViewModel
 import com.expensey.ui.theme.Typography
@@ -42,11 +46,17 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
-	val TAG = "Expense"
 
 	val context = LocalContext.current
 	val homeViewModel: HomeViewModel = viewModel()
 	val categoryViewModel: CategoryViewModel = viewModel()
+	val expenseViewModel : ExpenseViewModel = viewModel()
+	val accountsViewModel : AccountsViewModel = viewModel()
+
+	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
+
+	val cashLiveData by expenseViewModel.cashLiveData.observeAsState()
+	val bankAccountLiveDataList by expenseViewModel.bankAccountLiveDataList.observeAsState()
 
 	val expenseFlow = if (expenseId != 0) {
 		homeViewModel.getExpenseById(expenseId)
@@ -63,24 +73,29 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 	}
 
 	val pickedDate by remember { mutableStateOf(LocalDateTime.now()) }
-	var descriptionState by remember { mutableStateOf(TextFieldValue("")) }
-	var amountState by remember { mutableStateOf(TextFieldValue("")) }
-	var categoryId by remember { mutableStateOf(0) }
 	var dateState by remember { mutableStateOf(TextFieldValue("")) }
 	dateState = remember {
 		val formattedDate = pickedDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm"))
 		TextFieldValue(formattedDate)
 	}
-
+	var descriptionState by remember { mutableStateOf(TextFieldValue("")) }
+	var amountState by remember { mutableStateOf(TextFieldValue("")) }
+	var categoryId by remember { mutableIntStateOf(0) }
 	var paymentMethodState by remember { mutableStateOf(TextFieldValue("")) }
+	var cashIdState by remember { mutableStateOf(TextFieldValue("")) }
 	var bankAccountIdState by remember { mutableStateOf(TextFieldValue("")) }
 	var creditCardIdState by remember { mutableStateOf(TextFieldValue("")) }
-	var cashIdState by remember { mutableStateOf(TextFieldValue("")) }
+
 
 	var isCategoryMenuExpanded by remember { mutableStateOf(false) }
 	val categoryListState by categoryViewModel.categoryLiveDataList.observeAsState()
 	val categories = categoryListState ?: emptyList()
 	var selectedCategory by remember { mutableStateOf<Category?>(null) }
+
+
+	var isPaymentModeExpanded by remember { mutableStateOf(false) }
+	val bankAccountsList = bankAccountLiveDataList ?: emptyList()
+	var selectedPaymentMode by remember { mutableStateOf("") }
 
 
 	if (expense != null) {
@@ -91,7 +106,6 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 		)
 		amountState = TextFieldValue(expense!!.amount.toString())
 		descriptionState = TextFieldValue(expense!!.description)
-		paymentMethodState = TextFieldValue(expense!!.paymentMethod)
 
 		val categoryIdEdit = expense!!.categoryId
 		val categoryFlow = if(categoryIdEdit != null) {
@@ -111,13 +125,49 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 			selectedCategory = category
 			categoryId = categoryIdEdit
 		}
+
+//		// Instead of direct assignment, use the text property of TextFieldValue
+		LaunchedEffect(expense!!.bankAccountId) {
+			bankAccountIdState = TextFieldValue(expense!!.bankAccountId.toString())
+			paymentMethodState = TextFieldValue("Bank Account")
+		}
+
+		val bankAccountIdInt: Int? = bankAccountIdState.text.toIntOrNull()
+
+		if (bankAccountIdInt != null) {
+			val bankAccountLiveData = if (bankAccountIdInt != 0) {
+				accountsViewModel.getBankAccountById(bankAccountIdInt)
+			} else {
+				null
+			}
+
+			if (bankAccountLiveData != null) {
+				bankAccountLiveData.observeAsState().value?.let { bankAccount = it }
+			}
+
+			if (bankAccount != null) {
+				selectedPaymentMode = selectedPaymentMode.takeIf { it.isNotBlank() } ?: bankAccount!!.accountName
+			}
+		}
+
+		// Update cashIdState using LaunchedEffect
+		LaunchedEffect(expense!!.cashId) {
+			cashIdState = TextFieldValue(expense!!.cashId.toString())
+			paymentMethodState = TextFieldValue("Cash")
+		}
+
+		val cashIdInt: Int? = cashIdState.text.toIntOrNull()
+
+		if (cashIdInt != null && cashIdInt != 0) {
+			selectedPaymentMode = (selectedPaymentMode.takeIf { it.isNotBlank() } ?: cashLiveData?.name).toString()
+		}
 	}
 
 	Surface(modifier = Modifier.fillMaxSize()) {
 		Column {
 			Row(modifier = Modifier.fillMaxWidth()) {
 				Icon(
-					imageVector = Icons.Outlined.ArrowBackIos,
+					imageVector = Icons.Outlined.ArrowBackIosNew,
 					contentDescription = "Back",
 					modifier = Modifier.clickable {
 						navHostController.popBackStack()
@@ -132,7 +182,7 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 					style = Typography.headlineLarge
 				)
 
-				if (expenseId != null && expenseId != 0) {
+				if (expenseId != 0) {
 					Icon(
 						imageVector = Icons.Outlined.Delete,
 						contentDescription = "Delete Bank Account",
@@ -210,17 +260,6 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 					}
 				)
 
-				OutlinedTextField(
-					value = paymentMethodState,
-					onValueChange = {
-						paymentMethodState = it
-					},
-					label = { Text("Payment Method") },
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-				)
-
 				ExposedDropdownMenuBox(
 					expanded = isCategoryMenuExpanded,
 					onExpandedChange = {
@@ -265,6 +304,85 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 					}
 				}
 
+				ExposedDropdownMenuBox(
+					expanded = isPaymentModeExpanded,
+					onExpandedChange = {
+						isPaymentModeExpanded = !isPaymentModeExpanded
+					},
+					modifier = Modifier
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+						.fillMaxWidth()
+				) {
+					OutlinedTextField(
+						value = selectedPaymentMode,
+						onValueChange = {},
+						readOnly = true,
+						label = { Text("Payment Mode") },
+						trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isPaymentModeExpanded) },
+						modifier = Modifier
+							.fillMaxWidth()
+							.clickable {
+								isPaymentModeExpanded = ! isPaymentModeExpanded
+							}
+							.menuAnchor(),
+						colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+					)
+
+					ExposedDropdownMenu(
+						expanded = isPaymentModeExpanded,
+						onDismissRequest = {
+							isPaymentModeExpanded = false
+						},
+						modifier = Modifier.fillMaxWidth()
+					) {
+
+						DropdownMenuItem(
+							onClick = {
+							},
+							text = {
+								Text("Bank Account", fontWeight = FontWeight.Bold)
+							}
+						)
+
+						Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+
+						bankAccountsList.forEach { bankAccount ->
+							DropdownMenuItem(
+								onClick = {
+									bankAccountIdState = TextFieldValue(bankAccount.accountId.toString())
+									selectedPaymentMode = bankAccount.accountName
+									isPaymentModeExpanded = false
+									paymentMethodState = TextFieldValue("Bank Account")
+								},
+								text = {
+									Text(bankAccount.accountName +  "       " + "₹ " + bankAccount.currentBalance)
+								}
+							)
+						}
+
+						DropdownMenuItem(
+							onClick = {
+							},
+							text = {
+								Text("Cash", fontWeight = FontWeight.Bold)
+							}
+						)
+						Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+
+						DropdownMenuItem(
+							onClick = {
+								cashIdState = TextFieldValue(cashLiveData?.cashId.toString())
+								selectedPaymentMode = cashLiveData?.name.toString()
+								isPaymentModeExpanded = false
+								paymentMethodState = TextFieldValue("Cash")
+							},
+							text = {
+								Text(cashLiveData?.name +  "       " + "₹ " + cashLiveData?.amount)
+							}
+						)
+					}
+				}
+
 				Row(
 					modifier = Modifier
 						.fillMaxWidth()
@@ -288,8 +406,8 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 							)
 							val selectedDate = Date.from(selectedDateTime.atZone(ZoneId.systemDefault()).toInstant())
 
-
 							if(expenseId != 0) {
+								Log.d("Expense Add/Edit", "In update method paymentModeText: ${paymentMethodState.text}")
 								val updateExpense = Expense(
 									expenseId = expenseId,
 									description = descriptionState.text,
@@ -297,10 +415,11 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 									categoryId = categoryId,
 									date = selectedDate,
 									paymentMethod = paymentMethodState.text,
-									bankAccountId = bankAccountIdState.text.toIntOrNull(),
-									creditCardId = creditCardIdState.text.toIntOrNull(),
-									cashId = cashIdState.text.toIntOrNull()
+									bankAccountId = if (paymentMethodState.text == "Bank Account") bankAccountIdState.text.toIntOrNull() else null,
+									creditCardId = if (paymentMethodState.text == "Credit Card") creditCardIdState.text.toIntOrNull() else null,
+									cashId = if (paymentMethodState.text == "Cash") cashIdState.text.toIntOrNull() else null
 								)
+
 								homeViewModel.updateExpense(expense = updateExpense)
 							} else {
 								val newExpense = Expense(
@@ -309,9 +428,9 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 									categoryId = categoryId,
 									date = selectedDate,
 									paymentMethod = paymentMethodState.text,
-									bankAccountId = bankAccountIdState.text.toIntOrNull(),
-									creditCardId = creditCardIdState.text.toIntOrNull(),
-									cashId = cashIdState.text.toIntOrNull()
+									bankAccountId = if (paymentMethodState.text == "Bank Account") bankAccountIdState.text.toIntOrNull() else null,
+									creditCardId = if (paymentMethodState.text == "Credit Card") creditCardIdState.text.toIntOrNull() else null,
+									cashId = if (paymentMethodState.text == "Cash") cashIdState.text.toIntOrNull() else null
 								)
 								homeViewModel.insertExpense(newExpense)
 							}
@@ -354,7 +473,6 @@ fun showDateTimePicker(context: Context, onDateSelected: (LocalDateTime) -> Unit
 
 					// Format the selected date and time
 					val selectedDateTime = LocalDateTime.ofInstant(currentDateTime.toInstant(), ZoneId.systemDefault())
-					val dateFormat = DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm", Locale.getDefault())
 
 					// Update the dateState value
 					onDateSelected(selectedDateTime)

@@ -126,7 +126,6 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 			categoryId = categoryIdEdit
 		}
 
-//		// Instead of direct assignment, use the text property of TextFieldValue
 		LaunchedEffect(expense!!.bankAccountId) {
 			bankAccountIdState = TextFieldValue(expense!!.bankAccountId.toString())
 			paymentMethodState = TextFieldValue("Bank Account")
@@ -298,7 +297,9 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 									selectedCategory = category
 									isCategoryMenuExpanded = false
 								},
-								text = { Text(category.categoryName) }
+								text = { Text(category.categoryName) },
+								modifier = Modifier
+									.fillMaxWidth()
 							)
 						}
 					}
@@ -354,8 +355,22 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 									isPaymentModeExpanded = false
 									paymentMethodState = TextFieldValue("Bank Account")
 								},
+								modifier = Modifier.fillMaxWidth(),
 								text = {
-									Text(bankAccount.accountName +  "       " + "₹ " + bankAccount.currentBalance)
+									Row(
+										modifier = Modifier.fillMaxWidth(),
+										horizontalArrangement = Arrangement.SpaceBetween
+									) {
+										Text(
+											text = "${bankAccount.accountName}       ",
+											fontWeight = FontWeight.Bold
+										)
+										Text(
+											text = "₹ ${bankAccount.currentBalance}",
+											fontWeight = FontWeight.Bold,
+											color = Color.Gray // Adjust color based on your design
+										)
+									}
 								}
 							)
 						}
@@ -376,8 +391,22 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 								isPaymentModeExpanded = false
 								paymentMethodState = TextFieldValue("Cash")
 							},
+							modifier = Modifier.fillMaxWidth(),
 							text = {
-								Text(cashLiveData?.name +  "       " + "₹ " + cashLiveData?.amount)
+								Row(
+									modifier = Modifier.fillMaxWidth(),
+									horizontalArrangement = Arrangement.SpaceBetween
+								) {
+									Text(
+										text = "${cashLiveData?.name}",
+										fontWeight = FontWeight.Bold
+									)
+									Text(
+										text = "₹ ${cashLiveData?.amount}",
+										fontWeight = FontWeight.Bold,
+										color = Color.Gray // Adjust color based on your design
+									)
+								}
 							}
 						)
 					}

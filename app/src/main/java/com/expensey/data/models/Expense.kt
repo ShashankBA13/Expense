@@ -64,11 +64,11 @@ data class Expense (
 	val paymentMethod: String,  // This field acts as a discriminator
 
 	@ColumnInfo(name = "bank_account_id")
-	val bankAccountId: Int?,  // Foreign key to BankAccount entity
+	var bankAccountId: Int?,  // Foreign key to BankAccount entity
 
 	@ColumnInfo(name = "credit_card_id")
-	val creditCardId: Int?,  // Foreign key to CreditCard entity
+	var creditCardId: Int?,  // Foreign key to CreditCard entity
 
 	@ColumnInfo(name = "cash_id")
-	val cashId: Int?  // Foreign key to CreditCard entity
+	var cashId: Int?  // Foreign key to CreditCard entity
 )

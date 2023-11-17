@@ -1,5 +1,6 @@
 package com.expensey.ui.screens.accounts
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 
@@ -41,10 +42,11 @@ fun AccountsScreen() {
     val viewModel: AccountsViewModel = viewModel()
 
     val assetsValue = 10000
-    val liabilitiesValue = 2000
+    val liabilitiesValue = 20000
     val netWorth = assetsValue - liabilitiesValue
 
-    val textColor = if (netWorth < 0) Color.Red else Color.Black
+    val textColor = if (netWorth < 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+
 
     Surface(
         modifier = Modifier.fillMaxSize()
@@ -64,7 +66,7 @@ fun AccountsScreen() {
                 )
                 Icon(
                     imageVector = Icons.Outlined.MoreVert,
-                    contentDescription = "Hamburger Icon", // Provide a content description as needed
+                    contentDescription = "Hamburger Icon",
                     modifier = Modifier.clickable {
                         // Handle the icon click here
                     } then Modifier
@@ -78,67 +80,72 @@ fun AccountsScreen() {
                     .padding(20.dp, 10.dp)
             ) {
                 Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                   modifier = Modifier
+                       .fillMaxWidth()
+                       .height(70.dp)
+                       .background(MaterialTheme.colorScheme.secondaryContainer),
+                    horizontalArrangement = Arrangement.SpaceAround,
                 ) {
                     Column (
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "Assets",
+                            style = Typography.bodyLarge,
                             modifier = Modifier
-                                .padding(10.dp),
-                            style = Typography.bodyLarge
+                                .padding(top= 10.dp, start = 10.dp)
                         )
                         Text (
                             text = assetsValue.toString(),
-                            modifier = Modifier
-                                .padding(start = 10.dp, top = 0.dp, bottom = 5.dp),
+
                             style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
-                                color = Color.Blue
-                            )
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp)
                         )
                     }
                     Column (
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "Liabilities",
                             modifier = Modifier
-                                .padding(10.dp),
+                                .padding(top= 10.dp, start = 10.dp),
                             style = Typography.bodyLarge
                         )
                         Text (
                             text = liabilitiesValue.toString(),
-                            modifier = Modifier
-                                .padding(start = 10.dp, top = 0.dp, bottom = 5.dp),
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp),
                             style = TextStyle(
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
-                                color = Color.Red
+                                color = MaterialTheme.colorScheme.tertiary
                             )
                         )
                     }
 
                     Column (
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "Net Worth",
                             modifier = Modifier
-                                .padding(8.dp),
+                                .padding(top= 10.dp, start = 10.dp, end = 10.dp),
                             style = Typography.bodyLarge
                         )
                         Text (
                             text = netWorth.toString(),
-                            modifier = Modifier
-                                .padding(start = 10.dp, top = 0.dp, bottom = 5.dp),
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 10.dp),
                             style = TextStyle(
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.Monospace,
                                 color = textColor
                             )

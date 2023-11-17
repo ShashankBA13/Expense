@@ -1,6 +1,7 @@
 package com.expensey.ui.screens.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -24,26 +25,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.expensey.data.models.BankAccount
+import com.expensey.data.models.Category
 import com.expensey.data.models.Expense
+import com.expensey.ui.screens.accounts.AccountsViewModel
+import com.expensey.ui.screens.category.CategoryViewModel
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -84,28 +92,54 @@ fun HomeScreen(navController : NavHostController) {
 						.padding(20.dp),
 					style = Typography.headlineMedium
 				)
-				Text(
-					text = "₹ " + totalExpense.toString(),
-					textAlign = TextAlign.End,
-					modifier = Modifier.padding(end = 20.dp),
-					style = Typography.headlineLarge,
-					color = MaterialTheme.colorScheme.primary
-				)
+				if (totalExpense != null) {
+					Text(
+						text = "₹ $totalExpense",
+						textAlign = TextAlign.End,
+						modifier = Modifier.padding(end = 20.dp),
+						style = Typography.headlineLarge,
+						color = MaterialTheme.colorScheme.primary
+					)
+				}
 			}
 
 			LazyColumn(
 				modifier = Modifier.weight(1f)
 			) {
 				groupedExpenses.forEach { (date, expenses) ->
+
+					val today = LocalDate.now()
+					val yesterday = today.minusDays(1)
+
+					val displayDate = when {
+						date.equals(today.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))) -> "Today"
+						date.equals(yesterday.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))) -> "Yesterday"
+						else -> date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+					}
+
+					var totalSpendsPerDay = 0.0
+					expenses.forEach{ expense ->
+						totalSpendsPerDay += totalSpendsPerDay + expense.amount
+					}
+
 					stickyHeader {
-						Text(
-							text = date,
-							style = Typography.headlineSmall,
+						Row (
 							modifier = Modifier
 								.fillMaxWidth()
-								.padding(start = 20.dp, top = 20.dp),
-							textAlign = TextAlign.Center
-						)
+								.padding(start = 20.dp, top = 20.dp, end = 20.dp),
+							horizontalArrangement = Arrangement.SpaceBetween
+						) {
+							Text(
+								text = displayDate,
+								style = Typography.headlineSmall,
+								textAlign = TextAlign.Start
+							)
+							Text(
+								text = "₹ $totalSpendsPerDay",
+								style = Typography.headlineSmall,
+								color = MaterialTheme.colorScheme.primary
+							)
+						}
 					}
 					items(expenses) { expense ->
 						ExpenseCard(expense = expense, navController)
@@ -141,6 +175,43 @@ fun HomeScreenPreview() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ExpenseCard(expense: Expense, navController: NavHostController) {
+
+	val accountsViewModel : AccountsViewModel = viewModel()
+	val categoryViewModel: CategoryViewModel = viewModel()
+
+	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
+
+	val bankAccountLiveData = if (expense.bankAccountId != null && expense.bankAccountId != 0) {
+		accountsViewModel.getBankAccountById(expense.bankAccountId !!)
+	} else {
+		null
+	}
+
+	bankAccountLiveData?.observeAsState()?.value?.let { bankAccount = it }
+
+	var paymentMode = expense.paymentMethod
+
+	if(bankAccount != null) {
+		paymentMode = bankAccount !!.accountName
+	}
+
+	val categoryIdEdit = expense.categoryId
+	val categoryFlow = if(categoryIdEdit != null) {
+		categoryViewModel.getCategoryById(categoryIdEdit)
+	} else {
+		null
+	}
+	var category by remember { mutableStateOf<Category?>(null) }
+
+	LaunchedEffect(categoryFlow) {
+		categoryFlow?.collect { collectedCategory ->
+			category = collectedCategory
+		}
+	}
+
+	val categoryName = category?.categoryName
+	Log.d("HomeScreen", categoryName.toString())
+
 	Card(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -159,38 +230,46 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 			Column(
 				modifier = Modifier
 					.padding(16.dp)
-					.weight(1f)
 			) {
-				Text(
-					text = expense.description,
-					style = Typography.bodyLarge,
-					fontWeight = FontWeight.Bold
-				)
-				Spacer(modifier = Modifier.height(4.dp))
-				Text(
-					text = buildAnnotatedString {
-						withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-							append("Mode: ")
-						}
-						append(expense.paymentMethod)
-					},
-					style = Typography.bodyMedium,
-					color = MaterialTheme.colorScheme.tertiary
-				)
-			}
-			Text(
-				text = buildAnnotatedString {
-					withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+				Row (
+					modifier = Modifier.fillMaxWidth(),
+					horizontalArrangement = Arrangement.SpaceBetween
+				) {
+					Text(
+						text = expense.description,
+						style = Typography.bodyLarge,
+						fontWeight = FontWeight.Bold,
+						textAlign = TextAlign.Start
+					)
+					if (categoryName != null) {
+						Text(
+							text = categoryName,
+							style = Typography.bodyLarge,
+							fontWeight = FontWeight.Bold,
+							textAlign = TextAlign.End
+						)
 					}
-					append("₹${expense.amount}")
-				},
-				style = Typography.bodyLarge,
-				textAlign = TextAlign.Center,
-				modifier = Modifier
-					.padding(end = 16.dp, top = 15.dp)
-					.align(Alignment.CenterVertically), // Center the text vertically
-				color = MaterialTheme.colorScheme.primary
-			)
+				}
+				Spacer(modifier = Modifier.height(5.dp))
+				Row (
+					modifier = Modifier.fillMaxWidth(),
+					horizontalArrangement = Arrangement.SpaceBetween
+				) {
+					Text(
+						text = paymentMode,
+						style = Typography.bodyMedium,
+						color = MaterialTheme.colorScheme.tertiary,
+						textAlign = TextAlign.Start
+					)
+					Text(
+						text = "₹ ${expense.amount}",
+						style = Typography.bodyLarge,
+						color = MaterialTheme.colorScheme.primary,
+						textAlign = TextAlign.End
+					)
+				}
+			}
+
 		}
 	}
 }

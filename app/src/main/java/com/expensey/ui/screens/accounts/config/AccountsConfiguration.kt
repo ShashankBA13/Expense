@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.ArrowForwardIos
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -191,13 +192,13 @@ fun CreditCard(navController : NavHostController) {
 				modifier = Modifier.padding(20.dp),
 				style = Typography.headlineSmall
 			)
-			Icon(
-				imageVector = Icons.Outlined.ArrowForwardIos,
-				contentDescription = "Go to Credit Card",
-				modifier = Modifier.clickable {
-					navController.navigate("creditCard")
-				} then Modifier.padding(end = 10.dp)
-			)
+//			Icon(
+//				imageVector = Icons.Outlined.ArrowForwardIos,
+//				contentDescription = "Go to Credit Card",
+//				modifier = Modifier.clickable {
+//					navController.navigate("creditCard")
+//				} then Modifier.padding(end = 10.dp)
+//			)
 		}
 	}
 }
@@ -222,7 +223,7 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				textAlign = TextAlign.Center,
 			)
 
-			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), color = MaterialTheme.colorScheme.primary)
 
 			Text(
 				text = "Bank Account",
@@ -234,12 +235,12 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				textAlign = TextAlign.Center,
 			)
 
-			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), color = MaterialTheme.colorScheme.primary)
 
 			Text(
 				text = "Credit Card",
 				modifier = Modifier.clickable {
-
+					navController.navigate("creditCard/0")
 				}
 					.padding(20.dp)
 					.fillMaxWidth(),

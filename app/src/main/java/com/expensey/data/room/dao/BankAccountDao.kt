@@ -23,7 +23,7 @@ abstract class BankAccountDao : BaseDao<BankAccount> {
 	)
 	abstract fun updateAccountBalanceById(accountId : Int, currentBalance : Double)
 
-	@Query("SELECT SUM(current_balance) FROM bank_account")
+	@Query("SELECT ROUND(SUM(current_balance), 3) FROM bank_account")
 	abstract fun getTotalBalance(): LiveData<Double>
 
 	@Query("SELECT * FROM bank_account WHERE name LIKE :query")

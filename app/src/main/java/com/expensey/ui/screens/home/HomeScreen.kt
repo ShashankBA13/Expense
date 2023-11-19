@@ -1,7 +1,6 @@
 package com.expensey.ui.screens.home
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -210,7 +209,6 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 	}
 
 	val categoryName = category?.categoryName
-	Log.d("HomeScreen", categoryName.toString())
 
 	Card(
 		modifier = Modifier

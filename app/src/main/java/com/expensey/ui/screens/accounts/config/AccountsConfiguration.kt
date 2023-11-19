@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.ArrowForwardIos
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -35,6 +35,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.data.models.BankAccount
+import com.expensey.data.models.CreditCard
 import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.theme.Typography
 
@@ -77,7 +78,7 @@ fun AccountsConfiguration(navController : NavHostController) {
 			}
 
 			Cash(navController)
-			Account(navController)
+			BankAccount(navController)
 			CreditCard(navController)
 
 			if (isDialogVisible) {
@@ -99,7 +100,7 @@ fun Cash(navController : NavHostController) {
 				.height(100.dp)
 				.fillMaxWidth()
 				.padding(20.dp)
-				.border(1.dp, Color.Gray, shape = RoundedCornerShape(5.dp)),
+				.border(1.dp, MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(5.dp)),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
@@ -120,9 +121,7 @@ fun Cash(navController : NavHostController) {
 }
 
 @Composable
-fun Account(navController : NavHostController) {
-
-	val TAG = "AccountsConfiguration"
+fun BankAccount(navController : NavHostController) {
 
 	val viewModel: AccountsViewModel = viewModel()
 
@@ -134,7 +133,7 @@ fun Account(navController : NavHostController) {
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(20.dp)
-			.border(1.dp, Color.Gray, shape = RoundedCornerShape(5.dp)),
+			.border(1.dp, MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(5.dp)),
 	) {
 		Row (
 			modifier = Modifier
@@ -176,28 +175,54 @@ fun Account(navController : NavHostController) {
 
 @Composable
 fun CreditCard(navController : NavHostController) {
-	Column {
+
+	val viewModel: AccountsViewModel = viewModel()
+
+	val creditCardLiveDataList : LiveData<List<CreditCard>> = viewModel.creditCardLiveDataList
+
+	val creditCardList by creditCardLiveDataList.observeAsState(emptyList())
+
+
+	Column(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(20.dp)
+			.border(1.dp, MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(5.dp)),
+	) {
 		Row (
 			modifier = Modifier
-				.height(100.dp)
 				.fillMaxWidth()
-				.padding(20.dp)
-				.border(1.dp, Color.Gray, shape = RoundedCornerShape(5.dp)),
+				.padding(start = 20.dp, top = 20.dp, bottom = 20.dp),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
 			Text (
 				text = "Credit Card",
-				modifier = Modifier.padding(20.dp),
 				style = Typography.headlineSmall
 			)
-			Icon(
-				imageVector = Icons.Outlined.ArrowForwardIos,
-				contentDescription = "Go to Credit Card",
-				modifier = Modifier.clickable {
-					navController.navigate("creditCard")
-				} then Modifier.padding(end = 10.dp)
-			)
+		}
+
+		creditCardList.forEach{creditCard ->
+			Row(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(10.dp),
+				horizontalArrangement = Arrangement.SpaceBetween,
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Text(
+					text = creditCard.name,
+					modifier = Modifier.padding(10.dp)
+				)
+
+				Icon(
+					imageVector = Icons.Outlined.ArrowForwardIos,
+					contentDescription = "Go to Accounts",
+					modifier = Modifier.clickable {
+						navController.navigate("creditCard/${creditCard.creditCardId}")
+					} then Modifier.padding(end = 10.dp)
+				)
+			}
 		}
 	}
 }
@@ -222,7 +247,7 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				textAlign = TextAlign.Center,
 			)
 
-			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), color = MaterialTheme.colorScheme.primary)
 
 			Text(
 				text = "Bank Account",
@@ -234,12 +259,12 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				textAlign = TextAlign.Center,
 			)
 
-			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp))
+			Divider(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), color = MaterialTheme.colorScheme.primary)
 
 			Text(
 				text = "Credit Card",
 				modifier = Modifier.clickable {
-
+					navController.navigate("creditCard/0")
 				}
 					.padding(20.dp)
 					.fillMaxWidth(),

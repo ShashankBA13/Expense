@@ -8,14 +8,17 @@ import androidx.lifecycle.viewModelScope
 import com.expensey.ExpenseyApplication
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Cash
+import com.expensey.data.models.CreditCard
 import com.expensey.data.repository.BankAccountRepository
 import com.expensey.data.repository.CashRepository
+import com.expensey.data.repository.CreditCardRepository
 import kotlinx.coroutines.launch
 
 class AccountsViewModel(application: Application) : AndroidViewModel(application) {
 
 	private val cashRepository : CashRepository
 	private val bankAccountRepository : BankAccountRepository
+	private val creditCardRepository : CreditCardRepository
 	private val TAG = "AccountsViewModel"
 
 	val cashLiveData : LiveData<Cash>
@@ -24,18 +27,23 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 
 	val bankAccountLiveDataList : LiveData<List<BankAccount>>
 
+	val creditCardLiveDataList : LiveData<List<CreditCard>>
+
 	init {
 		val expenseyApplication = application as ExpenseyApplication
 
 		val cashDao = expenseyApplication.database.cashDao()
 		val bankAccountDao = expenseyApplication.database.bankAccountDao()
+		val creditCardDao = expenseyApplication.database.creditCardDao()
 
 		cashRepository = CashRepository(cashDao, expenseyApplication.baseContext)
 		bankAccountRepository = BankAccountRepository(bankAccountDao, expenseyApplication.baseContext)
+		creditCardRepository = CreditCardRepository(creditCardDao, expenseyApplication.baseContext)
 
 		cashLiveData = cashRepository.cashLiveData
 		totalBalance = bankAccountRepository.totalBalance
 		bankAccountLiveDataList = bankAccountRepository.bankAccountLiveDataList
+		creditCardLiveDataList = creditCardRepository.creditCardLiveDataList
 	}
 
 	fun insertCash(cash : Cash) {
@@ -81,5 +89,37 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 
 	fun searchBankAccountsByName(query: String): LiveData<List<BankAccount>> {
 		return bankAccountRepository.searchBankAccountsByName(query)
+	}
+
+	fun insertCreditCard(creditCard : CreditCard) {
+		viewModelScope.launch {
+			creditCardRepository.insertCreditCard(creditCard)
+		}
+	}
+
+	fun updateCreditCard(creditCard : CreditCard) {
+		viewModelScope.launch {
+			creditCardRepository.updateCreditCard(creditCard)
+		}
+	}
+
+	fun deleteCreditCard(creditCard : CreditCard) {
+		viewModelScope.launch {
+			creditCardRepository.deleteCreditCard(creditCard)
+		}
+	}
+
+	fun fetchCreditCardById(creditCardId : Int) : LiveData<CreditCard> {
+		return creditCardRepository.fetchCreditCardById(creditCardId)
+	}
+
+	fun updateCreditCardTotalLimitById(creditCardId : Int, totalLimit : Double) : LiveData<CreditCard> {
+		creditCardRepository.updateCurrentBalanceById(creditCardId, totalLimit)
+		return fetchCreditCardById(creditCardId)
+	}
+
+	fun updateCurrentBalanceById(creditCardId : Int, currentBalance : Double) : LiveData<CreditCard> {
+		creditCardRepository.updateCurrentBalanceById(creditCardId, currentBalance)
+		return fetchCreditCardById(creditCardId)
 	}
 }

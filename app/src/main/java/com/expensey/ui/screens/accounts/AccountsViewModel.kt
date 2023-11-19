@@ -113,6 +113,18 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 		return creditCardRepository.fetchCreditCardById(creditCardId)
 	}
 
+	fun totalNoOfCreditCard() : LiveData<Int> {
+		return creditCardRepository.totalNoOfCreditCard()
+	}
+
+	fun totalLimit() : LiveData<Double> {
+		return creditCardRepository.totalLimit()
+	}
+
+	fun totalRemainingBalance() : LiveData<Double> {
+		return creditCardRepository.totalRemainingBalance()
+	}
+
 	fun updateCreditCardTotalLimitById(creditCardId : Int, totalLimit : Double) : LiveData<CreditCard> {
 		creditCardRepository.updateCurrentBalanceById(creditCardId, totalLimit)
 		return fetchCreditCardById(creditCardId)

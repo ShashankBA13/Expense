@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Category
+import com.expensey.data.models.CreditCard
 import com.expensey.data.models.Expense
 import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.screens.category.CategoryViewModel
@@ -54,9 +55,13 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 	val accountsViewModel : AccountsViewModel = viewModel()
 
 	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
+	var creditCard by remember {
+		mutableStateOf<CreditCard?>(null)
+	}
 
 	val cashLiveData by expenseViewModel.cashLiveData.observeAsState()
 	val bankAccountLiveDataList by expenseViewModel.bankAccountLiveDataList.observeAsState()
+	val creditCardLiveDataList by expenseViewModel.creditCardLiveDataList.observeAsState()
 
 	val expenseFlow = if (expenseId != 0) {
 		homeViewModel.getExpenseById(expenseId)
@@ -95,6 +100,7 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 
 	var isPaymentModeExpanded by remember { mutableStateOf(false) }
 	val bankAccountsList = bankAccountLiveDataList ?: emptyList()
+	val creditCardsList = creditCardLiveDataList ?: emptyList()
 	var selectedPaymentMode by remember { mutableStateOf("") }
 
 
@@ -159,6 +165,30 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 
 		if (cashIdInt != null && cashIdInt != 0) {
 			selectedPaymentMode = (selectedPaymentMode.takeIf { it.isNotBlank() } ?: cashLiveData?.name).toString()
+		}
+
+		// Update cashIdState using LaunchedEffect
+		LaunchedEffect(expense!!.creditCardId) {
+			creditCardIdState = TextFieldValue(expense!!.creditCardId.toString())
+			paymentMethodState = TextFieldValue("Credit Card")
+		}
+
+		val creditCardIdInt : Int? = creditCardIdState.text.toIntOrNull()
+
+		if(creditCardIdInt != null && creditCardIdInt != 0) {
+			val creditCardLiveData = if (creditCardIdInt != 0) {
+				accountsViewModel.fetchCreditCardById(creditCardIdInt)
+			} else {
+				null
+			}
+
+			if (creditCardLiveData != null) {
+				creditCardLiveData.observeAsState().value?.let { creditCard = it }
+			}
+
+			if (creditCard != null) {
+				selectedPaymentMode = selectedPaymentMode.takeIf { it.isNotBlank() } ?: creditCard!!.name
+			}
 		}
 	}
 
@@ -369,6 +399,44 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 											text = "₹ ${bankAccount.currentBalance}",
 											fontWeight = FontWeight.Bold,
 											color = Color.Gray // Adjust color based on your design
+										)
+									}
+								}
+							)
+						}
+
+						DropdownMenuItem(
+							onClick = {
+							},
+							text = {
+								Text("Credit Card", fontWeight = FontWeight.Bold)
+							}
+						)
+
+						Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+
+						creditCardsList.forEach{creditCard ->
+							DropdownMenuItem(
+								onClick = {
+									creditCardIdState = TextFieldValue(creditCard.creditCardId.toString())
+									selectedPaymentMode = creditCard.name
+									isPaymentModeExpanded = false
+									paymentMethodState = TextFieldValue("Credit Card")
+								},
+								modifier = Modifier.fillMaxWidth(),
+								text = {
+									Row(
+										modifier = Modifier.fillMaxWidth(),
+										horizontalArrangement = Arrangement.SpaceBetween
+									) {
+										Text(
+											text = creditCard.name,
+											fontWeight = FontWeight.Bold
+										)
+										Text(
+											text = "₹ ${creditCard.currentBalance}",
+											fontWeight = FontWeight.Bold,
+											color = Color.Gray
 										)
 									}
 								}

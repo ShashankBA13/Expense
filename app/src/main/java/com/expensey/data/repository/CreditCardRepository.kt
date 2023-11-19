@@ -34,4 +34,16 @@ class CreditCardRepository(private val creditCardDao : CreditCardDao, private va
 		creditCardDao.updateCurrentBalanceById(creditCardId, currentBalance)
 		return fetchCreditCardById(creditCardId)
 	}
+
+	fun totalNoOfCreditCard() : LiveData<Int> {
+		return creditCardDao.totalNoOfCreditCard()
+	}
+
+	fun totalLimit() : LiveData<Double> {
+		return creditCardDao.totalLimit()
+	}
+
+	fun totalRemainingBalance() : LiveData<Double> {
+		return creditCardDao.totalRemainingBalance()
+	}
 }

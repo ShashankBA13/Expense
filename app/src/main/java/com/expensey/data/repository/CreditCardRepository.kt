@@ -7,6 +7,8 @@ import com.expensey.data.room.dao.CreditCardDao
 
 class CreditCardRepository(private val creditCardDao : CreditCardDao, private val context : Context) {
 
+	val creditCardLiveDataList : LiveData<List<CreditCard>> = creditCardDao.fetchAllCreditCards()
+
 	suspend fun insertCreditCard(creditCard : CreditCard) {
 		creditCardDao.insert(creditCard)
 	}

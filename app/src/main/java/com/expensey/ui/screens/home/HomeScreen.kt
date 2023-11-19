@@ -43,6 +43,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Category
+import com.expensey.data.models.CreditCard
 import com.expensey.data.models.Expense
 import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.screens.category.CategoryViewModel
@@ -66,8 +67,9 @@ fun HomeScreen(navController : NavHostController) {
 	val expenseFlowList : Flow<List<Expense>> = viewModel.expenseFlowList
 	val expenseList by expenseFlowList.collectAsState(initial = emptyList())
 
-	val totalExpenseState: State<Double?> = viewModel.getTotalSumOfExpenses().collectAsState(initial = null)
-	val totalExpense: Double? by totalExpenseState
+	val totalExpenseState : State<Double?> =
+		viewModel.getTotalSumOfExpenses().collectAsState(initial = null)
+	val totalExpense : Double? by totalExpenseState
 
 	val greeting = getGreeting()
 
@@ -117,12 +119,12 @@ fun HomeScreen(navController : NavHostController) {
 					}
 
 					var totalSpendsPerDay = 0.0
-					expenses.forEach{ expense ->
+					expenses.forEach { expense ->
 						totalSpendsPerDay += totalSpendsPerDay + expense.amount
 					}
 
 					stickyHeader {
-						Row (
+						Row(
 							modifier = Modifier
 								.fillMaxWidth()
 								.padding(start = 20.dp, top = 20.dp, end = 20.dp),
@@ -173,12 +175,13 @@ fun HomeScreenPreview() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ExpenseCard(expense: Expense, navController: NavHostController) {
+fun ExpenseCard(expense : Expense, navController : NavHostController) {
 
 	val accountsViewModel : AccountsViewModel = viewModel()
-	val categoryViewModel: CategoryViewModel = viewModel()
+	val categoryViewModel : CategoryViewModel = viewModel()
 
 	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
+	var paymentMode = expense.paymentMethod
 
 	val bankAccountLiveData = if (expense.bankAccountId != null && expense.bankAccountId != 0) {
 		accountsViewModel.getBankAccountById(expense.bankAccountId !!)
@@ -188,14 +191,30 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 
 	bankAccountLiveData?.observeAsState()?.value?.let { bankAccount = it }
 
-	var paymentMode = expense.paymentMethod
-
-	if(bankAccount != null) {
+	if (bankAccount != null) {
 		paymentMode = bankAccount !!.accountName
 	}
 
+	var creditCard by remember {
+		mutableStateOf<CreditCard?>(null)
+	}
+
+	val creditCardLiveData = if (expense.creditCardId != null && expense.creditCardId != 0) {
+		accountsViewModel.fetchCreditCardById(expense.creditCardId !!)
+	} else {
+		null
+	}
+
+	if (creditCardLiveData != null) {
+		creditCardLiveData.observeAsState().value?.let { creditCard = it }
+	}
+
+	if (creditCard != null) {
+		paymentMode = creditCard !!.name
+	}
+
 	val categoryIdEdit = expense.categoryId
-	val categoryFlow = if(categoryIdEdit != null) {
+	val categoryFlow = if (categoryIdEdit != null) {
 		categoryViewModel.getCategoryById(categoryIdEdit)
 	} else {
 		null
@@ -229,7 +248,7 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 				modifier = Modifier
 					.padding(16.dp)
 			) {
-				Row (
+				Row(
 					modifier = Modifier.fillMaxWidth(),
 					horizontalArrangement = Arrangement.SpaceBetween
 				) {
@@ -249,7 +268,7 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 					}
 				}
 				Spacer(modifier = Modifier.height(5.dp))
-				Row (
+				Row(
 					modifier = Modifier.fillMaxWidth(),
 					horizontalArrangement = Arrangement.SpaceBetween
 				) {
@@ -272,24 +291,25 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 	}
 }
 
-private fun getGreeting(): String {
+private fun getGreeting() : String {
 	val currentTime = Calendar.getInstance().time
 	val hourFormat = SimpleDateFormat("HH", Locale.getDefault())
 	val hour = hourFormat.format(currentTime).toInt()
 
 	return when {
-		hour in 6..11 -> "Good Morning"
-		hour in 12..15 -> "Good Afternoon"
-		hour in 16..23 || hour in 0..5 -> "Good Evening"
+		hour in 6 .. 11 -> "Good Morning"
+		hour in 12 .. 15 -> "Good Afternoon"
+		hour in 16 .. 23 || hour in 0 .. 5 -> "Good Evening"
 		else -> "Hello" // Default greeting
 	}
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun groupExpensesByDate(expenses: List<Expense>): List<Pair<String, List<Expense>>> {
+fun groupExpensesByDate(expenses : List<Expense>) : List<Pair<String, List<Expense>>> {
 	val groupedExpenses = expenses.groupBy {
-		DateTimeFormatter.ofPattern("dd MMM yyyy").format(it.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+		DateTimeFormatter.ofPattern("dd MMM yyyy")
+			.format(it.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
 	}
 	return groupedExpenses.map { (date, expenses) ->
 		date to expenses.sortedByDescending { it.date }

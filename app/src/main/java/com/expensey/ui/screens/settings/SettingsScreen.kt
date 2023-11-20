@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,8 @@ fun SettingsScreen(navController : NavHostController) {
             Text (
                 text = "Settings",
                 modifier = Modifier.padding(20.dp),
-                style = Typography.headlineLarge
+                style = Typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary
             )
 
             Row (
@@ -50,13 +52,15 @@ fun SettingsScreen(navController : NavHostController) {
                         imageVector = Icons.Outlined.Category,
                         contentDescription = "Edit Category", // Provide a content description as needed
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(40.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "Category",
                         modifier = Modifier
                             .padding(16.dp, 5.dp),
-                        style = Typography.bodyMedium
+                        style = Typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -69,15 +73,17 @@ fun SettingsScreen(navController : NavHostController) {
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.AccountBalance,
-                        contentDescription = "Edit Account", // Provide a content description as needed
+                        contentDescription = "Edit Account",
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(40.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "Accounts",
                         modifier = Modifier
                             .padding(16.dp, 5.dp),
-                        style = Typography.bodyMedium
+                        style = Typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

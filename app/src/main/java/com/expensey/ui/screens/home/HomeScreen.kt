@@ -3,6 +3,7 @@ package com.expensey.ui.screens.home
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,13 +35,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.expensey.R
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Category
 import com.expensey.data.models.CreditCard
@@ -91,7 +96,8 @@ fun HomeScreen(navController : NavHostController) {
 					text = greeting,
 					modifier = Modifier
 						.padding(20.dp),
-					style = Typography.headlineMedium
+					style = Typography.headlineMedium,
+					color = MaterialTheme.colorScheme.primary
 				)
 				if (totalExpense != null) {
 					Text(
@@ -100,6 +106,27 @@ fun HomeScreen(navController : NavHostController) {
 						modifier = Modifier.padding(end = 20.dp),
 						style = Typography.headlineLarge,
 						color = MaterialTheme.colorScheme.primary
+					)
+				}
+			}
+
+			if (groupedExpenses.isEmpty()) {
+				Image(
+					painter = painterResource(id = R.drawable.savings_money_bank_banking_woman),
+					contentDescription = "Savings illustration",
+					modifier = Modifier.height(500.dp)
+				)
+				Row  (
+					modifier = Modifier.fillMaxWidth(),
+					horizontalArrangement = Arrangement.Center
+				){
+					Text(
+						text = "Start adding expenses by clicking the add button below",
+						style = TextStyle(
+							textAlign = TextAlign.Center,
+							fontSize = 16.sp,
+							color = MaterialTheme.colorScheme.secondary
+						)
 					)
 				}
 			}

@@ -34,6 +34,7 @@ import com.expensey.ui.screens.accounts.AccountsViewModel
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 import java.util.Date
+import kotlin.random.Random
 
 @Composable
 fun CreditCardScreen(navHostController : NavHostController, creditCardId : Int?) {
@@ -174,14 +175,14 @@ fun CreditCardScreen(navHostController : NavHostController, creditCardId : Int?)
 				OutlinedButton(
 					onClick = {
 
-						if (creditCard?.creditCardId != null && creditCardId != null) {
+						if (creditCardId != null && creditCardId != 0) {
 							val updateCreditCard = CreditCard(
 								creditCardId = creditCardId,
 								name = creditCardName,
 								cardHolder = cardHolder,
 								currentBalance = availableLimit.toDouble(),
 								totalLimit = totalLimit.toDouble(),
-								cardNumber = 0,
+								cardNumber = creditCard !!.cardNumber,
 								billGenerationDate = Date(),
 								billPaymentDate = Date(),
 								notifyUserOfBillDate = false,
@@ -191,12 +192,13 @@ fun CreditCardScreen(navHostController : NavHostController, creditCardId : Int?)
 							)
 							viewModel.updateCreditCard(updateCreditCard)
 						} else {
+							val random = Random.Default
 							val newCreditCard = CreditCard(
 								name = creditCardName,
 								cardHolder = cardHolder,
 								currentBalance = availableLimit.toDouble(),
 								totalLimit = totalLimit.toDouble(),
-								cardNumber = 0,
+								cardNumber = random.nextInt(1_000_000_000, 2_000_000_000),
 								billGenerationDate = Date(),
 								billPaymentDate = Date(),
 								notifyUserOfBillDate = false,
@@ -205,7 +207,6 @@ fun CreditCardScreen(navHostController : NavHostController, creditCardId : Int?)
 								expirationDate = Date()
 							)
 							viewModel.insertCreditCard(newCreditCard)
-
 						}
 						navHostController.popBackStack()
 					},

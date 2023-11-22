@@ -50,4 +50,8 @@ data class CreditCard (
 
 	@ColumnInfo(name = "expiration_date")
 	val expirationDate : Date
-)
+) {
+	override fun toString() : String {
+		return "CreditCard(creditCardId=$creditCardId, name='$name', cardHolder='$cardHolder', currentBalance=$currentBalance, totalLimit=$totalLimit, cardNumber=$cardNumber, billGenerationDate=$billGenerationDate, billPaymentDate=$billPaymentDate, notifyUserOfBillDate=$notifyUserOfBillDate, interestRate=$interestRate, cvv=$cvv, expirationDate=$expirationDate)"
+	}
+}

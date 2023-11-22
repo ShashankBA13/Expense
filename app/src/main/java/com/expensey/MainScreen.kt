@@ -31,103 +31,115 @@ import com.expensey.ui.navigation.BottomNavGraph
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
-    val navController = rememberNavController()
+	val navController = rememberNavController()
 
-    // Create a list of BottomBarScreen items
-    val screens = listOf(
-        BottomBarScreen.Home,
-        BottomBarScreen.Accounts,
-        BottomBarScreen.Settings,
-    )
+	// Create a list of BottomBarScreen items
+	val screens = listOf(
+		BottomBarScreen.Home,
+		BottomBarScreen.Accounts,
+		BottomBarScreen.Insights,
+		BottomBarScreen.Settings
+	)
 
-    // Get the current destination from the navigation controller
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+	// Get the current destination from the navigation controller
+	val navBackStackEntry by navController.currentBackStackEntryAsState()
+	val currentDestination = navBackStackEntry?.destination
 
-    Scaffold(
-        bottomBar = {
-            // Create the BottomNavigation composable
-            if(currentDestination?.route == BottomBarScreen.Home.route ||
-                currentDestination?.route == BottomBarScreen.Accounts.route ||
-                currentDestination?.route == BottomBarScreen.Settings.route) {
-                BottomNavigation {
-                    // Loop through the screen items and create a BottomNavigationItem for each
-                    screens.forEach { screen ->
-                        BottomNavigationItem(
-                            icon = {
-                                // Use the current screen's icon, either filled or outlined
-                                val icon =
-                                    if (currentDestination.hierarchy.any { it.route == screen.route }) {
-                                        screen.iconFilled
-                                    } else {
-                                        screen.iconOutlined
-                                    }
-                                Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                            },
-                            label = { Text(text = screen.title, color = MaterialTheme.colorScheme.primary) }
-                        ) {
-                            // Navigate to the selected screen's route
-                            navController.navigate(screen.route) {
-                                // Pop up to the start destination when reselecting the current tab
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected tab
-                                restoreState = true
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    ) {
-        // Display the content of the selected screen
-        BottomNavGraph(navController = navController)
-    }
+	Scaffold(
+		bottomBar = {
+			// Create the BottomNavigation composable
+			if (currentDestination?.route == BottomBarScreen.Home.route ||
+				currentDestination?.route == BottomBarScreen.Accounts.route ||
+				currentDestination?.route == BottomBarScreen.Insights.route ||
+				currentDestination?.route == BottomBarScreen.Settings.route
+			) {
+				BottomNavigation {
+					// Loop through the screen items and create a BottomNavigationItem for each
+					screens.forEach { screen ->
+						BottomNavigationItem(
+							icon = {
+								// Use the current screen's icon, either filled or outlined
+								val icon =
+									if (currentDestination.hierarchy.any { it.route == screen.route }) {
+										screen.iconFilled
+									} else {
+										screen.iconOutlined
+									}
+								Icon(
+									imageVector = icon,
+									contentDescription = null,
+									tint = MaterialTheme.colorScheme.primary
+								)
+							},
+							label = {
+								Text(
+									text = screen.title,
+									color = MaterialTheme.colorScheme.primary
+								)
+							}
+						) {
+							// Navigate to the selected screen's route
+							navController.navigate(screen.route) {
+								// Pop up to the start destination when reselecting the current tab
+								launchSingleTop = true
+								// Restore state when reselecting a previously selected tab
+								restoreState = true
+							}
+						}
+					}
+				}
+			}
+		}
+	) {
+		// Display the content of the selected screen
+		BottomNavGraph(navController = navController)
+	}
 }
 
 @Composable
 fun BottomNavigationItem(
-    icon: @Composable () -> Unit,
-    label: @Composable () -> Unit,
-    onClick: () -> Unit
+	icon : @Composable () -> Unit,
+	label : @Composable () -> Unit,
+	onClick : () -> Unit
 ) {
-    // You can define the layout and behavior for a single BottomNavigationItem here
-    // For example, you can create a clickable area with the icon and label.
+	// You can define the layout and behavior for a single BottomNavigationItem here
+	// For example, you can create a clickable area with the icon and label.
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        IconButton(onClick = onClick) {
-            icon()
-        }
-        // Always display the label (screen name) below the icon
-        label()
-    }
+	Column(
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.Center
+	) {
+		IconButton(onClick = onClick) {
+			icon()
+		}
+		// Always display the label (screen name) below the icon
+		label()
+	}
 }
 
 @Composable
 fun BottomNavigation(
-    content: @Composable () -> Unit,
-    ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val backgroundColor = if (isSystemInDarkTheme()) {
-        colorScheme.background
-    } else {
-        colorScheme.surface
-    }
+	content : @Composable () -> Unit,
+) {
+	val colorScheme = MaterialTheme.colorScheme
+	val backgroundColor = if (isSystemInDarkTheme()) {
+		colorScheme.background
+	} else {
+		colorScheme.surface
+	}
 
-    Box(
-        modifier = Modifier
+	Box(
+		modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
+	) {
+		Row(
+			horizontalArrangement = Arrangement.SpaceEvenly,
+			modifier = Modifier
                 .fillMaxWidth()
                 .background(backgroundColor)
-        ) {
-            content()
-        }
-    }
+		) {
+			content()
+		}
+	}
 }

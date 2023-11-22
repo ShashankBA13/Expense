@@ -101,34 +101,56 @@ fun AccountsScreen() {
 	val formattedNetWorth = "%.3f".format(netWorth)
 
 
-	val textColor = if (netWorth < 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+	val textColor =
+		if (netWorth < 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
 
-    val assetsValueString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontSize = 20.sp)) {
-            append("₹")
-        }
-        withStyle(style = SpanStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)) {
-            append(" $assetsValue")
-        }
-    }
+	val assetsValueString = buildAnnotatedString {
+		withStyle(style = SpanStyle(fontSize = 20.sp)) {
+			append("₹")
+		}
+		withStyle(
+			style = SpanStyle(
+				fontSize = 26.sp,
+				fontWeight = FontWeight.Bold,
+				fontFamily = FontFamily.Monospace,
+				color = MaterialTheme.colorScheme.primary
+			)
+		) {
+			append(" $assetsValue")
+		}
+	}
 
-    val liabilitiesValueString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontSize = 20.sp)) {
-            append("₹")
-        }
-        withStyle(style = SpanStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)) {
-            append(" $liabilitiesValue")
-        }
-    }
+	val liabilitiesValueString = buildAnnotatedString {
+		withStyle(style = SpanStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.tertiary)) {
+			append("₹")
+		}
+		withStyle(
+			style = SpanStyle(
+				fontSize = 26.sp,
+				fontWeight = FontWeight.Bold,
+				fontFamily = FontFamily.Monospace,
+				color = MaterialTheme.colorScheme.tertiary
+			)
+		) {
+			append(" $liabilitiesValue")
+		}
+	}
 
-    val netWorthValueString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontSize = 20.sp)) {
-            append("₹")
-        }
-        withStyle(style = SpanStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)) {
-            append(" $formattedNetWorth")
-        }
-    }
+	val netWorthValueString = buildAnnotatedString {
+		withStyle(style = SpanStyle(fontSize = 20.sp, color = textColor)) {
+			append("₹")
+		}
+		withStyle(
+			style = SpanStyle(
+				fontSize = 28.sp,
+				fontWeight = FontWeight.Bold,
+				fontFamily = FontFamily.Monospace,
+				color = textColor
+			)
+		) {
+			append(" $formattedNetWorth")
+		}
+	}
 
 	Surface(
 		modifier = Modifier.fillMaxSize()
@@ -136,8 +158,8 @@ fun AccountsScreen() {
 		Column {
 			Row(
 				modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
+					.fillMaxWidth()
+					.padding(20.dp),
 				horizontalArrangement = Arrangement.SpaceBetween,
 				verticalAlignment = Alignment.CenterVertically
 			) {
@@ -158,15 +180,15 @@ fun AccountsScreen() {
 
 			Card(
 				modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp, 10.dp)
+					.fillMaxWidth()
+					.padding(20.dp, 10.dp)
 			) {
 				Row(
 					modifier = Modifier
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .border(1.dp, MaterialTheme.colorScheme.primaryContainer),
+						.fillMaxWidth()
+						.height(70.dp)
+						.background(MaterialTheme.colorScheme.secondaryContainer)
+						.border(1.dp, MaterialTheme.colorScheme.primaryContainer),
 					horizontalArrangement = Arrangement.SpaceAround,
 				) {
 					Column(
@@ -264,14 +286,14 @@ fun Cash() {
 	Column {
 		Row(
 			modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth()
-                .padding(20.dp)
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(5.dp)
-                ),
+				.height(100.dp)
+				.fillMaxWidth()
+				.padding(20.dp)
+				.border(
+					1.dp,
+					MaterialTheme.colorScheme.primaryContainer,
+					shape = RoundedCornerShape(5.dp)
+				),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
@@ -307,14 +329,14 @@ fun BankAccount() {
 	Column {
 		Row(
 			modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth()
-                .padding(20.dp)
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(5.dp)
-                ),
+				.height(100.dp)
+				.fillMaxWidth()
+				.padding(20.dp)
+				.border(
+					1.dp,
+					MaterialTheme.colorScheme.primaryContainer,
+					shape = RoundedCornerShape(5.dp)
+				),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
@@ -370,19 +392,21 @@ fun CreditCards() {
 
 	Column(
 		modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(5.dp)
-            )
-            .height(150.dp)
+			.fillMaxWidth()
+			.padding(16.dp)
+			.border(
+				1.dp,
+				MaterialTheme.colorScheme.primaryContainer,
+				shape = RoundedCornerShape(5.dp)
+			)
+			.height(150.dp)
 	) {
-		Row (
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+		Row(
+			modifier = Modifier
+				.padding(10.dp)
+				.fillMaxWidth(),
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
 			Text(
 				text = "Credit Cards",
 				style = Typography.bodyLarge,
@@ -392,18 +416,20 @@ fun CreditCards() {
 				text = "Across $totalCreditCards Cards",
 				style = Typography.bodyLarge,
 				color = Color.Gray,
-                textAlign = TextAlign.End
+				textAlign = TextAlign.End
 			)
 		}
 
-        Row (
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        )  {
+		Row(
+			modifier = Modifier
+				.padding(10.dp)
+				.fillMaxWidth(),
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
 			Text(
 				text = "Total Limit",
 				style = Typography.bodyMedium,
-                textAlign = TextAlign.Start
+				textAlign = TextAlign.Start
 			)
 			Text(
 				text = "₹ $totalLimit",
@@ -415,14 +441,16 @@ fun CreditCards() {
 				modifier = Modifier.padding(end = 10.dp)
 			)
 		}
-        Row (
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        )  {
+		Row(
+			modifier = Modifier
+				.padding(10.dp)
+				.fillMaxWidth(),
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
 			Text(
 				text = "Available Limit",
 				style = Typography.bodyMedium,
-                textAlign = TextAlign.Start
+				textAlign = TextAlign.Start
 			)
 			Text(
 				text = "₹ $totalAvailableLimit",
@@ -435,14 +463,16 @@ fun CreditCards() {
 			)
 		}
 
-        Row (
-            modifier = Modifier.padding(10.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        )  {
+		Row(
+			modifier = Modifier
+				.padding(10.dp)
+				.fillMaxWidth(),
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
 			Text(
 				text = "Total Payable",
 				style = Typography.bodyMedium,
-                textAlign = TextAlign.Start
+				textAlign = TextAlign.Start
 			)
 			Text(
 				text = "₹ $balancePayable",
@@ -451,7 +481,7 @@ fun CreditCards() {
 					fontWeight = FontWeight.SemiBold,
 					fontFamily = FontFamily.Monospace
 				),
-                modifier = Modifier.padding(end = 10.dp)
+				modifier = Modifier.padding(end = 10.dp)
 			)
 		}
 	}

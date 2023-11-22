@@ -14,6 +14,7 @@ import com.expensey.ui.screens.accounts.config.screens.CreditCardScreen
 import com.expensey.ui.screens.category.CategoryScreen
 import com.expensey.ui.screens.expense.ExpenseScreen
 import com.expensey.ui.screens.home.HomeScreen
+import com.expensey.ui.screens.insights.InsightsScreen
 import com.expensey.ui.screens.settings.SettingsScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -34,6 +35,10 @@ fun BottomNavGraph(navController: NavHostController) {
 
         composable(route = BottomBarScreen.Settings.route) {
             SettingsScreen(navController)
+        }
+
+        composable(route = BottomBarScreen.Insights.route) {
+            InsightsScreen(navController)
         }
 
         composable("category") {

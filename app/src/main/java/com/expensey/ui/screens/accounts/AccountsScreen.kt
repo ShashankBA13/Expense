@@ -90,10 +90,16 @@ fun AccountsScreen() {
 		0.0
 	}
 
-	val assetsValue : Double = if (cash != "" && totalBankBalance != "") {
-		cash.toDouble() + totalBankBalance.toDouble()
-	} else {
-		0.0
+	val assetsValue: Double = when {
+		cash.isNotBlank() -> {
+			if (totalBankBalance.isNotBlank()) {
+				cash.toDouble() + totalBankBalance.toDouble()
+			} else {
+				cash.toDouble()
+			}
+		}
+		totalBankBalance.isNotBlank() -> totalBankBalance.toDouble()
+		else -> 0.0
 	}
 
 	val liabilitiesValue = balancePayable
@@ -278,7 +284,7 @@ fun Cash() {
 	val viewModel : AccountsViewModel = viewModel()
 	val cashLiveData by viewModel.cashLiveData.observeAsState()
 
-	var text by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "") }
+	var text by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "0.0") }
 	if (cashLiveData != null) {
 		text = cashLiveData !!.amount.toString()
 	}
@@ -317,13 +323,14 @@ fun Cash() {
 
 @Composable
 fun BankAccount() {
-	val viewModel : AccountsViewModel = viewModel()
+	val viewModel: AccountsViewModel = viewModel()
 
 	val totalBalance by viewModel.totalBalance.observeAsState()
 
-	var text by remember { mutableStateOf(totalBalance?.toString() ?: "") }
+	var text by remember { mutableStateOf(totalBalance?.toString() ?: " ₹  0.0") }
+
 	if (totalBalance != null) {
-		text = totalBalance !!.toString()
+		text = "₹ " + totalBalance.toString()
 	}
 
 	Column {
@@ -346,7 +353,7 @@ fun BankAccount() {
 				style = Typography.bodyLarge
 			)
 			Text(
-				text = "₹ " + totalBalance.toString(),
+				text = text,
 				modifier = Modifier.padding(10.dp),
 				style = TextStyle(
 					fontSize = 20.sp,
@@ -370,7 +377,7 @@ fun CreditCards() {
 
 	val totalLimitLiveData by viewModel.totalLimit().observeAsState()
 	var totalLimit by remember {
-		mutableStateOf(totalLimitLiveData?.toString() ?: "")
+		mutableStateOf(totalLimitLiveData?.toString() ?: "0.0")
 	}
 	if (totalLimitLiveData != null) {
 		totalLimit = totalLimitLiveData.toString()
@@ -378,7 +385,7 @@ fun CreditCards() {
 
 	val totalAvailableLimitLiveData by viewModel.totalRemainingBalance().observeAsState()
 	var totalAvailableLimit by remember {
-		mutableStateOf(totalAvailableLimitLiveData?.toString() ?: "")
+		mutableStateOf(totalAvailableLimitLiveData?.toString() ?: "0.0")
 	}
 	if (totalAvailableLimitLiveData != null) {
 		totalAvailableLimit = totalAvailableLimitLiveData.toString()
@@ -387,7 +394,7 @@ fun CreditCards() {
 	val balancePayable = if (totalLimit != "" && totalAvailableLimit != "") {
 		totalLimit.toDouble() - totalAvailableLimit.toDouble()
 	} else {
-		""
+		"0.0"
 	}
 
 	Column(
@@ -486,4 +493,3 @@ fun CreditCards() {
 		}
 	}
 }
-

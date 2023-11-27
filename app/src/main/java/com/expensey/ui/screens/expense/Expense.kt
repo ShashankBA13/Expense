@@ -367,15 +367,17 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 						modifier = Modifier.fillMaxWidth()
 					) {
 
-						DropdownMenuItem(
-							onClick = {
-							},
-							text = {
-								Text("Bank Account", fontWeight = FontWeight.Bold)
-							}
-						)
+						if (bankAccountsList.isNotEmpty()) {
+							DropdownMenuItem(
+								onClick = {
+								},
+								text = {
+									Text("Bank Account", fontWeight = FontWeight.Bold)
+								}
+							)
 
-						Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+							Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+						}
 
 						bankAccountsList.forEach { bankAccount ->
 							DropdownMenuItem(
@@ -405,15 +407,17 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 							)
 						}
 
-						DropdownMenuItem(
-							onClick = {
-							},
-							text = {
-								Text("Credit Card", fontWeight = FontWeight.Bold)
-							}
-						)
+						if (creditCardsList.isNotEmpty()) {
+							DropdownMenuItem(
+								onClick = {
+								},
+								text = {
+									Text("Credit Card", fontWeight = FontWeight.Bold)
+								}
+							)
 
-						Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+							Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+						}
 
 						creditCardsList.forEach{creditCard ->
 							DropdownMenuItem(

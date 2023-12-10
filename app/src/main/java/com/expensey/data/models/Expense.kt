@@ -14,25 +14,25 @@ import java.util.Date
 			entity = BankAccount::class,
 			parentColumns = ["id"],
 			childColumns = ["bank_account_id"],
-			onDelete = ForeignKey.CASCADE
+			onDelete = ForeignKey.SET_NULL
 		),
 		ForeignKey(
 			entity = CreditCard::class,
 			parentColumns = ["id"],
 			childColumns = ["credit_card_id"],
-			onDelete = ForeignKey.CASCADE
+			onDelete = ForeignKey.SET_NULL
 		),
 		ForeignKey(
 			entity = Cash::class,
 			parentColumns = ["id"],
 			childColumns = ["cash_id"],
-			onDelete = ForeignKey.CASCADE
+			onDelete = ForeignKey.SET_NULL
 		),
 		ForeignKey(
 			entity = Category::class,
 			parentColumns = ["id"],
 			childColumns = ["category_id"],
-			onDelete = ForeignKey.CASCADE
+			onDelete = ForeignKey.SET_NULL
 		)
 	],
 	indices = [
@@ -55,20 +55,20 @@ data class Expense (
 	val amount: Double,
 
 	@ColumnInfo(name = "category_id")
-	val categoryId : Int?, // Foreign key to Category entity
+	val categoryId : Int?,
 
 	@ColumnInfo(name = "date")
 	val date: Date,
 
 	@ColumnInfo(name = "payment_method")
-	val paymentMethod: String,  // This field acts as a discriminator
+	val paymentMethod: String,
 
 	@ColumnInfo(name = "bank_account_id")
-	var bankAccountId: Int?,  // Foreign key to BankAccount entity
+	var bankAccountId: Int?,
 
 	@ColumnInfo(name = "credit_card_id")
-	var creditCardId: Int?,  // Foreign key to CreditCard entity
+	var creditCardId: Int?,
 
 	@ColumnInfo(name = "cash_id")
-	var cashId: Int?  // Foreign key to CreditCard entity
+	var cashId: Int?
 )

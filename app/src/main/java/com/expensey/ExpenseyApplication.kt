@@ -25,6 +25,7 @@ class ExpenseyApplication : Application() {
 		Log.d(TAG, "onCreate Method Called")
 		database =
 			Room.databaseBuilder(this, ExpenseyDatabase::class.java, "expensey_database")
+//				.fallbackToDestructiveMigration()
 				.build()
 
 		val applicationScope = CoroutineScope(Dispatchers.Default)

@@ -39,6 +39,4 @@ class ExpenseyApplication : Application() {
 		database.close()
 	}
 
-	val MIGRATION_2_3 = 1
-
 }

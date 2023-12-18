@@ -24,10 +24,10 @@ abstract class CreditCardDao : BaseDao<CreditCard> {
 	abstract fun updateCreditCardTotalLimitById(creditCardId : Int, totalLimit : Double)
 
 	@Query("""
-			UPDATE credit_card SET current_balance = :currentBalance WHERE id = :creditCardId
+			UPDATE credit_card SET current_balance = (current_balance - :currentBalance)  WHERE id = :creditCardId
 		   """
 	)
-	abstract fun updateCurrentBalanceById(creditCardId : Int, currentBalance : Double)
+	abstract suspend fun updateCurrentBalanceById(creditCardId : Int, currentBalance : Double)
 
 	@Query(" SELECT * FROM credit_card WHERE name LIKE :query ")
 	abstract fun searchCreditCardsByName(query : String) : LiveData<List<CreditCard>>

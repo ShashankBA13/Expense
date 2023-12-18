@@ -538,12 +538,20 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 
 								val amountToDeduct = amountState.text.toDouble()
 								if(paymentMethodState.text == "Cash") {
-									Log.d("Expense", "ExpenseScreen: Inside If block")
 									val updateCash = cashLiveData
 									updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
 
 									accountsViewModel.updateCash(updateCash)
+								} else if(paymentMethodState.text == "Bank Account") {
+									if((bankAccountIdState.text != null) && bankAccountIdState.text.isNotEmpty()) {
+										accountsViewModel.updateAccountBalanceById(bankAccountIdState.text.toInt(), amountToDeduct)
+									}
+								} else if(paymentMethodState.text == "Credit Card") {
+									if(creditCardIdState.text != null && creditCardIdState.text.isNotEmpty()) {
+										accountsViewModel.updateCurrentBalanceById(creditCardIdState.text.toInt(), amountToDeduct)
+									}
 								}
+
 							}
 							navHostController.popBackStack()
 						},

@@ -18,10 +18,10 @@ abstract class BankAccountDao : BaseDao<BankAccount> {
 	abstract fun fetchBankAccountById(accountId : Int) : LiveData<BankAccount>
 
 	@Query(""" 
-			UPDATE bank_account SET current_balance = :currentBalance WHERE id = :accountId 
+			UPDATE bank_account SET current_balance = (current_balance - :currentBalance) WHERE id = :accountId 
 			"""
 	)
-	abstract fun updateAccountBalanceById(accountId : Int, currentBalance : Double)
+	abstract suspend fun updateAccountBalanceById(accountId : Int, currentBalance : Double)
 
 	@Query("SELECT ROUND(SUM(current_balance), 3) FROM bank_account")
 	abstract fun getTotalBalance(): LiveData<Double>

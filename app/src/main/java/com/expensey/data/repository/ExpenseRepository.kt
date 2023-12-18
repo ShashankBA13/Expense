@@ -1,6 +1,8 @@
 package com.expensey.data.repository
 
 import android.content.Context
+import android.util.Log
+import androidx.lifecycle.LiveData
 import com.expensey.data.models.CategoryCount
 import com.expensey.data.models.Expense
 import com.expensey.data.models.ExpenseSummary
@@ -44,7 +46,7 @@ class ExpenseRepository(private val expenseDao : ExpenseDao, private val context
 		return expenseDao.totalSumOfExpenses()
 	}
 
-	suspend fun getMostSpentCategoryCout() : List<ExpenseSummary> {
+	fun getMostSpentCategoryCout() : LiveData<List<ExpenseSummary>> {
 		return expenseDao.mostSpentCategoryListDesc()
 	}
 }

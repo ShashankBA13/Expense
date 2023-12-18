@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.data.models.BankAccount
+import com.expensey.data.models.Cash
 import com.expensey.data.models.Category
 import com.expensey.data.models.CreditCard
 import com.expensey.data.models.Expense
@@ -307,7 +308,7 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 						modifier = Modifier
 							.fillMaxWidth()
 							.clickable {
-								isCategoryMenuExpanded = ! isCategoryMenuExpanded
+								isCategoryMenuExpanded = !isCategoryMenuExpanded
 							}
 							.menuAnchor(),
 						colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
@@ -353,7 +354,7 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 						modifier = Modifier
 							.fillMaxWidth()
 							.clickable {
-								isPaymentModeExpanded = ! isPaymentModeExpanded
+								isPaymentModeExpanded = !isPaymentModeExpanded
 							}
 							.menuAnchor(),
 						colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
@@ -534,6 +535,15 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 									cashId = if (paymentMethodState.text == "Cash") cashIdState.text.toIntOrNull() else null
 								)
 								homeViewModel.insertExpense(newExpense)
+
+								val amountToDeduct = amountState.text.toDouble()
+								if(paymentMethodState.text == "Cash") {
+									Log.d("Expense", "ExpenseScreen: Inside If block")
+									val updateCash = cashLiveData
+									updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
+
+									accountsViewModel.updateCash(updateCash)
+								}
 							}
 							navHostController.popBackStack()
 						},

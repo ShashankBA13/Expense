@@ -2,8 +2,18 @@ package com.expensey.ui.screens.insights
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Money
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -17,12 +27,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.expensey.R
 import com.expensey.data.models.Category
 import com.expensey.data.models.CategoryCount
@@ -36,71 +51,81 @@ import kotlinx.coroutines.flow.first
 
 @Composable
 fun InsightsScreen(navController: NavHostController) {
-	Surface {
-		Column {
-			Column(
-				modifier = Modifier.fillMaxSize()
-			) {
-				Text(text = "Insights",
-					style = Typography.headlineLarge,
-					color = MaterialTheme.colorScheme.primary,
-					fontFamily = FontFamily(Font(R.font.archivo_black_regular))
-				)
-				totalsProvider()
-			}
-
+	Surface(
+		modifier = Modifier.fillMaxSize(),
+		color = MaterialTheme.colorScheme.background
+	) {
+		Column(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(16.dp),
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			Text(
+				text = "Insights",
+				style = Typography.headlineLarge,
+				color = MaterialTheme.colorScheme.primary,
+				fontFamily = FontFamily(Font(R.font.archivo_black_regular))
+			)
+			Spacer(modifier = Modifier.height(16.dp))
+			TotalsProvider()
 		}
-
 	}
 }
 
-@Composable 
-fun totalsProvider() {
-	val viewModel : HomeViewModel = viewModel()
-	val insightsViewModel : InsightsViewModel = viewModel()
-	val categoryViewModel : CategoryViewModel = viewModel()
+@Composable
+fun TotalsProvider() {
+	val viewModel: HomeViewModel = viewModel()
+	val insightsViewModel: InsightsViewModel = viewModel()
 
-	val expenseFlowList : Flow<List<Expense>> = viewModel.expenseFlowList
-	val expenseList by expenseFlowList.collectAsState(initial = emptyList())
+	val totalExpense by viewModel.getTotalSumOfExpenses().collectAsState(initial = null)
+	val mostSpentCategoryCountList by insightsViewModel.mostSpentCategoryCountList.observeAsState()
 
-
-	val totalExpenseState : State<Double?> =
-		viewModel.getTotalSumOfExpenses().collectAsState(initial = null)
-	val totalExpense : Double? by totalExpenseState
-
-	val mostSpentCategoryCountListLiveData = insightsViewModel.mostSpentCategoryCountList
-	var mostSpentCategoryCountList by remember {
-		mutableStateOf<List<ExpenseSummary>?>(null)
-	}
-
-	if(mostSpentCategoryCountListLiveData != null) {
-		mostSpentCategoryCountList = mostSpentCategoryCountListLiveData.observeAsState().value
-
-	}
-
-	Surface {
-		Column {
-			Text(text = "Total Spends till date: ${totalExpense?.toString()}")
-			Text(text="Most Spent Category: ${mostSpentCategoryCountList?.get(0)?.categoryName}")
-			Text(text = "Amount Spent: ${mostSpentCategoryCountList?.get(0)?.amountSpent}")
-
-			LazyColumn {
-				// Check if the list is not null and not empty
-				if (!mostSpentCategoryCountList.isNullOrEmpty()) {
-					// Iterate over the list and create a Text composable for each item
-					items(mostSpentCategoryCountList!!.size) { index ->
-						Text(text = mostSpentCategoryCountList!![index].categoryName + ", " + mostSpentCategoryCountList!![index].amountSpent)
-					}
-				} else {
-					// If the list is null or empty, display a default message
-					item {
-						Text(text = "No data available.")
-					}
-				}
+	Column(
+		modifier = Modifier.fillMaxWidth(),
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		TotalCard(icon = Icons.Default.AttachMoney, label = "Total Spends", value = totalExpense?.toString())
+		Spacer(modifier = Modifier.height(16.dp))
+		mostSpentCategoryCountList?.let {
+			if (it.isNotEmpty()) {
+				TotalCard(icon = Icons.Default.Category, label = "Most Spent Category", value = it[0].categoryName)
+				Spacer(modifier = Modifier.height(8.dp))
+				TotalCard(icon = Icons.Default.Money, label = "Amount Spent", value = it[0].amountSpent.toString())
 			}
-
 		}
 	}
-
 }
 
+@Composable
+fun TotalCard(icon: ImageVector, label: String, value: String?) {
+	Card(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(16.dp)
+	) {
+		Column(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(16.dp),
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+			Spacer(modifier = Modifier.height(8.dp))
+			Text(text = label, style = MaterialTheme.typography.labelLarge)
+			Spacer(modifier = Modifier.height(4.dp))
+			Text(
+				text = value ?: "-",
+				style = MaterialTheme.typography.bodySmall,
+				color = MaterialTheme.colorScheme.primary,
+				fontSize = 20.sp
+			)
+		}
+	}
+}
+
+@Preview
+@Composable
+fun InsightsScreenPreview() {
+	InsightsScreen(navController = rememberNavController())
+}

@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -105,7 +107,8 @@ fun HomeScreen(navController : NavHostController) {
 						textAlign = TextAlign.End,
 						modifier = Modifier.padding(end = 20.dp),
 						style = Typography.headlineLarge,
-						color = MaterialTheme.colorScheme.primary
+						color = MaterialTheme.colorScheme.primary,
+						fontFamily = FontFamily(Font(R.font.archivo_black_regular))
 					)
 				}
 			}
@@ -147,7 +150,7 @@ fun HomeScreen(navController : NavHostController) {
 
 					var totalSpendsPerDay = 0.0
 					expenses.forEach { expense ->
-						totalSpendsPerDay += totalSpendsPerDay + expense.amount
+						totalSpendsPerDay += expense.amount
 					}
 
 					stickyHeader {
@@ -165,7 +168,8 @@ fun HomeScreen(navController : NavHostController) {
 							Text(
 								text = "₹ $totalSpendsPerDay",
 								style = Typography.headlineSmall,
-								color = MaterialTheme.colorScheme.primary
+								color = MaterialTheme.colorScheme.primary,
+								fontFamily = FontFamily(Font(R.font.archivo_black_regular))
 							)
 						}
 					}
@@ -266,7 +270,7 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 			modifier = Modifier
 				.fillMaxWidth()
 				.height(70.dp)
-				.background(MaterialTheme.colorScheme.secondaryContainer),
+				.background(MaterialTheme.colorScheme.primaryContainer),
 			horizontalArrangement = Arrangement.SpaceBetween,
 			verticalAlignment = Alignment.CenterVertically
 		) {
@@ -302,14 +306,15 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 					Text(
 						text = paymentMode,
 						style = Typography.bodyMedium,
-						color = MaterialTheme.colorScheme.tertiary,
 						textAlign = TextAlign.Start
 					)
 					Text(
 						text = "₹ ${expense.amount}",
-						style = Typography.bodyLarge,
+						style = Typography.headlineSmall,
 						color = MaterialTheme.colorScheme.primary,
-						textAlign = TextAlign.End
+						textAlign = TextAlign.End,
+						fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
+						fontWeight = FontWeight.Light
 					)
 				}
 			}
@@ -323,10 +328,10 @@ private fun getGreeting() : String {
 	val hourFormat = SimpleDateFormat("HH", Locale.getDefault())
 	val hour = hourFormat.format(currentTime).toInt()
 
-	return when {
-		hour in 6 .. 11 -> "Good Morning"
-		hour in 12 .. 15 -> "Good Afternoon"
-		hour in 16 .. 23 || hour in 0 .. 5 -> "Good Evening"
+	return when (hour) {
+		in 6 .. 11 -> "Good Morning"
+		in 12 .. 15 -> "Good Afternoon"
+		in 16 .. 23, in 0 .. 5 -> "Good Evening"
 		else -> "Hello" // Default greeting
 	}
 }

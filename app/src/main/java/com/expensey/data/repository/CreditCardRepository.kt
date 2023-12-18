@@ -25,12 +25,12 @@ class CreditCardRepository(private val creditCardDao : CreditCardDao, private va
 		return creditCardDao.getCreditCardById(creditCardId)
 	}
 
-	fun updateCreditCardTotalLimitById(creditCardId : Int, totalLimit : Double) : LiveData<CreditCard> {
-		creditCardDao.updateCurrentBalanceById(creditCardId, totalLimit)
+	suspend fun updateCreditCardTotalLimitById(creditCardId : Int, totalLimit : Double) : LiveData<CreditCard> {
+		creditCardDao.updateCreditCardTotalLimitById(creditCardId, totalLimit)
 		return fetchCreditCardById(creditCardId)
 	}
 
-	fun updateCurrentBalanceById(creditCardId : Int, currentBalance : Double) : LiveData<CreditCard> {
+	suspend fun updateCurrentBalanceById(creditCardId : Int, currentBalance : Double) : LiveData<CreditCard> {
 		creditCardDao.updateCurrentBalanceById(creditCardId, currentBalance)
 		return fetchCreditCardById(creditCardId)
 	}

@@ -77,7 +77,6 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 	}
 
 	fun getBankAccountById(accountId: Int): LiveData<BankAccount> {
-		Log.d(TAG, bankAccountRepository.fetchBankAccountById(accountId).value.toString())
 		return bankAccountRepository.fetchBankAccountById(accountId)
 	}
 
@@ -126,12 +125,16 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 	}
 
 	fun updateCreditCardTotalLimitById(creditCardId : Int, totalLimit : Double) : LiveData<CreditCard> {
-		creditCardRepository.updateCurrentBalanceById(creditCardId, totalLimit)
+		viewModelScope.launch {
+			creditCardRepository.updateCreditCardTotalLimitById(creditCardId, totalLimit)
+		}
 		return fetchCreditCardById(creditCardId)
 	}
 
 	fun updateCurrentBalanceById(creditCardId : Int, currentBalance : Double) : LiveData<CreditCard> {
-		creditCardRepository.updateCurrentBalanceById(creditCardId, currentBalance)
+		viewModelScope.launch {
+			creditCardRepository.updateCurrentBalanceById(creditCardId, currentBalance)
+		}
 		return fetchCreditCardById(creditCardId)
 	}
 }

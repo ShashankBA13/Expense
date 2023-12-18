@@ -11,21 +11,37 @@ import com.expensey.data.models.BankAccount
 @Dao
 abstract class BankAccountDao : BaseDao<BankAccount> {
 
-	@Query(" SELECT * FROM bank_account")
+	@Query("""
+		 	SELECT * FROM bank_account
+ 	""")
 	abstract fun fetchAllBankAccounts() : LiveData<List<BankAccount>>
 
-	@Query(" SELECT * FROM bank_account WHERE id = :accountId ")
+	@Query(""" 
+			SELECT * FROM bank_account WHERE id = :accountId 
+	""")
 	abstract fun fetchBankAccountById(accountId : Int) : LiveData<BankAccount>
 
 	@Query(""" 
-			UPDATE bank_account SET current_balance = :currentBalance WHERE id = :accountId 
-			"""
-	)
-	abstract fun updateAccountBalanceById(accountId : Int, currentBalance : Double)
+			UPDATE bank_account SET current_balance = (current_balance - :currentBalance) WHERE id = :accountId 
+	""")
+	abstract suspend fun updateAccountBalanceById(accountId : Int, currentBalance : Double)
 
-	@Query("SELECT ROUND(SUM(current_balance), 3) FROM bank_account")
+	@Query("""
+			SELECT ROUND(SUM(current_balance), 3) FROM bank_account
+	""")
 	abstract fun getTotalBalance(): LiveData<Double>
 
-	@Query("SELECT * FROM bank_account WHERE name LIKE :query")
+	@Query("""
+			SELECT * FROM bank_account WHERE name LIKE :query
+	""")
 	abstract fun searchBankAccountsByName(query: String): LiveData<List<BankAccount>>
+
+	/**
+	 * The method's task is to update/add back the amount deducted from the account balance
+	 * in case of an expense delete or expense update
+	 */
+	@Query("""
+			UPDATE bank_account SET current_balance = ( current_balance + :amountToAddBack) WHERE id = :accountId
+	""")
+	abstract suspend fun addBackAccountBalanceById(accountId: Int, amountToAddBack : Double)
 }

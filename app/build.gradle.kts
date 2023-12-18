@@ -57,14 +57,15 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-rc01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-rc02")
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
 
     // Room Database
     implementation("androidx.room:room-runtime:${room_version}")
@@ -72,9 +73,9 @@ dependencies {
     implementation("androidx.room:room-ktx:${room_version}")
 
     // Navigation Components
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
-    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 
     // Hilt for Navigation Components
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
@@ -99,4 +100,5 @@ dependencies {
     androidTestImplementation("androidx.room:room-testing:2.6.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
 }

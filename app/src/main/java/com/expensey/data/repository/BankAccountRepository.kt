@@ -26,7 +26,7 @@ class BankAccountRepository(private val bankAccountDao : BankAccountDao, private
 		return bankAccountDao.fetchBankAccountById(accountId)
 	}
 
-	fun updateAccountBalanceById(accountId : Int, currentBalance : Double) : LiveData<BankAccount> {
+	suspend fun updateAccountBalanceById(accountId : Int, currentBalance : Double) : LiveData<BankAccount> {
 		bankAccountDao.updateAccountBalanceById(accountId, currentBalance)
 		return fetchBankAccountById(accountId)
 	}

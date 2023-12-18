@@ -2,7 +2,9 @@ package com.expensey.data.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.expensey.data.models.CategoryCount
 import com.expensey.data.models.Expense
+import com.expensey.data.models.ExpenseSummary
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -32,4 +34,14 @@ abstract class ExpenseDao : BaseDao<Expense> {
 
 	@Query(" SELECT ROUND(SUM(amount), 3) FROM expenses")
 	abstract fun totalSumOfExpenses() : Flow<Double>
+	
+	@Query("""
+			SELECT  cat.name AS category_name,  COUNT(category_id) AS category_count, ROUND(SUM(amount), 3) as amount_spent, category_id
+			FROM expenses AS exp
+			LEFT JOIN
+			category AS cat ON cat.id = exp.category_id
+			GROUP BY exp.category_id
+			ORDER BY COUNT(exp.category_id) DESC
+	""")
+	abstract suspend fun mostSpentCategoryListDesc() : List<ExpenseSummary>
 }

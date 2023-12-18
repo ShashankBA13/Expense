@@ -1,7 +1,9 @@
 package com.expensey.data.repository
 
 import android.content.Context
+import com.expensey.data.models.CategoryCount
 import com.expensey.data.models.Expense
+import com.expensey.data.models.ExpenseSummary
 import com.expensey.data.room.dao.ExpenseDao
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -40,5 +42,9 @@ class ExpenseRepository(private val expenseDao : ExpenseDao, private val context
 
 	fun getTotalSumOfExpenses() : Flow<Double> {
 		return expenseDao.totalSumOfExpenses()
+	}
+
+	suspend fun getMostSpentCategoryCout() : List<ExpenseSummary> {
+		return expenseDao.mostSpentCategoryListDesc()
 	}
 }

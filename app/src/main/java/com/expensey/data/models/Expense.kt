@@ -71,4 +71,10 @@ data class Expense (
 
 	@ColumnInfo(name = "cash_id")
 	var cashId: Int?
+
+//	/** Based on the payment method this can point to either
+//	  * cash, credit card or bank account
+//    */
+//	@ColumnInfo(name = "payment_mode_id")
+//	var paymentModeId : Int,
 )

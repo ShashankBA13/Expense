@@ -1,5 +1,8 @@
 package com.expensey.ui.screens.accounts
 
+import android.content.Context
+import android.health.connect.datatypes.units.Length
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,16 +44,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.expensey.R
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
+import java.time.Duration
 
 @Composable
 fun AccountsScreen() {
 	val viewModel : AccountsViewModel = viewModel()
+	val context = LocalContext.current
 
-	// Cash Related Data
+	// Cash related Data
 	val cashLiveData by viewModel.cashLiveData.observeAsState()
-
 	var cash by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "") }
 	if (cashLiveData != null) {
 		cash = cashLiveData !!.amount.toString()
@@ -55,7 +63,6 @@ fun AccountsScreen() {
 
 	// BankAccounts related Data
 	val totalBalanceLiveData by viewModel.totalBalance.observeAsState()
-
 	var totalBankBalance by remember { mutableStateOf(totalBalanceLiveData?.toString() ?: "") }
 	if (totalBalanceLiveData != null) {
 		totalBankBalance = totalBalanceLiveData.toString()
@@ -109,7 +116,7 @@ fun AccountsScreen() {
 
 
 	val textColor =
-		if (netWorth < 0) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+		if (netWorth < 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
 
 	val assetsValueString = buildAnnotatedString {
 		withStyle(style = SpanStyle(fontSize = 20.sp)) {
@@ -128,7 +135,7 @@ fun AccountsScreen() {
 	}
 
 	val liabilitiesValueString = buildAnnotatedString {
-		withStyle(style = SpanStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.tertiary)) {
+		withStyle(style = SpanStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)) {
 			append("₹")
 		}
 		withStyle(
@@ -136,7 +143,7 @@ fun AccountsScreen() {
 				fontSize = 26.sp,
 				fontWeight = FontWeight.Bold,
 				fontFamily = FontFamily.Monospace,
-				color = MaterialTheme.colorScheme.tertiary
+				color = MaterialTheme.colorScheme.secondary
 			)
 		) {
 			append(" ${"%.3f".format(liabilitiesValue)} ")
@@ -180,7 +187,7 @@ fun AccountsScreen() {
 					imageVector = Icons.Outlined.MoreVert,
 					contentDescription = "Hamburger Icon",
 					modifier = Modifier.clickable {
-						// Handle the icon click here
+						Toast.makeText(context, "Nothing here YET!!! 😂", Toast.LENGTH_SHORT).show()
 					}
 				)
 			}
@@ -188,14 +195,16 @@ fun AccountsScreen() {
 			Card(
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(20.dp, 10.dp)
+					.padding(20.dp, 10.dp),
+				colors = CardDefaults.cardColors(
+					containerColor = MaterialTheme.colorScheme.background
+				)
+
 			) {
 				Row(
 					modifier = Modifier
 						.fillMaxWidth()
-						.height(70.dp)
-						.background(MaterialTheme.colorScheme.secondaryContainer)
-						.border(1.dp, MaterialTheme.colorScheme.primaryContainer),
+						.height(70.dp),
 					horizontalArrangement = Arrangement.SpaceAround,
 				) {
 					Column(
@@ -212,8 +221,7 @@ fun AccountsScreen() {
 							text = assetsValueString,
 							style = TextStyle(
 								fontSize = 30.sp,
-								fontWeight = FontWeight.Bold,
-								fontFamily = FontFamily.Monospace,
+								fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
 								color = MaterialTheme.colorScheme.primary
 							),
 							modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp)
@@ -234,9 +242,8 @@ fun AccountsScreen() {
 							modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp),
 							style = TextStyle(
 								fontSize = 30.sp,
-								fontWeight = FontWeight.Bold,
-								fontFamily = FontFamily.Monospace,
-								color = MaterialTheme.colorScheme.tertiary
+								fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
+								color = MaterialTheme.colorScheme.secondary
 							)
 						)
 					}
@@ -256,8 +263,7 @@ fun AccountsScreen() {
 							modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 10.dp),
 							style = TextStyle(
 								fontSize = 30.sp,
-								fontWeight = FontWeight.Bold,
-								fontFamily = FontFamily.Monospace,
+								fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
 								color = textColor
 							)
 						)
@@ -298,7 +304,7 @@ fun Cash() {
 				.padding(20.dp)
 				.border(
 					1.dp,
-					MaterialTheme.colorScheme.primaryContainer,
+					MaterialTheme.colorScheme.tertiaryContainer,
 					shape = RoundedCornerShape(5.dp)
 				),
 			horizontalArrangement = Arrangement.SpaceBetween,
@@ -342,7 +348,7 @@ fun BankAccount() {
 				.padding(20.dp)
 				.border(
 					1.dp,
-					MaterialTheme.colorScheme.primaryContainer,
+					MaterialTheme.colorScheme.tertiaryContainer,
 					shape = RoundedCornerShape(5.dp)
 				),
 			horizontalArrangement = Arrangement.SpaceBetween,
@@ -404,7 +410,7 @@ fun CreditCards() {
 			.padding(16.dp)
 			.border(
 				1.dp,
-				MaterialTheme.colorScheme.primaryContainer,
+				MaterialTheme.colorScheme.tertiaryContainer,
 				shape = RoundedCornerShape(5.dp)
 			)
 			.height(150.dp)

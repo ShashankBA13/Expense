@@ -128,7 +128,7 @@ fun HomeScreen(navController : NavHostController) {
 						style = TextStyle(
 							textAlign = TextAlign.Center,
 							fontSize = 16.sp,
-							color = MaterialTheme.colorScheme.secondary
+							color = MaterialTheme.colorScheme.primary
 						)
 					)
 				}

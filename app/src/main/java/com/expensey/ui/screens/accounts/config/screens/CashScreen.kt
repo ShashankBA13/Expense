@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,13 +53,13 @@ fun CashScreen(navHostController: NavHostController) {
 				)
 			}
 
-			TextField(
+			OutlinedTextField(
 				value = text,
 				onValueChange = { text = it },
 				label = { Text("Current Balance") },
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(20.dp)
+					.padding(start = 20.dp, end = 20.dp, bottom = 10.dp, top = 20.dp)
 			)
 
 			Row(
@@ -87,9 +88,10 @@ fun CashScreen(navHostController: NavHostController) {
 						}
 						navHostController.popBackStack()
 					},
-					modifier = Modifier.weight(1f)
+					modifier = Modifier.weight(1f),
+					enabled = text.isNotEmpty()  // Disable button when text is empty
 				) {
-					Text("Save")
+					Text("Update")
 				}
 			}
 		}

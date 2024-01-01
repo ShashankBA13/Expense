@@ -304,7 +304,7 @@ fun Cash() {
 				.padding(20.dp)
 				.border(
 					1.dp,
-					MaterialTheme.colorScheme.tertiaryContainer,
+					MaterialTheme.colorScheme.primaryContainer,
 					shape = RoundedCornerShape(5.dp)
 				),
 			horizontalArrangement = Arrangement.SpaceBetween,
@@ -348,7 +348,7 @@ fun BankAccount() {
 				.padding(20.dp)
 				.border(
 					1.dp,
-					MaterialTheme.colorScheme.tertiaryContainer,
+					MaterialTheme.colorScheme.primaryContainer,
 					shape = RoundedCornerShape(5.dp)
 				),
 			horizontalArrangement = Arrangement.SpaceBetween,
@@ -410,7 +410,7 @@ fun CreditCards() {
 			.padding(16.dp)
 			.border(
 				1.dp,
-				MaterialTheme.colorScheme.tertiaryContainer,
+				MaterialTheme.colorScheme.primaryContainer,
 				shape = RoundedCornerShape(5.dp)
 			)
 			.height(150.dp)

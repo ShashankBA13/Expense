@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -157,7 +159,9 @@ fun HomeScreen(navController : NavHostController) {
 						Row(
 							modifier = Modifier
 								.fillMaxWidth()
-								.padding(start = 20.dp, top = 20.dp, end = 20.dp),
+								.padding(start = 20.dp, top = 20.dp, end = 20.dp)
+								.background(color = MaterialTheme.colorScheme.primaryContainer)
+								.border(width = 1.dp, color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp) ),
 							horizontalArrangement = Arrangement.SpaceBetween
 						) {
 							Text(
@@ -184,8 +188,8 @@ fun HomeScreen(navController : NavHostController) {
 					navController.navigate("expense/0")
 				},
 				modifier = Modifier
-					.padding(bottom = 90.dp)
-					.align(Alignment.CenterHorizontally)
+					.padding(bottom = 90.dp, end = 40.dp)
+					.align(Alignment.End)
 			) {
 				Icon(Icons.Filled.Add, "Floating action button.")
 			}

@@ -111,8 +111,8 @@ fun AccountsScreen() {
 
 	val liabilitiesValue = balancePayable
 	val netWorth : Double = assetsValue - liabilitiesValue
-	val formattedNetWorth = "%.3f".format(netWorth)
-	"%.3f".format(liabilitiesValue)
+	val formattedNetWorth = "%.2f".format(netWorth)
+	"%.2f".format(liabilitiesValue)
 
 
 	val textColor =
@@ -130,7 +130,7 @@ fun AccountsScreen() {
 				color = MaterialTheme.colorScheme.primary
 			)
 		) {
-			append(" ${"%.3f".format(assetsValue)} ")
+			append(" ${"%.2f".format(assetsValue)} ")
 		}
 	}
 
@@ -146,7 +146,7 @@ fun AccountsScreen() {
 				color = MaterialTheme.colorScheme.secondary
 			)
 		) {
-			append(" ${"%.3f".format(liabilitiesValue)} ")
+			append(" ${"%.2f".format(liabilitiesValue)} ")
 		}
 	}
 
@@ -181,7 +181,9 @@ fun AccountsScreen() {
 					text = "Accounts",
 					modifier = Modifier
 						.weight(1f),
-					style = Typography.headlineLarge
+					style = Typography.headlineLarge,
+					color = MaterialTheme.colorScheme.primary
+
 				)
 				Icon(
 					imageVector = Icons.Outlined.MoreVert,
@@ -489,7 +491,7 @@ fun CreditCards() {
 				textAlign = TextAlign.Start
 			)
 			Text(
-				text = "₹ ${"%.3f".format(balancePayable)}",
+				text = "₹ ${"%.2f".format(balancePayable)}",
 				style = TextStyle(
 					fontSize = 20.sp,
 					fontWeight = FontWeight.SemiBold,

@@ -159,9 +159,7 @@ fun HomeScreen(navController : NavHostController) {
 						Row(
 							modifier = Modifier
 								.fillMaxWidth()
-								.padding(start = 20.dp, top = 20.dp, end = 20.dp)
-								.background(color = MaterialTheme.colorScheme.primaryContainer)
-								.border(width = 1.dp, color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(10.dp) ),
+								.padding(start = 20.dp, top = 20.dp, end = 20.dp),
 							horizontalArrangement = Arrangement.SpaceBetween
 						) {
 							Text(

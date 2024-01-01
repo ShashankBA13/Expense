@@ -236,6 +236,7 @@ fun AccountsMenuPopUp(onDismiss: () -> Unit, navController : NavHostController) 
 				.height(200.dp)
 				.padding(16.dp),
 			shape = RoundedCornerShape(16.dp),
+
 		) {
 			Text(
 				text = "Cash",

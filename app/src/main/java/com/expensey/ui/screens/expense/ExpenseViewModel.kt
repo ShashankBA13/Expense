@@ -1,8 +1,10 @@
 package com.expensey.ui.screens.expense
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.expensey.ExpenseyApplication
 import com.expensey.data.models.BankAccount
 import com.expensey.data.models.Cash
@@ -10,6 +12,7 @@ import com.expensey.data.models.CreditCard
 import com.expensey.data.repository.BankAccountRepository
 import com.expensey.data.repository.CashRepository
 import com.expensey.data.repository.CreditCardRepository
+import kotlinx.coroutines.launch
 
 class ExpenseViewModel(application : Application) : AndroidViewModel(application) {
 
@@ -38,5 +41,12 @@ class ExpenseViewModel(application : Application) : AndroidViewModel(application
 		cashLiveData = cashRepository.cashLiveData
 		bankAccountLiveDataList = bankAccountRepository.bankAccountLiveDataList
 		creditCardLiveDataList = creditCardRepository.creditCardLiveDataList
+	}
+
+	fun addBackAccountBalanceById(accountId: Int, amountToAddBack : Double) {
+		Log.d("ExpenseViewMode", "Inside view model")
+		viewModelScope.launch {
+			bankAccountRepository.addBackAccountBalanceById(accountId, amountToAddBack)
+		}
 	}
 }

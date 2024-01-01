@@ -34,4 +34,8 @@ class BankAccountRepository(private val bankAccountDao : BankAccountDao, private
 	fun searchBankAccountsByName(query : String) : LiveData<List<BankAccount>> {
 		return bankAccountDao.searchBankAccountsByName(query)
 	}
+
+	suspend fun addBackAccountBalanceById(accountId: Int, amountToAddBack : Double) {
+		return bankAccountDao.addBackAccountBalanceById(accountId, amountToAddBack)
+	}
 }

@@ -509,7 +509,6 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 							val selectedDate = Date.from(selectedDateTime.atZone(ZoneId.systemDefault()).toInstant())
 
 							if(expenseId != 0) {
-								Log.d("Expense Add/Edit", "In update method paymentModeText: ${paymentMethodState.text}")
 								val updateExpense = Expense(
 									expenseId = expenseId,
 									description = descriptionState.text,
@@ -521,6 +520,48 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 									creditCardId = if (paymentMethodState.text == "Credit Card") creditCardIdState.text.toIntOrNull() else null,
 									cashId = if (paymentMethodState.text == "Cash") cashIdState.text.toIntOrNull() else null
 								)
+
+								val TAG = "Expense Screen"
+
+								val amounToAddBack :  Double = expense?.amount ?: 0.0
+								val updatedAmount = amountState.text.toDoubleOrNull() ?: 0.0
+								val oldPaymentModeState = expense?.paymentMethod
+								val newPaymentModeState = paymentMethodState.text
+
+								Log.d(TAG, "$oldPaymentModeState $newPaymentModeState")
+
+								if(oldPaymentModeState.equals(newPaymentModeState)) {
+									if(oldPaymentModeState == "Bank Account") {
+										Log.d(TAG, "Inside Bank account block")
+										if(expense?.bankAccountId != null)  {
+											expense!!.bankAccountId?.let {
+												expenseViewModel.addBackAccountBalanceById(accountId = it,
+													amountToAddBack = amounToAddBack
+												)
+											}
+										}
+									}
+								} else {
+									Log.d("Expense", "Inside else block")
+									if(oldPaymentModeState == "Cash") {
+										val updateCash = cashLiveData
+										updateCash?.amount = updateCash?.amount?.minus(amounToAddBack)!!
+
+										accountsViewModel.updateCash(updateCash)
+									} else if(oldPaymentModeState == "Bank Account") {
+										if(expense?.bankAccountId != null)  {
+											expense!!.bankAccountId?.let {
+												expenseViewModel.addBackAccountBalanceById(accountId = it,
+													amountToAddBack = amounToAddBack
+												)
+											}
+										}
+									} else if(oldPaymentModeState == "Credit Card") {
+										if(creditCardIdState.text != null && creditCardIdState.text.isNotEmpty()) {
+											accountsViewModel.updateCurrentBalanceById(creditCardIdState.text.toInt(), amounToAddBack)
+										}
+									}
+								}
 
 								homeViewModel.updateExpense(expense = updateExpense)
 							} else {
@@ -551,7 +592,6 @@ fun ExpenseScreen(navHostController : NavHostController, expenseId : Int) {
 										accountsViewModel.updateCurrentBalanceById(creditCardIdState.text.toInt(), amountToDeduct)
 									}
 								}
-
 							}
 							navHostController.popBackStack()
 						},

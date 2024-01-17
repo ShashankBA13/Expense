@@ -21,5 +21,5 @@ data class Cash (
 	val name : String,
 
 	@ColumnInfo(name = "amount")
-	var amount : Double
+	var amount : Double = 100.0
 )

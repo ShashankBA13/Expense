@@ -39,7 +39,8 @@ import java.util.Date
 		Index("bank_account_id"),
 		Index("credit_card_id"),
 		Index("cash_id"),
-		Index("category_id")
+		Index("category_id"),
+		Index("payment_id")
 	]
 )
 data class Expense (
@@ -70,7 +71,10 @@ data class Expense (
 	var creditCardId: Int?,
 
 	@ColumnInfo(name = "cash_id")
-	var cashId: Int?
+	var cashId: Int?,
+
+	@ColumnInfo(name = "payment_id")
+	var paymentId : Int
 
 //	/** Based on the payment method this can point to either
 //	  * cash, credit card or bank account

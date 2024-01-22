@@ -8,7 +8,6 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.data.models.BankAccount
-import com.expensey.data.models.Cash
 import com.expensey.data.models.Category
 import com.expensey.data.models.CreditCard
 import com.expensey.data.models.Expense
@@ -43,7 +41,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.math.exp
 
 @SuppressLint("RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -142,27 +139,27 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
             categoryId = categoryIdEdit
         }
 
-        if (oldPaymentMethodState.text == "Bank Account") {
-            val bankAccountLiveData = accountsViewModel.getBankAccountById(expense!!.paymentId)
+        when (oldPaymentMethodState.text) {
+            "Bank Account" -> {
+                val bankAccountLiveData = accountsViewModel.getBankAccountById(expense!!.paymentId)
 
-            if (bankAccountLiveData != null) {
                 bankAccountLiveData.observeAsState().value?.let { bankAccount = it }
+
+                selectedPaymentModeDisplay = bankAccount?.accountName.toString()
+
             }
+            "Credit Card" -> {
+                val creditCardLiveData = accountsViewModel.fetchCreditCardById(expense!!.paymentId)
 
-            selectedPaymentModeDisplay = bankAccount?.accountName.toString()
-
-        } else if (oldPaymentMethodState.text == "Credit Card") {
-            val creditCardLiveData = accountsViewModel.fetchCreditCardById(expense!!.paymentId)
-
-            if (creditCardLiveData != null) {
                 creditCardLiveData.observeAsState().value?.let { creditCard = it }
+
+                selectedPaymentModeDisplay = creditCard?.name.toString()
+
             }
-
-            selectedPaymentModeDisplay = creditCard?.name.toString()
-
-        } else if (oldPaymentMethodState.text == "Cash") {
-            selectedPaymentModeDisplay = (selectedPaymentModeDisplay.takeIf { it.isNotBlank() }
-                ?: cashLiveData?.name).toString()
+            "Cash" -> {
+                selectedPaymentModeDisplay = (selectedPaymentModeDisplay.takeIf { it.isNotBlank() }
+                    ?: cashLiveData?.name).toString()
+            }
         }
     }
 
@@ -187,6 +184,29 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                     Icon(imageVector = Icons.Outlined.Delete,
                         contentDescription = "Delete Bank Account",
                         modifier = Modifier.clickable {
+                            when (oldPaymentMethodState.text) {
+                                "Cash" -> {
+                                    val updateCash = cashLiveData
+                                    updateCash?.amount = expense?.let { updateCash?.amount?.plus(it.amount) }!!
+                                    if (updateCash != null) {
+                                        accountsViewModel.updateCash(updateCash)
+                                    }
+                                }
+                                "Bank Account" -> {
+                                    expense?.let {
+                                        expenseViewModel.addBackAccountBalanceById(
+                                            oldPaymentIdState.text.toInt(), it.amount
+                                        )
+                                    }
+                                }
+                                "Credit Card" -> {
+                                    expense?.let {
+                                        accountsViewModel.addBackDedcutedAmountInCreditCardById(
+                                            oldPaymentIdState.text.toInt(), it.amount
+                                        )
+                                    }
+                                }
+                            }
                             expense?.let { homeViewModel.deleteExpense(it) }
                             Toast.makeText(context, "Expense Deleted", Toast.LENGTH_SHORT).show()
                             navHostController.popBackStack()
@@ -333,8 +353,6 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                         bankAccountsList.forEach { bankAccount ->
                             DropdownMenuItem(onClick = {
-//                                    bankAccountIdState =
-//                                        TextFieldValue(bankAccount.accountId.toString())
                                 selectedPaymentModeDisplay = bankAccount.accountName
                                 isPaymentModeExpanded = false
                                 newPaymentMethodState = TextFieldValue("Bank Account")
@@ -368,8 +386,6 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                         creditCardsList.forEach { creditCard ->
                             DropdownMenuItem(onClick = {
-//                                    creditCardIdState =
-//                                        TextFieldValue(creditCard.creditCardId.toString())
                                 selectedPaymentModeDisplay = creditCard.name
                                 isPaymentModeExpanded = false
                                 newPaymentMethodState = TextFieldValue("Credit Card")
@@ -398,7 +414,6 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
 
                         DropdownMenuItem(onClick = {
-//                                cashIdState = TextFieldValue(cashLiveData?.cashId.toString())
                             selectedPaymentModeDisplay = cashLiveData?.name.toString()
                             isPaymentModeExpanded = false
                             newPaymentMethodState = TextFieldValue("Cash")
@@ -456,47 +471,49 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                     paymentId = updatedPaymentIdState.text.toInt()
                                 )
 
-                                val TAG = "Expense Screen"
-
-                                val amounToAddBack: Double = expense?.amount ?: 0.0
+                                val amountToAddBack: Double = expense?.amount ?: 0.0
                                 val amountToDeduct = amountState.text.toDoubleOrNull() ?: 0.0
                                 val oldPaymentModeState = oldPaymentMethodState.text
                                 val newPaymentModeState = newPaymentMethodState.text
 
-                                Log.d(TAG, "$oldPaymentModeState $newPaymentModeState")
-
-                                if (oldPaymentMethodState.text == "Cash") {
-                                    val updateCash = cashLiveData
-                                    updateCash?.amount = updateCash?.amount?.plus(amounToAddBack)!!
-                                    accountsViewModel.updateCash(updateCash)
-                                } else if (oldPaymentMethodState.text == "Bank Account") {
-                                    expenseViewModel.addBackAccountBalanceById(
-                                        oldPaymentIdState.text.toInt(), amounToAddBack
-                                    )
-                                } else if (oldPaymentMethodState.text == "Credit Card") {
-                                    accountsViewModel.addBackDedcutedAmountInCreditCardById(
-                                        oldPaymentIdState.text.toInt(), amounToAddBack
-                                    )
+                                when (oldPaymentMethodState.text) {
+                                    "Cash" -> {
+                                        val updateCash = cashLiveData
+                                        updateCash?.amount = updateCash?.amount?.plus(amountToAddBack)!!
+                                        accountsViewModel.updateCash(updateCash)
+                                    }
+                                    "Bank Account" -> {
+                                        expenseViewModel.addBackAccountBalanceById(
+                                            oldPaymentIdState.text.toInt(), amountToAddBack
+                                        )
+                                    }
+                                    "Credit Card" -> {
+                                        accountsViewModel.addBackDedcutedAmountInCreditCardById(
+                                            oldPaymentIdState.text.toInt(), amountToAddBack
+                                        )
+                                    }
                                 }
-                                Log.d(TAG, "ExpenseScreen: new Payment Mode State $newPaymentModeState")
-                                Log.d(TAG, "ExpenseScreen: new Payment Method State $newPaymentMethodState")
 
-                                if (newPaymentModeState == "Cash") {
-                                    val updateCash = cashLiveData
-                                    updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
-                                    accountsViewModel.updateCash(updateCash)
-                                } else if (newPaymentModeState == "Bank Account") {
-                                    Log.d(TAG, "ExpenseScreen: Inside Bank Account")
-                                    accountsViewModel.updateAccountBalanceById(
-                                        updatedPaymentIdState.text.toInt(),
-                                        amountToDeduct
-                                    )
-                                } else if (newPaymentModeState == "Credit Card") {
-                                    Log.d(TAG, "ExpenseScreen: Inside Credit Card")
-                                    accountsViewModel.updateCurrentBalanceById(
-                                        updatedPaymentIdState.text.toInt(),
-                                        amountToDeduct
-                                    )
+                                when (newPaymentModeState) {
+                                    "Cash" -> {
+                                        val updateCash = cashLiveData
+                                        updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
+                                        accountsViewModel.updateCash(updateCash)
+                                    }
+                                    "Bank Account" -> {
+                                        Log.d(TAG, "ExpenseScreen: Inside Bank Account")
+                                        accountsViewModel.updateAccountBalanceById(
+                                            updatedPaymentIdState.text.toInt(),
+                                            amountToDeduct
+                                        )
+                                    }
+                                    "Credit Card" -> {
+                                        Log.d(TAG, "ExpenseScreen: Inside Credit Card")
+                                        accountsViewModel.updateCurrentBalanceById(
+                                            updatedPaymentIdState.text.toInt(),
+                                            amountToDeduct
+                                        )
+                                    }
                                 }
 
                                 homeViewModel.updateExpense(expense = updateExpense)
@@ -512,21 +529,25 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                 homeViewModel.insertExpense(newExpense)
 
                                 val amountToDeduct = amountState.text.toDouble()
-                                if (newPaymentMethodState.text == "Cash") {
-                                    val updateCash = cashLiveData
-                                    updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
+                                when (newPaymentMethodState.text) {
+                                    "Cash" -> {
+                                        val updateCash = cashLiveData
+                                        updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
 
-                                    accountsViewModel.updateCash(updateCash)
-                                } else if (newPaymentMethodState.text == "Bank Account") {
-                                    accountsViewModel.updateAccountBalanceById(
-                                        updatedPaymentIdState.text.toInt(),
-                                        amountToDeduct
-                                    )
-                                } else if (newPaymentMethodState.text == "Credit Card") {
-                                    accountsViewModel.updateCurrentBalanceById(
-                                        updatedPaymentIdState.text.toInt(),
-                                        amountToDeduct
-                                    )
+                                        accountsViewModel.updateCash(updateCash)
+                                    }
+                                    "Bank Account" -> {
+                                        accountsViewModel.updateAccountBalanceById(
+                                            updatedPaymentIdState.text.toInt(),
+                                            amountToDeduct
+                                        )
+                                    }
+                                    "Credit Card" -> {
+                                        accountsViewModel.updateCurrentBalanceById(
+                                            updatedPaymentIdState.text.toInt(),
+                                            amountToDeduct
+                                        )
+                                    }
                                 }
                             }
 

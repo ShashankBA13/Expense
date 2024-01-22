@@ -46,4 +46,9 @@ class CreditCardRepository(private val creditCardDao : CreditCardDao, private va
 	fun totalRemainingBalance() : LiveData<Double> {
 		return creditCardDao.totalRemainingBalance()
 	}
+
+	suspend fun addBackDedcutedAmountInCreditCardById(creditCardId: Int, amounToAddBack: Double) {
+		creditCardDao.addBackDeductedAmount(creditCardId, amounToAddBack)
+	}
+
 }

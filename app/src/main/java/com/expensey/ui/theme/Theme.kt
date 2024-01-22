@@ -20,7 +20,15 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -64,7 +72,7 @@ fun ExpenseyTheme(
     val systemUiController = rememberSystemUiController()
     if(darkTheme) {
         systemUiController.setSystemBarsColor(
-            color = Color.Transparent
+            color = Color.Black
         )
     } else {
         systemUiController.setSystemBarsColor(

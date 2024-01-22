@@ -137,4 +137,10 @@ class AccountsViewModel(application: Application) : AndroidViewModel(application
 		}
 		return fetchCreditCardById(creditCardId)
 	}
+
+	fun addBackDedcutedAmountInCreditCardById(creditCardId: Int, amounToAddBack: Double) {
+		viewModelScope.launch {
+			creditCardRepository.addBackDedcutedAmountInCreditCardById(creditCardId, amounToAddBack)
+		}
+	}
 }

@@ -216,8 +216,8 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
 	var paymentMode = expense.paymentMethod
 
-	val bankAccountLiveData = if (expense.bankAccountId != null && expense.bankAccountId != 0) {
-		accountsViewModel.getBankAccountById(expense.bankAccountId !!)
+	val bankAccountLiveData = if (expense.paymentId != null && expense.paymentId != 0) {
+		accountsViewModel.getBankAccountById(expense.paymentId !!)
 	} else {
 		null
 	}
@@ -232,8 +232,8 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 		mutableStateOf<CreditCard?>(null)
 	}
 
-	val creditCardLiveData = if (expense.creditCardId != null && expense.creditCardId != 0) {
-		accountsViewModel.fetchCreditCardById(expense.creditCardId !!)
+	val creditCardLiveData = if (expense.paymentId != null && expense.paymentId != 0) {
+		accountsViewModel.fetchCreditCardById(expense.paymentId !!)
 	} else {
 		null
 	}

@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -42,6 +43,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.exp
 
 @SuppressLint("RememberReturnType")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -54,6 +56,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
     val categoryViewModel: CategoryViewModel = viewModel()
     val expenseViewModel: ExpenseViewModel = viewModel()
     val accountsViewModel: AccountsViewModel = viewModel()
+    val TAG = "Expense Screen"
 
     var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
     var creditCard by remember {
@@ -87,10 +90,10 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
     var descriptionState by remember { mutableStateOf(TextFieldValue("")) }
     var amountState by remember { mutableStateOf(TextFieldValue("")) }
     var categoryId by remember { mutableIntStateOf(0) }
-    var paymentMethodState by remember { mutableStateOf(TextFieldValue("")) }
-    var cashIdState by remember { mutableStateOf(TextFieldValue("")) }
-    var bankAccountIdState by remember { mutableStateOf(TextFieldValue("")) }
-    var creditCardIdState by remember { mutableStateOf(TextFieldValue("")) }
+
+    var oldPaymentMethodState by remember { mutableStateOf(TextFieldValue("")) }
+    var oldPaymentIdState by remember { mutableStateOf(TextFieldValue("")) }
+    var updatedPaymentIdState by remember { mutableStateOf(TextFieldValue("")) }
 
 
     var isCategoryMenuExpanded by remember { mutableStateOf(false) }
@@ -102,8 +105,9 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
     var isPaymentModeExpanded by remember { mutableStateOf(false) }
     val bankAccountsList = bankAccountLiveDataList ?: emptyList()
     val creditCardsList = creditCardLiveDataList ?: emptyList()
-    var selectedPaymentMode by remember { mutableStateOf("") }
+    var newPaymentMethodState by remember { mutableStateOf(TextFieldValue("")) }
 
+    var selectedPaymentModeDisplay by remember { mutableStateOf("") }
 
     if (expense != null) {
         dateState = TextFieldValue(
@@ -113,6 +117,11 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
         )
         amountState = TextFieldValue(expense!!.amount.toString())
         descriptionState = TextFieldValue(expense!!.description)
+        oldPaymentMethodState = TextFieldValue(expense!!.paymentMethod)
+        oldPaymentIdState = TextFieldValue(expense!!.paymentId.toString())
+
+        Log.d(TAG, "Old Payment Id State: $oldPaymentIdState")
+        Log.d(TAG, "Old Payment Method State: $oldPaymentMethodState")
 
         val categoryIdEdit = expense!!.categoryId
         val categoryFlow = if (categoryIdEdit != null) {
@@ -133,131 +142,84 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
             categoryId = categoryIdEdit
         }
 
-        LaunchedEffect(expense!!.bankAccountId) {
-            bankAccountIdState = TextFieldValue(expense!!.bankAccountId.toString())
-            paymentMethodState = TextFieldValue("Bank Account")
-        }
-
-        val bankAccountIdInt: Int? = bankAccountIdState.text.toIntOrNull()
-
-        if (bankAccountIdInt != null) {
-            val bankAccountLiveData = if (bankAccountIdInt != 0) {
-                accountsViewModel.getBankAccountById(bankAccountIdInt)
-            } else {
-                null
-            }
+        if (oldPaymentMethodState.text == "Bank Account") {
+            val bankAccountLiveData = accountsViewModel.getBankAccountById(expense!!.paymentId)
 
             if (bankAccountLiveData != null) {
                 bankAccountLiveData.observeAsState().value?.let { bankAccount = it }
             }
 
-            if (bankAccount != null) {
-                selectedPaymentMode =
-                    selectedPaymentMode.takeIf { it.isNotBlank() } ?: bankAccount!!.accountName
-            }
-        }
+            selectedPaymentModeDisplay = bankAccount?.accountName.toString()
 
-        // Update cashIdState using LaunchedEffect
-        LaunchedEffect(expense!!.cashId) {
-            cashIdState = TextFieldValue(expense!!.cashId.toString())
-            paymentMethodState = TextFieldValue("Cash")
-        }
-
-        val cashIdInt: Int? = cashIdState.text.toIntOrNull()
-
-        if (cashIdInt != null && cashIdInt != 0) {
-            selectedPaymentMode =
-                (selectedPaymentMode.takeIf { it.isNotBlank() } ?: cashLiveData?.name).toString()
-        }
-
-        // Update cashIdState using LaunchedEffect
-        LaunchedEffect(expense!!.creditCardId) {
-            creditCardIdState = TextFieldValue(expense!!.creditCardId.toString())
-            paymentMethodState = TextFieldValue("Credit Card")
-        }
-
-        val creditCardIdInt: Int? = creditCardIdState.text.toIntOrNull()
-
-        if (creditCardIdInt != null && creditCardIdInt != 0) {
-            val creditCardLiveData = if (creditCardIdInt != 0) {
-                accountsViewModel.fetchCreditCardById(creditCardIdInt)
-            } else {
-                null
-            }
+        } else if (oldPaymentMethodState.text == "Credit Card") {
+            val creditCardLiveData = accountsViewModel.fetchCreditCardById(expense!!.paymentId)
 
             if (creditCardLiveData != null) {
                 creditCardLiveData.observeAsState().value?.let { creditCard = it }
             }
 
-            if (creditCard != null) {
-                selectedPaymentMode =
-                    selectedPaymentMode.takeIf { it.isNotBlank() } ?: creditCard!!.name
-            }
+            selectedPaymentModeDisplay = creditCard?.name.toString()
+
+        } else if (oldPaymentMethodState.text == "Cash") {
+            selectedPaymentModeDisplay = (selectedPaymentModeDisplay.takeIf { it.isNotBlank() }
+                ?: cashLiveData?.name).toString()
         }
     }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column {
             Row(modifier = Modifier.fillMaxWidth()) {
-                Icon(
-                    imageVector = Icons.Outlined.ArrowBackIosNew,
+                Icon(imageVector = Icons.Outlined.ArrowBackIosNew,
                     contentDescription = "Back",
                     modifier = Modifier.clickable {
                         navHostController.popBackStack()
-                    } then Modifier.padding(start = 20.dp, top = 20.dp, end = 10.dp)
-                )
+                    } then Modifier.padding(start = 20.dp, top = 20.dp, end = 10.dp))
 
                 Text(
                     text = "Expense",
                     modifier = Modifier
-						.padding(20.dp)
-						.weight(1f),
+                        .padding(20.dp)
+                        .weight(1f),
                     style = Typography.headlineLarge
                 )
 
                 if (expenseId != 0) {
-                    Icon(
-                        imageVector = Icons.Outlined.Delete,
+                    Icon(imageVector = Icons.Outlined.Delete,
                         contentDescription = "Delete Bank Account",
                         modifier = Modifier.clickable {
                             expense?.let { homeViewModel.deleteExpense(it) }
                             Toast.makeText(context, "Expense Deleted", Toast.LENGTH_SHORT).show()
                             navHostController.popBackStack()
                         } then Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
-                        tint = Color.Red
-                    )
+                        tint = Color.Red)
                 }
             }
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = dateState,
+                OutlinedTextField(value = dateState,
                     onValueChange = {
                         dateState = it
                     },
                     label = { Text("Date") },
                     modifier = Modifier
-						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
                     trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                showDateTimePicker(context)
-                                { selectedDateTime ->
-                                    dateState = TextFieldValue(
-                                        selectedDateTime.format(
-                                            DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm")
-                                        )
+                        IconButton(onClick = {
+                            showDateTimePicker(context) { selectedDateTime ->
+                                dateState = TextFieldValue(
+                                    selectedDateTime.format(
+                                        DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm")
                                     )
-                                }
-                            }) {
+                                )
+                            }
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.CalendarToday,
                                 contentDescription = "Date And Time"
                             )
                         }
-                    }
-                )
+                    })
 
                 OutlinedTextField(
                     value = amountState,
@@ -266,12 +228,11 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                     },
                     label = { Text("Amount") },
                     modifier = Modifier
-						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
                     trailingIcon = {
                         Icon(
-                            Icons.Outlined.AttachMoney,
-                            contentDescription = "Amount"
+                            Icons.Outlined.AttachMoney, contentDescription = "Amount"
                         )
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -279,22 +240,19 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                     )
                 )
 
-                OutlinedTextField(
-                    value = descriptionState,
+                OutlinedTextField(value = descriptionState,
                     onValueChange = {
                         descriptionState = it
                     },
                     label = { Text("Description") },
                     modifier = Modifier
-						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
                     trailingIcon = {
                         Icon(
-                            Icons.Outlined.Description,
-                            contentDescription = "Description Icon"
+                            Icons.Outlined.Description, contentDescription = "Description Icon"
                         )
-                    }
-                )
+                    })
 
                 ExposedDropdownMenuBox(
                     expanded = isCategoryMenuExpanded,
@@ -302,30 +260,26 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         isCategoryMenuExpanded = !isCategoryMenuExpanded
                     },
                     modifier = Modifier
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-						.fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                        .fillMaxWidth()
                 ) {
-                    OutlinedTextField(
-                        value = selectedCategory?.categoryName ?: "",
+                    OutlinedTextField(value = selectedCategory?.categoryName ?: "",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Category") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isCategoryMenuExpanded) },
                         modifier = Modifier
-							.fillMaxWidth()
-							.clickable {
-								isCategoryMenuExpanded = !isCategoryMenuExpanded
-							}
-							.menuAnchor(),
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                    )
+                            .fillMaxWidth()
+                            .clickable {
+                                isCategoryMenuExpanded = !isCategoryMenuExpanded
+                            }
+                            .menuAnchor(),
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors())
 
                     ExposedDropdownMenu(
-                        expanded = isCategoryMenuExpanded,
-                        onDismissRequest = {
+                        expanded = isCategoryMenuExpanded, onDismissRequest = {
                             isCategoryMenuExpanded = false
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        }, modifier = Modifier.fillMaxWidth()
                     ) {
                         categories.forEach { category ->
                             DropdownMenuItem(
@@ -335,8 +289,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                     isCategoryMenuExpanded = false
                                 },
                                 text = { Text(category.categoryName) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }
@@ -348,171 +301,145 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         isPaymentModeExpanded = !isPaymentModeExpanded
                     },
                     modifier = Modifier
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-						.fillMaxWidth()
+                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                        .fillMaxWidth()
                 ) {
-                    OutlinedTextField(
-                        value = selectedPaymentMode,
+                    OutlinedTextField(value = selectedPaymentModeDisplay,
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Payment Mode") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isPaymentModeExpanded) },
                         modifier = Modifier
-							.fillMaxWidth()
-							.clickable {
-								isPaymentModeExpanded = !isPaymentModeExpanded
-							}
-							.menuAnchor(),
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                    )
+                            .fillMaxWidth()
+                            .clickable {
+                                isPaymentModeExpanded = !isPaymentModeExpanded
+                            }
+                            .menuAnchor(),
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors())
 
                     ExposedDropdownMenu(
-                        expanded = isPaymentModeExpanded,
-                        onDismissRequest = {
+                        expanded = isPaymentModeExpanded, onDismissRequest = {
                             isPaymentModeExpanded = false
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        }, modifier = Modifier.fillMaxWidth()
                     ) {
 
                         if (bankAccountsList.isNotEmpty()) {
-                            DropdownMenuItem(
-                                onClick = {
-                                },
-                                text = {
-                                    Text("Bank Account", fontWeight = FontWeight.Bold)
-                                }
-                            )
+                            DropdownMenuItem(onClick = {}, text = {
+                                Text("Bank Account", fontWeight = FontWeight.Bold)
+                            })
 
                             Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
                         }
 
                         bankAccountsList.forEach { bankAccount ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    bankAccountIdState =
-                                        TextFieldValue(bankAccount.accountId.toString())
-                                    selectedPaymentMode = bankAccount.accountName
-                                    isPaymentModeExpanded = false
-                                    paymentMethodState = TextFieldValue("Bank Account")
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                text = {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = "${bankAccount.accountName}       ",
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = "₹ ${bankAccount.currentBalance}",
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.Gray // Adjust color based on your design
-                                        )
-                                    }
-                                }
-                            )
-                        }
-
-                        if (creditCardsList.isNotEmpty()) {
-                            DropdownMenuItem(
-                                onClick = {
-                                },
-                                text = {
-                                    Text("Credit Card", fontWeight = FontWeight.Bold)
-                                }
-                            )
-
-                            Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
-                        }
-
-                        creditCardsList.forEach { creditCard ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    creditCardIdState =
-                                        TextFieldValue(creditCard.creditCardId.toString())
-                                    selectedPaymentMode = creditCard.name
-                                    isPaymentModeExpanded = false
-                                    paymentMethodState = TextFieldValue("Credit Card")
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                text = {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = creditCard.name,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = "₹ ${creditCard.currentBalance}",
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.Gray
-                                        )
-                                    }
-                                }
-                            )
-                        }
-
-                        DropdownMenuItem(
-                            onClick = {
-                            },
-                            text = {
-                                Text("Cash", fontWeight = FontWeight.Bold)
-                            }
-                        )
-                        Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
-
-                        DropdownMenuItem(
-                            onClick = {
-                                cashIdState = TextFieldValue(cashLiveData?.cashId.toString())
-                                selectedPaymentMode = cashLiveData?.name.toString()
+                            DropdownMenuItem(onClick = {
+//                                    bankAccountIdState =
+//                                        TextFieldValue(bankAccount.accountId.toString())
+                                selectedPaymentModeDisplay = bankAccount.accountName
                                 isPaymentModeExpanded = false
-                                paymentMethodState = TextFieldValue("Cash")
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            text = {
+                                newPaymentMethodState = TextFieldValue("Bank Account")
+                                updatedPaymentIdState =
+                                    TextFieldValue(bankAccount.accountId.toString())
+                            }, modifier = Modifier.fillMaxWidth(), text = {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${cashLiveData?.name}",
+                                        text = "${bankAccount.accountName}       ",
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "₹ ${cashLiveData?.amount}",
+                                        text = "₹ ${bankAccount.currentBalance}",
                                         fontWeight = FontWeight.Bold,
                                         color = Color.Gray // Adjust color based on your design
                                     )
                                 }
+                            })
+                        }
+
+                        if (creditCardsList.isNotEmpty()) {
+                            DropdownMenuItem(onClick = {}, text = {
+                                Text("Credit Card", fontWeight = FontWeight.Bold)
+                            })
+
+                            Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+                        }
+
+                        creditCardsList.forEach { creditCard ->
+                            DropdownMenuItem(onClick = {
+//                                    creditCardIdState =
+//                                        TextFieldValue(creditCard.creditCardId.toString())
+                                selectedPaymentModeDisplay = creditCard.name
+                                isPaymentModeExpanded = false
+                                newPaymentMethodState = TextFieldValue("Credit Card")
+                                updatedPaymentIdState =
+                                    TextFieldValue(creditCard.creditCardId.toString())
+                            }, modifier = Modifier.fillMaxWidth(), text = {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = creditCard.name, fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "₹ ${creditCard.currentBalance}",
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Gray
+                                    )
+                                }
+                            })
+                        }
+
+                        DropdownMenuItem(onClick = {}, text = {
+                            Text("Cash", fontWeight = FontWeight.Bold)
+                        })
+                        Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
+
+                        DropdownMenuItem(onClick = {
+//                                cashIdState = TextFieldValue(cashLiveData?.cashId.toString())
+                            selectedPaymentModeDisplay = cashLiveData?.name.toString()
+                            isPaymentModeExpanded = false
+                            newPaymentMethodState = TextFieldValue("Cash")
+                            updatedPaymentIdState = TextFieldValue(cashLiveData?.cashId.toString())
+                        }, modifier = Modifier.fillMaxWidth(), text = {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "${cashLiveData?.name}", fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "₹ ${cashLiveData?.amount}",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Gray // Adjust color based on your design
+                                )
                             }
-                        )
+                        })
                     }
                 }
 
                 Row(
                     modifier = Modifier
-						.fillMaxWidth()
-						.padding(20.dp),
+                        .fillMaxWidth()
+                        .padding(20.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TextButton(
                         onClick = {
                             navHostController.popBackStack()
-                        },
-                        modifier = Modifier.weight(1f)
+                        }, modifier = Modifier.weight(1f)
                     ) {
                         Text("Cancel")
                     }
 
                     OutlinedButton(
                         onClick = {
+
                             val selectedDateTime = LocalDateTime.parse(
-                                dateState.text,
-                                DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm")
+                                dateState.text, DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm")
                             )
                             val selectedDate = Date.from(
                                 selectedDateTime.atZone(ZoneId.systemDefault()).toInstant()
@@ -525,96 +452,72 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                     amount = amountState.text.toDoubleOrNull() ?: 0.0,
                                     categoryId = categoryId,
                                     date = selectedDate,
-                                    paymentMethod = paymentMethodState.text,
-                                    bankAccountId = if (paymentMethodState.text == "Bank Account") bankAccountIdState.text.toIntOrNull() else null,
-                                    creditCardId = if (paymentMethodState.text == "Credit Card") creditCardIdState.text.toIntOrNull() else null,
-                                    cashId = if (paymentMethodState.text == "Cash") cashIdState.text.toIntOrNull() else null,
-                                    paymentId = 1
+                                    paymentMethod = newPaymentMethodState.text,
+                                    paymentId = updatedPaymentIdState.text.toInt()
                                 )
 
                                 val TAG = "Expense Screen"
 
                                 val amounToAddBack: Double = expense?.amount ?: 0.0
-                                val updatedAmount = amountState.text.toDoubleOrNull() ?: 0.0
-                                val oldPaymentModeState = expense?.paymentMethod
-                                val newPaymentModeState = paymentMethodState.text
+                                val amountToDeduct = amountState.text.toDoubleOrNull() ?: 0.0
+                                val oldPaymentModeState = oldPaymentMethodState.text
+                                val newPaymentModeState = newPaymentMethodState.text
 
                                 Log.d(TAG, "$oldPaymentModeState $newPaymentModeState")
 
-                                if (oldPaymentModeState.equals(newPaymentModeState)) {
-                                    if (oldPaymentModeState == "Bank Account") {
-                                        Log.d(TAG, "Inside Bank account block")
-                                        if (expense?.bankAccountId != null) {
-                                            expense!!.bankAccountId?.let {
-                                                expenseViewModel.addBackAccountBalanceById(
-                                                    accountId = it,
-                                                    amountToAddBack = amounToAddBack
-                                                )
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    Log.d("Expense", "Inside else block")
-                                    if (oldPaymentModeState == "Cash") {
-                                        val updateCash = cashLiveData
-                                        updateCash?.amount =
-                                            updateCash?.amount?.minus(amounToAddBack)!!
+                                if (oldPaymentMethodState.text == "Cash") {
+                                    val updateCash = cashLiveData
+                                    updateCash?.amount = updateCash?.amount?.plus(amounToAddBack)!!
+                                    accountsViewModel.updateCash(updateCash)
+                                } else if (oldPaymentMethodState.text == "Bank Account") {
+                                    expenseViewModel.addBackAccountBalanceById(
+                                        oldPaymentIdState.text.toInt(), amounToAddBack
+                                    )
+                                } else if (oldPaymentMethodState.text == "Credit Card") {
+                                    accountsViewModel.addBackDedcutedAmountInCreditCardById(
+                                        oldPaymentIdState.text.toInt(), amounToAddBack
+                                    )
+                                }
 
-                                        accountsViewModel.updateCash(updateCash)
-                                    } else if (oldPaymentModeState == "Bank Account") {
-                                        if (expense?.bankAccountId != null) {
-                                            expense!!.bankAccountId?.let {
-                                                expenseViewModel.addBackAccountBalanceById(
-                                                    accountId = it,
-                                                    amountToAddBack = amounToAddBack
-                                                )
-                                            }
-                                        }
-                                    } else if (oldPaymentModeState == "Credit Card") {
-                                        if (creditCardIdState.text != null && creditCardIdState.text.isNotEmpty()) {
-                                            accountsViewModel.updateCurrentBalanceById(
-                                                creditCardIdState.text.toInt(),
-                                                amounToAddBack
-                                            )
-                                        }
-                                    }
+                                if (newPaymentModeState == "Cash") {
+                                    val updateCash = cashLiveData
+                                    updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
+                                    accountsViewModel.updateCash(updateCash)
+                                } else if (newPaymentMethodState.text == "Bank Account") {
+                                    accountsViewModel.updateAccountBalanceById(
+                                        updatedPaymentIdState.text.toInt(),
+                                        amountToDeduct
+                                    )
+                                } else if (newPaymentMethodState.text == "Credit Card") {
+                                    accountsViewModel.updateCurrentBalanceById(
+                                        updatedPaymentIdState.text.toInt(),
+                                        amountToDeduct
+                                    )
                                 }
 
                                 homeViewModel.updateExpense(expense = updateExpense)
                             } else {
+                                Log.d(TAG, "ExpenseScreen: ${updatedPaymentIdState.text}")
                                 val newExpense = Expense(
                                     description = descriptionState.text,
                                     amount = amountState.text.toDoubleOrNull() ?: 0.0,
                                     categoryId = categoryId,
                                     date = selectedDate,
-                                    paymentMethod = paymentMethodState.text,
-                                    bankAccountId = if (paymentMethodState.text == "Bank Account") bankAccountIdState.text.toIntOrNull() else null,
-                                    creditCardId = if (paymentMethodState.text == "Credit Card") creditCardIdState.text.toIntOrNull() else null,
-                                    cashId = if (paymentMethodState.text == "Cash") cashIdState.text.toIntOrNull() else null,
-                                    paymentId = 1
+                                    paymentMethod = newPaymentMethodState.text,
+                                    paymentId = updatedPaymentIdState.text.toInt()
                                 )
                                 homeViewModel.insertExpense(newExpense)
 
                                 val amountToDeduct = amountState.text.toDouble()
-                                if (paymentMethodState.text == "Cash") {
+                                if (newPaymentMethodState.text == "Cash") {
                                     val updateCash = cashLiveData
                                     updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
 
                                     accountsViewModel.updateCash(updateCash)
-                                } else if (paymentMethodState.text == "Bank Account") {
-                                    if ((bankAccountIdState.text != null) && bankAccountIdState.text.isNotEmpty()) {
-                                        accountsViewModel.updateAccountBalanceById(
-                                            bankAccountIdState.text.toInt(),
-                                            amountToDeduct
-                                        )
-                                    }
-                                } else if (paymentMethodState.text == "Credit Card") {
-                                    if (creditCardIdState.text != null && creditCardIdState.text.isNotEmpty()) {
-                                        accountsViewModel.updateCurrentBalanceById(
-                                            creditCardIdState.text.toInt(),
-                                            amountToDeduct
-                                        )
-                                    }
+                                } else if (newPaymentMethodState.text == "Bank Account") {
+
+                                } else if (newPaymentMethodState.text == "Credit Card") {
+
                                 }
                             }
                             navHostController.popBackStack()
@@ -639,8 +542,7 @@ fun showDateTimePicker(context: Context, onDateSelected: (LocalDateTime) -> Unit
 
     // Date Picker Dialog
     val datePickerDialog = DatePickerDialog(
-        context,
-        { _, selectedYear, selectedMonth, selectedDay ->
+        context, { _, selectedYear, selectedMonth, selectedDay ->
             currentDateTime.set(Calendar.YEAR, selectedYear)
             currentDateTime.set(Calendar.MONTH, selectedMonth)
             currentDateTime.set(Calendar.DAY_OF_MONTH, selectedDay)
@@ -649,8 +551,7 @@ fun showDateTimePicker(context: Context, onDateSelected: (LocalDateTime) -> Unit
 
             // Time Picker Dialog
             val timePickerDialog = TimePickerDialog(
-                context,
-                { _, selectedHour, selectedMinute ->
+                context, { _, selectedHour, selectedMinute ->
                     currentDateTime.set(Calendar.HOUR_OF_DAY, selectedHour)
                     currentDateTime.set(Calendar.MINUTE, selectedMinute)
 
@@ -660,16 +561,10 @@ fun showDateTimePicker(context: Context, onDateSelected: (LocalDateTime) -> Unit
 
                     // Update the dateState value
                     onDateSelected(selectedDateTime)
-                },
-                hour,
-                minute,
-                false
+                }, hour, minute, false
             )
             timePickerDialog.show()
-        },
-        year,
-        month,
-        day
+        }, year, month, day
     )
     datePickerDialog.show()
 }

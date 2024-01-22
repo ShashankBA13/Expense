@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Money
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -59,7 +62,10 @@ fun CashScreen(navHostController: NavHostController) {
 				label = { Text("Current Balance") },
 				modifier = Modifier
 					.fillMaxWidth()
-					.padding(start = 20.dp, end = 20.dp, bottom = 10.dp, top = 20.dp)
+					.padding(start = 20.dp, end = 20.dp, bottom = 10.dp, top = 20.dp),
+				trailingIcon = {
+					Icon(Icons.Outlined.Money, "Total Limit")
+				}
 			)
 
 			Row(

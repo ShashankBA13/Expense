@@ -8,8 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.ArrowBackIos
+import androidx.compose.material.icons.outlined.Balance
+import androidx.compose.material.icons.outlined.CommentBank
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Numbers
+import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -123,7 +128,10 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					label = { Text("Account Name") },
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+					trailingIcon = {
+						Icon(Icons.Outlined.AccountBox, "Account Name")
+					}
 				)
 
 
@@ -133,7 +141,10 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					label = { Text("Current Balance") },
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+					trailingIcon = {
+						Icon(Icons.Outlined.Balance, "Current Balance")
+					}
 				)
 
 				OutlinedTextField(
@@ -142,7 +153,10 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					label = { Text("Account Number") },
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+					trailingIcon = {
+						Icon(Icons.Outlined.Numbers, "Account Number")
+					}
 				)
 
 				OutlinedTextField(
@@ -151,7 +165,10 @@ fun BankAccountsScreen(navHostController : NavHostController, accountId : Int?) 
 					label = { Text("Account Holder Name") },
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+						.padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
+					trailingIcon = {
+						Icon(Icons.Outlined.PersonOutline, "Account Holder Name")
+					}
 				)
 			}
 

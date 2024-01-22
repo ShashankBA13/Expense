@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.ArrowBackIos
+import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Money
+import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -37,193 +41,207 @@ import java.util.Date
 import kotlin.random.Random
 
 @Composable
-fun CreditCardScreen(navHostController : NavHostController, creditCardId : Int?) {
+fun CreditCardScreen(navHostController: NavHostController, creditCardId: Int?) {
 
-	val viewModel : AccountsViewModel = viewModel()
+    val viewModel: AccountsViewModel = viewModel()
 
-	var creditCard by remember {
-		mutableStateOf<CreditCard?>(null)
-	}
+    var creditCard by remember {
+        mutableStateOf<CreditCard?>(null)
+    }
 
-	val creditCardLiveData = if (creditCardId != null && creditCardId != 0) {
-		viewModel.fetchCreditCardById(creditCardId)
-	} else {
-		null
-	}
+    val creditCardLiveData = if (creditCardId != null && creditCardId != 0) {
+        viewModel.fetchCreditCardById(creditCardId)
+    } else {
+        null
+    }
 
-	creditCardLiveData?.observeAsState()?.value?.let { creditCard = it }
+    creditCardLiveData?.observeAsState()?.value?.let { creditCard = it }
 
-	var creditCardName by remember {
-		mutableStateOf(creditCard?.name.orEmpty())
-	}
+    var creditCardName by remember {
+        mutableStateOf(creditCard?.name.orEmpty())
+    }
 
-	var totalLimit by remember {
-		mutableStateOf(creditCard?.totalLimit?.toString() ?: "")
-	}
+    var totalLimit by remember {
+        mutableStateOf(creditCard?.totalLimit?.toString() ?: "")
+    }
 
-	var availableLimit by remember {
-		mutableStateOf(creditCard?.currentBalance?.toString() ?: "")
-	}
+    var availableLimit by remember {
+        mutableStateOf(creditCard?.currentBalance?.toString() ?: "")
+    }
 
-	var cardHolder by remember {
-		mutableStateOf(creditCard?.cardHolder.orEmpty())
-	}
+    var cardHolder by remember {
+        mutableStateOf(creditCard?.cardHolder.orEmpty())
+    }
 
-	if (creditCardLiveData != null) {
-		creditCardName = creditCard?.name.toString()
-		totalLimit = creditCard?.totalLimit.toString()
-		availableLimit = creditCard?.currentBalance.toString()
-		cardHolder = creditCard?.cardHolder.toString()
-	}
+    if (creditCardLiveData != null) {
+        creditCardName = creditCard?.name.toString()
+        totalLimit = creditCard?.totalLimit.toString()
+        availableLimit = creditCard?.currentBalance.toString()
+        cardHolder = creditCard?.cardHolder.toString()
+    }
 
 
-	Surface(
-		modifier = Modifier.fillMaxSize()
-	) {
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-		Column {
-			Row(
-				modifier = Modifier.fillMaxWidth()
-			) {
-				Icon(
-					imageVector = Icons.Outlined.ArrowBackIos,
-					contentDescription = "Back",
-					modifier = Modifier.clickable {
-						navHostController.popBackStack()
-					} then Modifier.padding(start = 20.dp, top = 20.dp, end = 10.dp)
-				)
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.ArrowBackIos,
+                    contentDescription = "Back",
+                    modifier = Modifier.clickable {
+                        navHostController.popBackStack()
+                    } then Modifier.padding(start = 20.dp, top = 20.dp, end = 10.dp)
+                )
 
-				Text(
-					text = "Credit Card",
-					modifier = Modifier
+                Text(
+                    text = "Credit Card",
+                    modifier = Modifier
 						.padding(20.dp)
 						.weight(1f),
-					style = Typography.headlineLarge
-				)
+                    style = Typography.headlineLarge
+                )
 
-				if (creditCardId != null && creditCardId != 0) {
-					Icon(
-						imageVector = Icons.Outlined.Delete,
-						contentDescription = "Delete Credit Card",
-						modifier = Modifier.clickable {
-							creditCard?.let { viewModel.deleteCreditCard(it) }
-							navHostController.popBackStack()
-						} then Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
-						tint = Color.Red
-					)
-				}
-			}
+                if (creditCardId != null && creditCardId != 0) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete Credit Card",
+                        modifier = Modifier.clickable {
+                            creditCard?.let { viewModel.deleteCreditCard(it) }
+                            navHostController.popBackStack()
+                        } then Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
+                        tint = Color.Red
+                    )
+                }
+            }
 
 
-			Column(
-				modifier = Modifier
+            Column(
+                modifier = Modifier
 					.fillMaxWidth()
 					.padding(16.dp)
-			) {
-				OutlinedTextField(
-					value = creditCardName,
-					onValueChange = { creditCardName = it },
-					label = { Text("Card Name") },
-					modifier = Modifier
+            ) {
+                OutlinedTextField(
+                    value = creditCardName,
+                    onValueChange = { creditCardName = it },
+                    label = { Text("Card Name") },
+                    modifier = Modifier
 						.fillMaxWidth()
-						.padding(bottom = 8.dp)
-				)
+						.padding(bottom = 8.dp),
+                    trailingIcon = {
+                        Icon(Icons.Outlined.CreditCard, "Card Name")
+                    }
 
-				OutlinedTextField(
-					value = totalLimit,
-					onValueChange = { totalLimit = it },
-					label = { Text("Total Limit") },
-					modifier = Modifier
+                )
+
+                OutlinedTextField(
+                    value = totalLimit,
+                    onValueChange = { totalLimit = it },
+                    label = { Text("Total Limit") },
+                    modifier = Modifier
 						.fillMaxWidth()
-						.padding(bottom = 8.dp)
-				)
+						.padding(bottom = 8.dp),
+                    trailingIcon = {
+                        Icon(Icons.Outlined.Money, "Total Limit")
+                    }
 
-				OutlinedTextField(
-					value = availableLimit,
-					onValueChange = { availableLimit = it },
-					label = { Text("Available Limit") },
-					modifier = Modifier
+                )
+
+                OutlinedTextField(
+                    value = availableLimit,
+                    onValueChange = { availableLimit = it },
+                    label = { Text("Available Limit") },
+                    modifier = Modifier
 						.fillMaxWidth()
-						.padding(bottom = 8.dp)
-				)
+						.padding(bottom = 8.dp),
+					trailingIcon = {
+						Icon(Icons.Outlined.Money, "Available Limit")
+					}
+                )
 
-				OutlinedTextField(
-					value = cardHolder,
-					onValueChange = { cardHolder = it },
-					label = { Text("Card Holder") },
-					modifier = Modifier
+                OutlinedTextField(
+                    value = cardHolder,
+                    onValueChange = { cardHolder = it },
+                    label = { Text("Card Holder") },
+                    modifier = Modifier
 						.fillMaxWidth()
-						.padding(bottom = 8.dp)
-				)
-			}
+						.padding(bottom = 8.dp),
+					trailingIcon = {
+						Icon(Icons.Outlined.PersonOutline, "Card Holder")
+					}
+                )
+            }
 
-			Row(
-				modifier = Modifier
+            Row(
+                modifier = Modifier
 					.fillMaxWidth()
 					.padding(20.dp),
-				horizontalArrangement = Arrangement.SpaceEvenly
-			) {
-				TextButton(
-					onClick = {
-						navHostController.popBackStack()
-					},
-					modifier = Modifier.weight(1f)
-				) {
-					Text("Cancel")
-				}
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                TextButton(
+                    onClick = {
+                        navHostController.popBackStack()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Cancel")
+                }
 
-				OutlinedButton(
-					onClick = {
+                OutlinedButton(
+                    onClick = {
 
-						if (creditCardId != null && creditCardId != 0) {
-							val updateCreditCard = CreditCard(
-								creditCardId = creditCardId,
-								name = creditCardName,
-								cardHolder = cardHolder,
-								currentBalance = availableLimit.toDouble(),
-								totalLimit = totalLimit.toDouble(),
-								cardNumber = creditCard !!.cardNumber,
-								billGenerationDate = Date(),
-								billPaymentDate = Date(),
-								notifyUserOfBillDate = false,
-								interestRate = 0.0,
-								cvv = 0,
-								expirationDate = Date()
-							)
-							viewModel.updateCreditCard(updateCreditCard)
-						} else {
-							val random = Random.Default
-							val newCreditCard = CreditCard(
-								name = creditCardName,
-								cardHolder = cardHolder,
-								currentBalance = availableLimit.toDouble(),
-								totalLimit = totalLimit.toDouble(),
-								cardNumber = random.nextInt(1_000_000_000, 2_000_000_000),
-								billGenerationDate = Date(),
-								billPaymentDate = Date(),
-								notifyUserOfBillDate = false,
-								interestRate = 0.0,
-								cvv = 0,
-								expirationDate = Date()
-							)
-							viewModel.insertCreditCard(newCreditCard)
-						}
-						navHostController.popBackStack()
-					},
-					modifier = Modifier.weight(1f)
-				) {
-					Text(if (creditCardId != null && creditCardId != 0) "Update" else "Save")
-				}
-			}
-		}
-	}
+                        if (creditCardId != null && creditCardId != 0) {
+                            val updateCreditCard = CreditCard(
+                                creditCardId = creditCardId,
+                                name = creditCardName,
+                                cardHolder = cardHolder,
+                                currentBalance = availableLimit.toDouble(),
+                                totalLimit = totalLimit.toDouble(),
+                                cardNumber = creditCard!!.cardNumber,
+                                billGenerationDate = Date(),
+                                billPaymentDate = Date(),
+                                notifyUserOfBillDate = false,
+                                interestRate = 0.0,
+                                cvv = 0,
+                                expirationDate = Date()
+                            )
+                            viewModel.updateCreditCard(updateCreditCard)
+                        } else {
+                            val random = Random.Default
+                            val newCreditCard = CreditCard(
+                                name = creditCardName,
+                                cardHolder = cardHolder,
+                                currentBalance = availableLimit.toDouble(),
+                                totalLimit = totalLimit.toDouble(),
+                                cardNumber = random.nextInt(1_000_000_000, 2_000_000_000),
+                                billGenerationDate = Date(),
+                                billPaymentDate = Date(),
+                                notifyUserOfBillDate = false,
+                                interestRate = 0.0,
+                                cvv = 0,
+                                expirationDate = Date()
+                            )
+                            viewModel.insertCreditCard(newCreditCard)
+                        }
+                        navHostController.popBackStack()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(if (creditCardId != null && creditCardId != 0) "Update" else "Save")
+                }
+            }
+        }
+    }
 }
 
 @Preview
 @Composable
 fun PreviewCreditCard() {
-	val navHostController : NavHostController = rememberNavController()
-	ExpenseyTheme {
-		CreditCardScreen(navHostController = navHostController, 0)
-	}
+    val navHostController: NavHostController = rememberNavController()
+    ExpenseyTheme {
+        CreditCardScreen(navHostController = navHostController, 0)
+    }
 }

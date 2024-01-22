@@ -216,13 +216,14 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 	var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
 	var paymentMode = expense.paymentMethod
 
-	val bankAccountLiveData = if (expense.paymentId != null && expense.paymentId != 0) {
-		accountsViewModel.getBankAccountById(expense.paymentId !!)
-	} else {
-		null
+	if(expense.paymentMethod == "Bank Account") {
+		val bankAccountLiveData = if (expense.paymentId != null && expense.paymentId != 0) {
+			accountsViewModel.getBankAccountById(expense.paymentId !!)
+		} else {
+			null
+		}
+		bankAccountLiveData?.observeAsState()?.value?.let { bankAccount = it }
 	}
-
-	bankAccountLiveData?.observeAsState()?.value?.let { bankAccount = it }
 
 	if (bankAccount != null) {
 		paymentMode = bankAccount !!.accountName
@@ -232,14 +233,16 @@ fun ExpenseCard(expense : Expense, navController : NavHostController) {
 		mutableStateOf<CreditCard?>(null)
 	}
 
-	val creditCardLiveData = if (expense.paymentId != null && expense.paymentId != 0) {
-		accountsViewModel.fetchCreditCardById(expense.paymentId !!)
-	} else {
-		null
-	}
+	if(expense.paymentMethod == "Credit Card") {
+		val creditCardLiveData = if (expense.paymentId != null && expense.paymentId != 0) {
+			accountsViewModel.fetchCreditCardById(expense.paymentId !!)
+		} else {
+			null
+		}
 
-	if (creditCardLiveData != null) {
-		creditCardLiveData.observeAsState().value?.let { creditCard = it }
+		if (creditCardLiveData != null) {
+			creditCardLiveData.observeAsState().value?.let { creditCard = it }
+		}
 	}
 
 	if (creditCard != null) {

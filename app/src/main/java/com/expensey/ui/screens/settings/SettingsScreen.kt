@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,12 +19,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.expensey.ui.theme.Typography
+import com.expensey.util.DatabaseBackup
 
 @Composable
 fun SettingsScreen(navController : NavHostController) {
+    val context = LocalContext.current
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -80,6 +84,31 @@ fun SettingsScreen(navController : NavHostController) {
                     )
                     Text(
                         text = "Accounts",
+                        modifier = Modifier
+                            .padding(16.dp, 5.dp),
+                        style = Typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.clickable {
+                        // Call this function when you want to perform a backup
+                        DatabaseBackup.backupDatabase(context, "expensey_database")
+
+                    },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Backup,
+                        contentDescription = "Backup Data",
+                        modifier = Modifier
+                            .size(40.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Backup",
                         modifier = Modifier
                             .padding(16.dp, 5.dp),
                         style = Typography.bodyMedium,

@@ -14,7 +14,7 @@ object DatabaseBackup {
     fun backupDatabase(context: Context, dbName: String) {
         try {
             // Create a backup folder if it doesn't exist
-            val backupDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "BackupFolder")
+            val backupDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Expensey_Backup")
             if (!backupDir.exists()) {
                 backupDir.mkdirs()
             }

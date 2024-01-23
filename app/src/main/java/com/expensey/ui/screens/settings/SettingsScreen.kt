@@ -113,7 +113,7 @@ fun SettingsScreen(navController : NavHostController) {
                         tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Backup",
+                        text = "Local Backup",
                         modifier = Modifier
                             .padding(16.dp, 5.dp),
                         style = Typography.bodyMedium,

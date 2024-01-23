@@ -176,8 +176,9 @@ fun AccountsScreen() {
             ) {
                 Text(
                     text = "Accounts",
-                    modifier = Modifier.weight(1f),
-                    style = Typography.headlineLarge
+                    style = Typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontFamily = FontFamily(Font(R.font.archivo_black_regular))
                 )
                 Icon(imageVector = Icons.Outlined.MoreVert,
                     contentDescription = "Hamburger Icon",

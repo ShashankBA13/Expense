@@ -1,10 +1,6 @@
 package com.expensey.ui.screens.accounts
 
-import android.content.Context
-import android.health.connect.datatypes.units.Length
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
@@ -30,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -38,7 +32,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,458 +40,404 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.expensey.R
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
-import java.time.Duration
+import java.text.NumberFormat
 
 @Composable
 fun AccountsScreen() {
-	val viewModel : AccountsViewModel = viewModel()
-	val context = LocalContext.current
+    val viewModel: AccountsViewModel = viewModel()
+    val context = LocalContext.current
 
-	// Cash related Data
-	val cashLiveData by viewModel.cashLiveData.observeAsState()
-	var cash by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "") }
-	if (cashLiveData != null) {
-		cash = cashLiveData !!.amount.toString()
-	}
+    // Cash related Data
+    val cashLiveData by viewModel.cashLiveData.observeAsState()
+    var cash by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "") }
+    if (cashLiveData != null) {
+        cash = cashLiveData!!.amount.toString()
+    }
 
-	// BankAccounts related Data
-	val totalBalanceLiveData by viewModel.totalBalance.observeAsState()
-	var totalBankBalance by remember { mutableStateOf(totalBalanceLiveData?.toString() ?: "") }
-	if (totalBalanceLiveData != null) {
-		totalBankBalance = totalBalanceLiveData.toString()
-	}
+    // BankAccounts related Data
+    val totalBalanceLiveData by viewModel.totalBalance.observeAsState()
+    var totalBankBalance by remember { mutableStateOf(totalBalanceLiveData?.toString() ?: "") }
+    if (totalBalanceLiveData != null) {
+        totalBankBalance = totalBalanceLiveData.toString()
+    }
 
-	//Credit Card Related Data
-	val totalNoOfCreditCards by viewModel.totalNoOfCreditCard().observeAsState()
-	var totalCreditCards by remember { mutableStateOf(totalNoOfCreditCards?.toString() ?: "") }
-	if (totalNoOfCreditCards != null) {
-		totalCreditCards = totalNoOfCreditCards.toString()
-	}
+    //Credit Card Related Data
+    val totalNoOfCreditCards by viewModel.totalNoOfCreditCard().observeAsState()
+    var totalCreditCards by remember { mutableStateOf(totalNoOfCreditCards?.toString() ?: "") }
+    if (totalNoOfCreditCards != null) {
+        totalCreditCards = totalNoOfCreditCards.toString()
+    }
 
-	val totalLimitLiveData by viewModel.totalLimit().observeAsState()
-	var totalLimit by remember {
-		mutableStateOf(totalLimitLiveData?.toString() ?: "")
-	}
-	if (totalLimitLiveData != null) {
-		totalLimit = totalLimitLiveData.toString()
-	}
+    val totalLimitLiveData by viewModel.totalLimit().observeAsState()
+    var totalLimit by remember {
+        mutableStateOf(totalLimitLiveData?.toString() ?: "")
+    }
+    if (totalLimitLiveData != null) {
+        totalLimit = totalLimitLiveData.toString()
+    }
 
-	val totalAvailableLimitLiveData by viewModel.totalRemainingBalance().observeAsState()
-	var totalAvailableLimit by remember {
-		mutableStateOf(totalAvailableLimitLiveData?.toString() ?: "")
-	}
-	if (totalAvailableLimitLiveData != null) {
-		totalAvailableLimit = totalAvailableLimitLiveData.toString()
-	}
+    val totalAvailableLimitLiveData by viewModel.totalRemainingBalance().observeAsState()
+    var totalAvailableLimit by remember {
+        mutableStateOf(totalAvailableLimitLiveData?.toString() ?: "")
+    }
+    if (totalAvailableLimitLiveData != null) {
+        totalAvailableLimit = totalAvailableLimitLiveData.toString()
+    }
 
-	val balancePayable : Double = if (totalLimit != "" && totalAvailableLimit != "") {
-		totalLimit.toDouble() - totalAvailableLimit.toDouble()
-	} else {
-		0.0
-	}
+    val balancePayable: Double = if (totalLimit != "" && totalAvailableLimit != "") {
+        totalLimit.toDouble() - totalAvailableLimit.toDouble()
+    } else {
+        0.0
+    }
 
-	val assetsValue: Double = when {
-		cash.isNotBlank() -> {
-			if (totalBankBalance.isNotBlank()) {
-				cash.toDouble() + totalBankBalance.toDouble()
-			} else {
-				cash.toDouble()
-			}
-		}
-		totalBankBalance.isNotBlank() -> totalBankBalance.toDouble()
-		else -> 0.0
-	}
+    val assetsValue: Double = when {
+        cash.isNotBlank() -> {
+            if (totalBankBalance.isNotBlank()) {
+                cash.toDouble() + totalBankBalance.toDouble()
+            } else {
+                cash.toDouble()
+            }
+        }
 
-	val liabilitiesValue = balancePayable
-	val netWorth : Double = assetsValue - liabilitiesValue
-	val formattedNetWorth = "%.2f".format(netWorth)
-	"%.2f".format(liabilitiesValue)
+        totalBankBalance.isNotBlank() -> totalBankBalance.toDouble()
+        else -> 0.0
+    }
+
+    val netWorth: Double = assetsValue - balancePayable
+    val formattedNetWorth = formatNumber(number = netWorth)
+    "%.2f".format(balancePayable)
 
 
-	val textColor =
-		if (netWorth < 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+    val textColor =
+        if (netWorth < 0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
 
-	val assetsValueString = buildAnnotatedString {
-		withStyle(style = SpanStyle(fontSize = 20.sp)) {
-			append("₹")
-		}
-		withStyle(
-			style = SpanStyle(
-				fontSize = 26.sp,
-				fontWeight = FontWeight.Bold,
-				fontFamily = FontFamily.Monospace,
-				color = MaterialTheme.colorScheme.primary
-			)
-		) {
-			append(" ${"%.2f".format(assetsValue)} ")
-		}
-	}
+    val assetsValueString = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontSize = 20.sp)) {
+            append("₹")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            append(formatNumber(number = assetsValue))
+        }
+    }
 
-	val liabilitiesValueString = buildAnnotatedString {
-		withStyle(style = SpanStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)) {
-			append("₹")
-		}
-		withStyle(
-			style = SpanStyle(
-				fontSize = 26.sp,
-				fontWeight = FontWeight.Bold,
-				fontFamily = FontFamily.Monospace,
-				color = MaterialTheme.colorScheme.secondary
-			)
-		) {
-			append(" ${"%.2f".format(liabilitiesValue)} ")
-		}
-	}
+    val liabilitiesValueString = buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(
+                fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            append("₹")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        ) {
+            append(formatNumber(number = balancePayable))
+        }
+    }
 
-	val netWorthValueString = buildAnnotatedString {
-		withStyle(style = SpanStyle(fontSize = 20.sp, color = textColor)) {
-			append("₹")
-		}
-		withStyle(
-			style = SpanStyle(
-				fontSize = 28.sp,
-				fontWeight = FontWeight.Bold,
-				fontFamily = FontFamily.Monospace,
-				color = textColor
-			)
-		) {
-			append(" $formattedNetWorth")
-		}
-	}
+    val netWorthValueString = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontSize = 20.sp, color = textColor)) {
+            append("₹")
+        }
+        withStyle(
+            style = SpanStyle(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                color = textColor
+            )
+        ) {
+            append(" $formattedNetWorth")
+        }
+    }
 
-	Surface(
-		modifier = Modifier.fillMaxSize()
-	) {
-		Column {
-			Row(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(20.dp),
-				horizontalArrangement = Arrangement.SpaceBetween,
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				Text(
-					text = "Accounts",
-					modifier = Modifier
-						.weight(1f),
-					style = Typography.headlineLarge,
-					color = MaterialTheme.colorScheme.primary
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Accounts",
+                    modifier = Modifier.weight(1f),
+                    style = Typography.headlineLarge
+                )
+                Icon(imageVector = Icons.Outlined.MoreVert,
+                    contentDescription = "Hamburger Icon",
+                    modifier = Modifier.clickable {
+                        Toast.makeText(context, "Nothing here YET!!! 😂", Toast.LENGTH_SHORT).show()
+                    })
+            }
 
-				)
-				Icon(
-					imageVector = Icons.Outlined.MoreVert,
-					contentDescription = "Hamburger Icon",
-					modifier = Modifier.clickable {
-						Toast.makeText(context, "Nothing here YET!!! 😂", Toast.LENGTH_SHORT).show()
-					}
-				)
-			}
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp, 10.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
 
-			Card(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(20.dp, 10.dp),
-				colors = CardDefaults.cardColors(
-					containerColor = MaterialTheme.colorScheme.background
-				)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Assets",
+                            style = Typography.bodyLarge,
+                            modifier = Modifier.padding(top = 10.dp, start = 10.dp)
+                        )
+                        Text(
+                            text = assetsValueString, style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
+                                color = MaterialTheme.colorScheme.primary
+                            ), modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp)
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Liabilities",
+                            modifier = Modifier.padding(top = 10.dp, start = 10.dp),
+                            style = Typography.bodyLarge
+                        )
+                        Text(
+                            text = liabilitiesValueString,
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp),
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                    }
 
-			) {
-				Row(
-					modifier = Modifier
-						.fillMaxWidth()
-						.height(70.dp),
-					horizontalArrangement = Arrangement.SpaceAround,
-				) {
-					Column(
-						verticalArrangement = Arrangement.Center,
-						horizontalAlignment = Alignment.CenterHorizontally
-					) {
-						Text(
-							text = "Assets",
-							style = Typography.bodyLarge,
-							modifier = Modifier
-								.padding(top = 10.dp, start = 10.dp)
-						)
-						Text(
-							text = assetsValueString,
-							style = TextStyle(
-								fontSize = 30.sp,
-								fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
-								color = MaterialTheme.colorScheme.primary
-							),
-							modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp)
-						)
-					}
-					Column(
-						verticalArrangement = Arrangement.Center,
-						horizontalAlignment = Alignment.CenterHorizontally
-					) {
-						Text(
-							text = "Liabilities",
-							modifier = Modifier
-								.padding(top = 10.dp, start = 10.dp),
-							style = Typography.bodyLarge
-						)
-						Text(
-							text = liabilitiesValueString,
-							modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 5.dp),
-							style = TextStyle(
-								fontSize = 30.sp,
-								fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
-								color = MaterialTheme.colorScheme.secondary
-							)
-						)
-					}
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Net Worth",
+                            modifier = Modifier.padding(top = 10.dp, start = 10.dp, end = 10.dp),
+                            style = Typography.bodyLarge
+                        )
+                        Text(
+                            text = netWorthValueString,
+                            modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 10.dp),
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
+                                color = textColor
+                            )
+                        )
+                    }
+                }
+            }
 
-					Column(
-						verticalArrangement = Arrangement.Center,
-						horizontalAlignment = Alignment.CenterHorizontally
-					) {
-						Text(
-							text = "Net Worth",
-							modifier = Modifier
-								.padding(top = 10.dp, start = 10.dp, end = 10.dp),
-							style = Typography.bodyLarge
-						)
-						Text(
-							text = netWorthValueString,
-							modifier = Modifier.padding(start = 10.dp, top = 5.dp, end = 10.dp),
-							style = TextStyle(
-								fontSize = 30.sp,
-								fontFamily = FontFamily(Font(R.font.archivo_black_regular)),
-								color = textColor
-							)
-						)
-					}
-				}
-			}
-
-			Cash()
-			BankAccount()
-			CreditCards()
-		}
-	}
+            Cash()
+            BankAccount()
+            CreditCards()
+        }
+    }
 }
 
 @Preview
 @Composable
 fun AccountsScreenPreview() {
-	ExpenseyTheme {
-		AccountsScreen()
-	}
+    ExpenseyTheme {
+        AccountsScreen()
+    }
 }
 
 @Composable
 fun Cash() {
-	val viewModel : AccountsViewModel = viewModel()
-	val cashLiveData by viewModel.cashLiveData.observeAsState()
+    val viewModel: AccountsViewModel = viewModel()
+    val cashLiveData by viewModel.cashLiveData.observeAsState()
 
-	var text by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "0.0") }
-	if (cashLiveData != null) {
-		text = cashLiveData !!.amount.toString()
-	}
+    var text by remember { mutableStateOf(cashLiveData?.amount?.toString() ?: "0.0") }
+    if (cashLiveData != null) {
+        text = cashLiveData!!.amount.toString()
+    }
 
-	Column {
-		Row(
-			modifier = Modifier
-				.height(100.dp)
-				.fillMaxWidth()
-				.padding(20.dp)
-				.border(
-					1.dp,
-					MaterialTheme.colorScheme.primaryContainer,
-					shape = RoundedCornerShape(5.dp)
-				),
-			horizontalArrangement = Arrangement.SpaceBetween,
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			Text(
-				text = "Cash",
-				modifier = Modifier.padding(10.dp),
-				style = Typography.bodyLarge
-			)
-			Text(
-				text = "₹ $text",
-				modifier = Modifier.padding(10.dp),
-				style = TextStyle(
-					fontSize = 20.sp,
-					fontWeight = FontWeight.SemiBold,
-					fontFamily = FontFamily.Monospace
-				)
-			)
-		}
-	}
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Cash", style = Typography.titleLarge
+
+            )
+            Text(
+                text = "₹ ${formatNumber(text.toDouble())}", style = Typography.headlineSmall
+            )
+        }
+    }
 }
 
 @Composable
 fun BankAccount() {
-	val viewModel: AccountsViewModel = viewModel()
+    val viewModel: AccountsViewModel = viewModel()
+    val totalBalance by viewModel.totalBalance.observeAsState()
 
-	val totalBalance by viewModel.totalBalance.observeAsState()
+    var text by remember { mutableStateOf(totalBalance?.toString() ?: " ₹  0.0") }
+    if (totalBalance != null) {
+        text = formatNumber(totalBalance!!.toDouble())
+    }
 
-	var text by remember { mutableStateOf(totalBalance?.toString() ?: " ₹  0.0") }
-
-	if (totalBalance != null) {
-		text = "₹ " + totalBalance.toString()
-	}
-
-	Column {
-		Row(
-			modifier = Modifier
-				.height(100.dp)
-				.fillMaxWidth()
-				.padding(20.dp)
-				.border(
-					1.dp,
-					MaterialTheme.colorScheme.primaryContainer,
-					shape = RoundedCornerShape(5.dp)
-				),
-			horizontalArrangement = Arrangement.SpaceBetween,
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			Text(
-				text = "Accounts",
-				modifier = Modifier.padding(10.dp),
-				style = Typography.bodyLarge
-			)
-			Text(
-				text = text,
-				modifier = Modifier.padding(10.dp),
-				style = TextStyle(
-					fontSize = 20.sp,
-					fontWeight = FontWeight.SemiBold,
-					fontFamily = FontFamily.Monospace
-				)
-			)
-		}
-	}
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Accounts",
+                style = Typography.titleLarge
+            )
+            Text(
+                text = "₹ $text",
+                style = Typography.headlineSmall,
+            )
+        }
+    }
 }
 
 @Composable
 fun CreditCards() {
-	val viewModel : AccountsViewModel = viewModel()
+    val viewModel: AccountsViewModel = viewModel()
+    val totalNoOfCreditCards by viewModel.totalNoOfCreditCard().observeAsState()
+    var totalCreditCards by remember { mutableStateOf(totalNoOfCreditCards?.toString() ?: "") }
+    if (totalNoOfCreditCards != null) {
+        totalCreditCards = totalNoOfCreditCards.toString()
+    }
 
-	val totalNoOfCreditCards by viewModel.totalNoOfCreditCard().observeAsState()
-	var totalCreditCards by remember { mutableStateOf(totalNoOfCreditCards?.toString() ?: "") }
-	if (totalNoOfCreditCards != null) {
-		totalCreditCards = totalNoOfCreditCards.toString()
-	}
+    val totalLimitLiveData by viewModel.totalLimit().observeAsState()
+    var totalLimit by remember { mutableStateOf(totalLimitLiveData?.toString() ?: "0.0") }
+    if (totalLimitLiveData != null) {
+        totalLimit = totalLimitLiveData.toString()
+    }
 
-	val totalLimitLiveData by viewModel.totalLimit().observeAsState()
-	var totalLimit by remember {
-		mutableStateOf(totalLimitLiveData?.toString() ?: "0.0")
-	}
-	if (totalLimitLiveData != null) {
-		totalLimit = totalLimitLiveData.toString()
-	}
+    val totalAvailableLimitLiveData by viewModel.totalRemainingBalance().observeAsState()
+    var totalAvailableLimit by remember {
+        mutableStateOf(totalAvailableLimitLiveData?.toString() ?: "0.0")
+    }
+    if (totalAvailableLimitLiveData != null) {
+        totalAvailableLimit = totalAvailableLimitLiveData.toString()
+    }
 
-	val totalAvailableLimitLiveData by viewModel.totalRemainingBalance().observeAsState()
-	var totalAvailableLimit by remember {
-		mutableStateOf(totalAvailableLimitLiveData?.toString() ?: "0.0")
-	}
-	if (totalAvailableLimitLiveData != null) {
-		totalAvailableLimit = totalAvailableLimitLiveData.toString()
-	}
+    val balancePayable : Double = if (totalLimit != "" && totalAvailableLimit != "") {
+        totalLimit.toDouble() - totalAvailableLimit.toDouble()
+    } else {
+        0.0
+    }
 
-	val balancePayable = if (totalLimit != "" && totalAvailableLimit != "") {
-		totalLimit.toDouble() - totalAvailableLimit.toDouble()
-	} else {
-		"0.0"
-	}
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 10.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "Credit Cards",
+                style = Typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = "Across $totalCreditCards Cards", modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
 
-	Column(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(16.dp)
-			.border(
-				1.dp,
-				MaterialTheme.colorScheme.primaryContainer,
-				shape = RoundedCornerShape(5.dp)
-			)
-			.height(150.dp)
-	) {
-		Row(
-			modifier = Modifier
-				.padding(10.dp)
-				.fillMaxWidth(),
-			horizontalArrangement = Arrangement.SpaceBetween
-		) {
-			Text(
-				text = "Credit Cards",
-				style = Typography.bodyLarge,
-				textAlign = TextAlign.Start
-			)
-			Text(
-				text = "Across $totalCreditCards Cards",
-				style = Typography.bodyLarge,
-				color = Color.Gray,
-				textAlign = TextAlign.End
-			)
-		}
+        Column(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.End
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Total Limit", style = Typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 5.dp)
+                    )
+                    Text(
+                        text = "₹ ${formatNumber(totalLimit.toDouble())}", style = Typography.headlineSmall
+                    )
+                }
+                Column {
+                    Text(
+                        text = "Available Limit", style = Typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 5.dp)
+                    )
+                    Text(
+                        text = "₹ ${formatNumber(totalAvailableLimit.toDouble())}", style = Typography.headlineSmall
+                    )
+                }
+                Column {
+                    Text(
+                        text = "Total Payable", style = Typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 5.dp)
+                    )
+                    Text(
+                        text = "₹ ${formatNumber(balancePayable)}",
+                        style = Typography.headlineSmall
+                    )
+                }
+            }
+        }
+    }
+}
 
-		Row(
-			modifier = Modifier
-				.padding(10.dp)
-				.fillMaxWidth(),
-			horizontalArrangement = Arrangement.SpaceBetween
-		) {
-			Text(
-				text = "Total Limit",
-				style = Typography.bodyMedium,
-				textAlign = TextAlign.Start
-			)
-			Text(
-				text = "₹ $totalLimit",
-				style = TextStyle(
-					fontSize = 20.sp,
-					fontWeight = FontWeight.SemiBold,
-					fontFamily = FontFamily.Monospace
-				),
-				modifier = Modifier.padding(end = 10.dp)
-			)
-		}
-		Row(
-			modifier = Modifier
-				.padding(10.dp)
-				.fillMaxWidth(),
-			horizontalArrangement = Arrangement.SpaceBetween
-		) {
-			Text(
-				text = "Available Limit",
-				style = Typography.bodyMedium,
-				textAlign = TextAlign.Start
-			)
-			Text(
-				text = "₹ $totalAvailableLimit",
-				style = TextStyle(
-					fontSize = 20.sp,
-					fontWeight = FontWeight.SemiBold,
-					fontFamily = FontFamily.Monospace
-				),
-				modifier = Modifier.padding(end = 10.dp)
-			)
-		}
 
-		Row(
-			modifier = Modifier
-				.padding(10.dp)
-				.fillMaxWidth(),
-			horizontalArrangement = Arrangement.SpaceBetween
-		) {
-			Text(
-				text = "Total Payable",
-				style = Typography.bodyMedium,
-				textAlign = TextAlign.Start
-			)
-			Text(
-				text = "₹ ${"%.2f".format(balancePayable)}",
-				style = TextStyle(
-					fontSize = 20.sp,
-					fontWeight = FontWeight.SemiBold,
-					fontFamily = FontFamily.Monospace
-				),
-				modifier = Modifier.padding(end = 10.dp)
-			)
-		}
-	}
+@Composable
+fun formatNumber(number: Double): String {
+    val formatter = NumberFormat.getInstance()
+    return formatter.format(number)
 }

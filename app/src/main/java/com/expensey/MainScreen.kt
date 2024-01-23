@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -102,9 +103,6 @@ fun BottomNavigationItem(
 	label : @Composable () -> Unit,
 	onClick : () -> Unit
 ) {
-	// You can define the layout and behavior for a single BottomNavigationItem here
-	// For example, you can create a clickable area with the icon and label.
-
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center
@@ -112,8 +110,7 @@ fun BottomNavigationItem(
 		IconButton(onClick = onClick) {
 			icon()
 		}
-		// Always display the label (screen name) below the icon
-		label()
+//		label()
 	}
 }
 
@@ -121,23 +118,19 @@ fun BottomNavigationItem(
 fun BottomNavigation(
 	content : @Composable () -> Unit,
 ) {
-	val colorScheme = MaterialTheme.colorScheme
-	val backgroundColor = if (isSystemInDarkTheme()) {
-		colorScheme.background
-	} else {
-		colorScheme.surface
-	}
 
 	Box(
 		modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp)
+			.background(NavigationBarDefaults.containerColor),
+
 	) {
 		Row(
 			horizontalArrangement = Arrangement.SpaceEvenly,
 			modifier = Modifier
                 .fillMaxWidth()
-                .background(backgroundColor)
+                .background(NavigationBarDefaults.containerColor)
 		) {
 			content()
 		}

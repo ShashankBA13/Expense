@@ -117,9 +117,6 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
         oldPaymentMethodState = TextFieldValue(expense!!.paymentMethod)
         oldPaymentIdState = TextFieldValue(expense!!.paymentId.toString())
 
-        Log.d(TAG, "Old Payment Id State: $oldPaymentIdState")
-        Log.d(TAG, "Old Payment Method State: $oldPaymentMethodState")
-
         val categoryIdEdit = expense!!.categoryId
         val categoryFlow = if (categoryIdEdit != null) {
             categoryViewModel.getCategoryById(categoryIdEdit)
@@ -142,20 +139,16 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
         when (oldPaymentMethodState.text) {
             "Bank Account" -> {
                 val bankAccountLiveData = accountsViewModel.getBankAccountById(expense!!.paymentId)
-
                 bankAccountLiveData.observeAsState().value?.let { bankAccount = it }
-
                 selectedPaymentModeDisplay = bankAccount?.accountName.toString()
-
             }
+
             "Credit Card" -> {
                 val creditCardLiveData = accountsViewModel.fetchCreditCardById(expense!!.paymentId)
-
                 creditCardLiveData.observeAsState().value?.let { creditCard = it }
-
                 selectedPaymentModeDisplay = creditCard?.name.toString()
-
             }
+
             "Cash" -> {
                 selectedPaymentModeDisplay = (selectedPaymentModeDisplay.takeIf { it.isNotBlank() }
                     ?: cashLiveData?.name).toString()
@@ -187,11 +180,13 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                             when (oldPaymentMethodState.text) {
                                 "Cash" -> {
                                     val updateCash = cashLiveData
-                                    updateCash?.amount = expense?.let { updateCash?.amount?.plus(it.amount) }!!
+                                    updateCash?.amount =
+                                        expense?.let { updateCash?.amount?.plus(it.amount) }!!
                                     if (updateCash != null) {
                                         accountsViewModel.updateCash(updateCash)
                                     }
                                 }
+
                                 "Bank Account" -> {
                                     expense?.let {
                                         expenseViewModel.addBackAccountBalanceById(
@@ -199,6 +194,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                         )
                                     }
                                 }
+
                                 "Credit Card" -> {
                                     expense?.let {
                                         accountsViewModel.addBackDedcutedAmountInCreditCardById(
@@ -299,7 +295,8 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                     ExposedDropdownMenu(
                         expanded = isCategoryMenuExpanded, onDismissRequest = {
                             isCategoryMenuExpanded = false
-                        }, modifier = Modifier.fillMaxWidth()
+                        }, modifier = Modifier.fillMaxWidth(),
+
                     ) {
                         categories.forEach { category ->
                             DropdownMenuItem(
@@ -429,7 +426,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                 Text(
                                     text = "₹ ${cashLiveData?.amount}",
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.Gray // Adjust color based on your design
+                                    color = Color.Gray
                                 )
                             }
                         })
@@ -479,14 +476,17 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                 when (oldPaymentMethodState.text) {
                                     "Cash" -> {
                                         val updateCash = cashLiveData
-                                        updateCash?.amount = updateCash?.amount?.plus(amountToAddBack)!!
+                                        updateCash?.amount =
+                                            updateCash?.amount?.plus(amountToAddBack)!!
                                         accountsViewModel.updateCash(updateCash)
                                     }
+
                                     "Bank Account" -> {
                                         expenseViewModel.addBackAccountBalanceById(
                                             oldPaymentIdState.text.toInt(), amountToAddBack
                                         )
                                     }
+
                                     "Credit Card" -> {
                                         accountsViewModel.addBackDedcutedAmountInCreditCardById(
                                             oldPaymentIdState.text.toInt(), amountToAddBack
@@ -497,18 +497,19 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                 when (newPaymentModeState) {
                                     "Cash" -> {
                                         val updateCash = cashLiveData
-                                        updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
+                                        updateCash?.amount =
+                                            updateCash?.amount?.minus(amountToDeduct)!!
                                         accountsViewModel.updateCash(updateCash)
                                     }
+
                                     "Bank Account" -> {
-                                        Log.d(TAG, "ExpenseScreen: Inside Bank Account")
                                         accountsViewModel.updateAccountBalanceById(
                                             updatedPaymentIdState.text.toInt(),
                                             amountToDeduct
                                         )
                                     }
+
                                     "Credit Card" -> {
-                                        Log.d(TAG, "ExpenseScreen: Inside Credit Card")
                                         accountsViewModel.updateCurrentBalanceById(
                                             updatedPaymentIdState.text.toInt(),
                                             amountToDeduct
@@ -532,16 +533,18 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                                 when (newPaymentMethodState.text) {
                                     "Cash" -> {
                                         val updateCash = cashLiveData
-                                        updateCash?.amount = updateCash?.amount?.minus(amountToDeduct)!!
-
+                                        updateCash?.amount =
+                                            updateCash?.amount?.minus(amountToDeduct)!!
                                         accountsViewModel.updateCash(updateCash)
                                     }
+
                                     "Bank Account" -> {
                                         accountsViewModel.updateAccountBalanceById(
                                             updatedPaymentIdState.text.toInt(),
                                             amountToDeduct
                                         )
                                     }
+
                                     "Credit Card" -> {
                                         accountsViewModel.updateCurrentBalanceById(
                                             updatedPaymentIdState.text.toInt(),

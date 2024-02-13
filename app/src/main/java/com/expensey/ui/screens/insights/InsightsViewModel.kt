@@ -9,8 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.expensey.ExpenseyApplication
 import com.expensey.data.models.CategoryCount
+import com.expensey.data.models.Expense
 import com.expensey.data.models.ExpenseSummary
 import com.expensey.data.repository.ExpenseRepository
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class InsightsViewModel(application: Application) : AndroidViewModel(application) {
@@ -18,12 +21,29 @@ class InsightsViewModel(application: Application) : AndroidViewModel(application
     private val expenseRepository: ExpenseRepository
     private val _mostSpentCategoryCountList = MutableLiveData<List<ExpenseSummary>>()
     val mostSpentCategoryCountList: LiveData<List<ExpenseSummary>>
+    val expenseFlowList : Flow<List<Expense>>
+
 
     init {
         val expenseyApplication = application as ExpenseyApplication
         val expenseDao = expenseyApplication.database.expenseDao()
         expenseRepository = ExpenseRepository(expenseDao, expenseyApplication.baseContext)
+        expenseFlowList = expenseRepository.expenseFlowList
 
         mostSpentCategoryCountList = expenseRepository.getMostSpentCategoryCout()
     }
+
+    suspend fun getSpendsByMonth(month : String): List<Expense> {
+        val expenseList = mutableListOf<Expense>()
+        expenseFlowList.collect { expenses ->
+            val filteredExpenses = expenses.filter { expense ->
+                val expenseMonth = expense.date.month.toString().padStart(2, '0')
+                expenseMonth == month
+            }
+            expenseList.addAll(filteredExpenses)
+            Log.d("Insights View Model: ", expenseList.toString())
+        }
+        return expenseList
+    }
+
 }

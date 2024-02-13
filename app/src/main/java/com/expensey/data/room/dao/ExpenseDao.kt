@@ -45,4 +45,8 @@ abstract class ExpenseDao : BaseDao<Expense> {
 			ORDER BY SUM(amount) DESC
 	""")
 	abstract fun mostSpentCategoryListDesc() : LiveData<List<ExpenseSummary>>
+
+	@Query("SELECT * FROM expenses WHERE strftime('%m', date) = :month ORDER BY date")
+	abstract fun getSpendsByMonth(month: String) : LiveData<List<Expense>>
+
 }

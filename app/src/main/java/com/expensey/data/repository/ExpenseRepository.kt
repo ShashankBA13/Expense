@@ -49,4 +49,8 @@ class ExpenseRepository(private val expenseDao : ExpenseDao, private val context
 	fun getMostSpentCategoryCout() : LiveData<List<ExpenseSummary>> {
 		return expenseDao.mostSpentCategoryListDesc()
 	}
+
+	fun getSpendsByMonth(month : String) : LiveData<List<Expense>> {
+		return expenseDao.getSpendsByMonth(month);
+	}
 }

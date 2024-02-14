@@ -30,7 +30,7 @@ fun BottomNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomBarScreen.Accounts.route) {
-            AccountsScreen()
+            AccountsScreen(navController)
         }
 
         composable(route = BottomBarScreen.Settings.route) {

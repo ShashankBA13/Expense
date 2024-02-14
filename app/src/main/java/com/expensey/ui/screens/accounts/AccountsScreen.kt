@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -37,13 +40,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.expensey.R
 import com.expensey.ui.theme.ExpenseyTheme
 import com.expensey.ui.theme.Typography
 import java.text.NumberFormat
 
 @Composable
-fun AccountsScreen() {
+fun AccountsScreen(navController: NavController) {
     val viewModel: AccountsViewModel = viewModel()
     val context = LocalContext.current
 
@@ -180,11 +185,12 @@ fun AccountsScreen() {
                     color = MaterialTheme.colorScheme.primary,
                     fontFamily = FontFamily(Font(R.font.archivo_black_regular))
                 )
-                Icon(imageVector = Icons.Outlined.MoreVert,
+                HamBurgerMenu(
+                    icon = Icons.Outlined.MoreVert,
                     contentDescription = "Hamburger Icon",
-                    modifier = Modifier.clickable {
-                        Toast.makeText(context, "Nothing here YET!!! 😂", Toast.LENGTH_SHORT).show()
-                    })
+                    items = listOf("Item 1", "Item 2", "Item 3"),
+                    navController = navController
+                )
             }
 
             Card(
@@ -265,14 +271,6 @@ fun AccountsScreen() {
             BankAccount()
             CreditCards()
         }
-    }
-}
-
-@Preview
-@Composable
-fun AccountsScreenPreview() {
-    ExpenseyTheme {
-        AccountsScreen()
     }
 }
 
@@ -441,4 +439,39 @@ fun CreditCards() {
 fun formatNumber(number: Double): String {
     val formatter = NumberFormat.getInstance()
     return formatter.format(number)
+}
+
+@Composable
+fun HamBurgerMenu(
+    icon: ImageVector,
+    contentDescription: String,
+    items: List<String>,
+    navController: NavController
+) {
+    // State to track if dropdown menu is expanded or not
+    val expanded = remember { mutableStateOf(false) }
+
+    // State to keep track of the selected item
+    val selectedItem = remember { mutableStateOf("") }
+
+    Column {
+        // Icon with click listener to show/hide dropdown menu
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            modifier = Modifier.clickable {
+                expanded.value = true
+            }
+        )
+
+        // Dropdown menu
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false }
+        ) {
+
+                DropdownMenuItem(text = { Text(text = "Configure Accounts") }, onClick = { navController.navigate("accountsConfiguration") })
+
+        }
+    }
 }

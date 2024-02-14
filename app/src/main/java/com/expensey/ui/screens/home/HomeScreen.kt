@@ -332,7 +332,6 @@ private fun getGreeting(): String {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun groupExpensesByDate(expenses: List<Expense>): List<Pair<String, List<Expense>>> {
-    Log.d("HomeScreen", "groupExpensesByDate: $expenses")
 
     // Group expenses by date
     val groupedExpenses = expenses.groupBy {
@@ -351,8 +350,6 @@ fun groupExpensesByDate(expenses: List<Expense>): List<Pair<String, List<Expense
         }
         formattedDate to expenses.sortedByDescending { it.date }
     }
-
-    Log.d("HomeScreen Descending", "groupExpensesByDate: $formattedAndSortedGroups")
 
     return formattedAndSortedGroups
 }

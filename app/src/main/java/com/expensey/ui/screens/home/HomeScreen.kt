@@ -1,6 +1,7 @@
 package com.expensey.ui.screens.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -66,6 +67,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.log
 
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -102,16 +104,6 @@ fun HomeScreen(navController: NavHostController) {
                     style = Typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                if (totalExpense != null) {
-                    Text(
-                        text = "₹ $totalExpense",
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.padding(end = 20.dp),
-                        style = Typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontFamily = FontFamily(Font(R.font.archivo_black_regular))
-                    )
-                }
             }
 
             if (groupedExpenses.isEmpty()) {
@@ -156,8 +148,8 @@ fun HomeScreen(navController: NavHostController) {
                     stickyHeader {
                         Row(
                             modifier = Modifier
-								.fillMaxWidth()
-								.padding(start = 20.dp, top = 20.dp, end = 20.dp),
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, top = 20.dp, end = 20.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
@@ -182,9 +174,10 @@ fun HomeScreen(navController: NavHostController) {
             FloatingActionButton(
                 onClick = {
                     navController.navigate("expense/0")
-                }, modifier = Modifier.padding(bottom = 70.dp)
-					.align(Alignment.CenterHorizontally),
-				containerColor = MaterialTheme.colorScheme.primary
+                }, modifier = Modifier
+                    .padding(bottom = 70.dp)
+                    .align(Alignment.CenterHorizontally),
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(Icons.Filled.Add, "Floating action button.")
             }
@@ -264,14 +257,14 @@ fun ExpenseCard(expense: Expense, navController: NavHostController) {
 
     Card(
         modifier = Modifier
-			.fillMaxWidth()
-			.padding(16.dp, top = 10.dp, end = 16.dp)
-			.clickable { navController.navigate("expense/${expense.expenseId}") },
+            .fillMaxWidth()
+            .padding(16.dp, top = 10.dp, end = 16.dp)
+            .clickable { navController.navigate("expense/${expense.expenseId}") },
     ) {
         Row(
             modifier = Modifier
-				.fillMaxWidth()
-				.height(70.dp),
+                .fillMaxWidth()
+                .height(70.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -339,11 +332,27 @@ private fun getGreeting(): String {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun groupExpensesByDate(expenses: List<Expense>): List<Pair<String, List<Expense>>> {
+    Log.d("HomeScreen", "groupExpensesByDate: $expenses")
+
+    // Group expenses by date
     val groupedExpenses = expenses.groupBy {
-        DateTimeFormatter.ofPattern("dd MMM yyyy")
-            .format(it.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+        LocalDate.from(it.date.toInstant().atZone(ZoneId.systemDefault()))
     }
-    return groupedExpenses.map { (date, expenses) ->
-        date to expenses.sortedByDescending { it.date }
-    }.sortedByDescending { it.first }
+
+    // Sort the groups by date in descending order
+    val sortedGroupedExpenses = groupedExpenses.toList().sortedByDescending { (date, _) -> date }
+
+    // Map each group to a pair of formatted date string and sorted expenses list
+    val formattedAndSortedGroups = sortedGroupedExpenses.map { (date, expenses) ->
+        val formattedDate = when {
+            date == LocalDate.now() -> "Today"
+            date == LocalDate.now().minusDays(1) -> "Yesterday"
+            else -> DateTimeFormatter.ofPattern("dd MMM yyyy").format(date)
+        }
+        formattedDate to expenses.sortedByDescending { it.date }
+    }
+
+    Log.d("HomeScreen Descending", "groupExpensesByDate: $formattedAndSortedGroups")
+
+    return formattedAndSortedGroups
 }

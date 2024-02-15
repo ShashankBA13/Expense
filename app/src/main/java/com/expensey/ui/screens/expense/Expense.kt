@@ -116,6 +116,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
         descriptionState = TextFieldValue(expense!!.description)
         oldPaymentMethodState = TextFieldValue(expense!!.paymentMethod)
         oldPaymentIdState = TextFieldValue(expense!!.paymentId.toString())
+        updatedPaymentIdState = TextFieldValue(expense!!.paymentId.toString())
 
         val categoryIdEdit = expense!!.categoryId
         val categoryFlow = if (categoryIdEdit != null) {

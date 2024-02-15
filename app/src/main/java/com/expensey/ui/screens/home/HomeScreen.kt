@@ -1,14 +1,12 @@
 package com.expensey.ui.screens.home
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -67,7 +64,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.log
 
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -86,88 +82,95 @@ fun HomeScreen(navController: NavHostController) {
     val greeting = getGreeting()
 
     val groupedExpenses = groupExpensesByDate(expenseList)
-
-    Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
+        Surface(
+            color = MaterialTheme.colorScheme.background
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = greeting,
-                    modifier = Modifier.padding(20.dp),
-                    style = Typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            if (groupedExpenses.isEmpty()) {
-                Image(
-                    painter = painterResource(id = R.drawable.savings_money_bank_banking_woman),
-                    contentDescription = "Savings illustration",
-                    modifier = Modifier.height(500.dp)
-                )
                 Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Start adding expenses by clicking the add button below",
-                        style = TextStyle(
-                            textAlign = TextAlign.Center,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        text = greeting,
+                        modifier = Modifier.padding(20.dp),
+                        style = Typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
-            }
 
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
-                groupedExpenses.forEach { (date, expenses) ->
-
-                    val today = LocalDate.now()
-                    val yesterday = today.minusDays(1)
-
-                    val displayDate = when {
-                        date.equals(today.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))) -> "Today"
-                        date.equals(yesterday.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))) -> "Yesterday"
-                        else -> date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                    }
-
-                    var totalSpendsPerDay = 0.0
-                    expenses.forEach { expense ->
-                        totalSpendsPerDay += expense.amount
-                    }
-
-                    stickyHeader {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, top = 20.dp, end = 20.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = displayDate,
-                                style = Typography.headlineSmall,
-                                textAlign = TextAlign.Start
+                if (groupedExpenses.isEmpty()) {
+                    Image(
+                        painter = painterResource(id = R.drawable.savings_money_bank_banking_woman),
+                        contentDescription = "Savings illustration",
+                        modifier = Modifier.height(500.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Start adding expenses by clicking the add button below",
+                            style = TextStyle(
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.primary
                             )
-                            Text(
-                                text = "₹ $totalSpendsPerDay",
-                                style = Typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontFamily = FontFamily(Font(R.font.archivo_black_regular))
-                            )
+                        )
+                    }
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(1f)
+                        .padding(bottom = 70.dp)
+                ) {
+                    groupedExpenses.forEach { (date, expenses) ->
+
+                        val today = LocalDate.now()
+                        val yesterday = today.minusDays(1)
+
+                        val displayDate = when {
+                            date.equals(today.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))) -> "Today"
+                            date.equals(yesterday.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))) -> "Yesterday"
+                            else -> date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                        }
+
+                        var totalSpendsPerDay = 0.0
+                        expenses.forEach { expense ->
+                            totalSpendsPerDay += expense.amount
+                        }
+
+                        stickyHeader {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 20.dp, top = 20.dp, end = 20.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = displayDate,
+                                    style = Typography.headlineSmall,
+                                    textAlign = TextAlign.Start
+                                )
+                                Text(
+                                    text = "₹ $totalSpendsPerDay",
+                                    style = Typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontFamily = FontFamily(Font(R.font.archivo_black_regular))
+                                )
+                            }
+                        }
+                        items(expenses) { expense ->
+                            ExpenseCard(expense = expense, navController)
                         }
                     }
-                    items(expenses) { expense ->
-                        ExpenseCard(expense = expense, navController)
-                    }
+
                 }
             }
 
@@ -175,12 +178,12 @@ fun HomeScreen(navController: NavHostController) {
                 onClick = {
                     navController.navigate("expense/0")
                 }, modifier = Modifier
-                    .padding(bottom = 70.dp)
-                    .align(Alignment.CenterHorizontally),
-                containerColor = MaterialTheme.colorScheme.primary
+                    .padding(bottom = 75.dp).align(Alignment.BottomCenter),
+                containerColor = MaterialTheme.colorScheme.tertiary
             ) {
                 Icon(Icons.Filled.Add, "Floating action button.")
             }
+
         }
     }
 }

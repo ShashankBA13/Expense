@@ -1,6 +1,7 @@
 package com.expensey.ui.screens.insights
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.outlined.FireTruck
+import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -103,7 +106,7 @@ fun TotalsProvider() {
 		modifier = Modifier.fillMaxWidth(),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		TotalCard(icon = Icons.Default.AttachMoney, label = "Total Spends", value = totalExpense?.toString())
+		TotalCard(icon = Icons.Outlined.Wallet, label = "Total Spends", value = totalExpense?.toString())
 		Spacer(modifier = Modifier.height(16.dp))
 		mostSpentCategoryCountList?.let {
 			if (it.isNotEmpty()) {
@@ -120,7 +123,7 @@ fun TotalCard(icon: ImageVector, label: String, value: String?) {
 	Card(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(16.dp)
+			.padding(16.dp).clickable {}
 	) {
 		Column(
 			modifier = Modifier

@@ -5,10 +5,12 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomBarScreen(
@@ -34,8 +36,8 @@ sealed class BottomBarScreen(
     object Accounts : BottomBarScreen(
         route = "accounts",
         title = "Accounts",
-        iconFilled = Icons.Filled.AccountBalance,
-        iconOutlined = Icons.Outlined.AccountBalance
+        iconFilled = Icons.Filled.Wallet,
+        iconOutlined = Icons.Outlined.Wallet
     )
 
     object Settings : BottomBarScreen(

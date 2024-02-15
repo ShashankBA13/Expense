@@ -118,7 +118,7 @@ fun AccountsScreen(navController: NavController) {
 
     val assetsValueString = buildAnnotatedString {
         withStyle(style = SpanStyle(fontSize = 20.sp)) {
-            append("₹")
+            append("₹ ")
         }
         withStyle(
             style = SpanStyle(
@@ -138,7 +138,7 @@ fun AccountsScreen(navController: NavController) {
                 fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary
             )
         ) {
-            append("₹")
+            append("₹ ")
         }
         withStyle(
             style = SpanStyle(
@@ -362,7 +362,7 @@ fun CreditCards() {
         totalAvailableLimit = totalAvailableLimitLiveData.toString()
     }
 
-    val balancePayable : Double = if (totalLimit != "" && totalAvailableLimit != "") {
+    val balancePayable: Double = if (totalLimit != "" && totalAvailableLimit != "") {
         totalLimit.toDouble() - totalAvailableLimit.toDouble()
     } else {
         0.0
@@ -407,7 +407,8 @@ fun CreditCards() {
                         modifier = Modifier.padding(bottom = 5.dp)
                     )
                     Text(
-                        text = "₹ ${formatNumber(totalLimit.toDouble())}", style = Typography.headlineSmall
+                        text = "₹ ${formatNumber(totalLimit.toDouble())}",
+                        style = Typography.headlineSmall
                     )
                 }
                 Column {
@@ -416,7 +417,8 @@ fun CreditCards() {
                         modifier = Modifier.padding(bottom = 5.dp)
                     )
                     Text(
-                        text = "₹ ${formatNumber(totalAvailableLimit.toDouble())}", style = Typography.headlineSmall
+                        text = "₹ ${formatNumber(totalAvailableLimit.toDouble())}",
+                        style = Typography.headlineSmall
                     )
                 }
                 Column {
@@ -470,7 +472,9 @@ fun HamBurgerMenu(
             onDismissRequest = { expanded.value = false }
         ) {
 
-                DropdownMenuItem(text = { Text(text = "Configure Accounts") }, onClick = { navController.navigate("accountsConfiguration") })
+            DropdownMenuItem(
+                text = { Text(text = "Configure Accounts") },
+                onClick = { navController.navigate("accountsConfiguration") })
 
         }
     }

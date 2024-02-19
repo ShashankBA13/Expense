@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -126,12 +127,10 @@ fun HomeScreen(navController: NavHostController) {
                 }
 
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxHeight(1f)
-                        .padding(bottom = 70.dp)
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 70.dp)
                 ) {
                     groupedExpenses.forEach { (date, expenses) ->
-
                         val today = LocalDate.now()
                         val yesterday = today.minusDays(1)
 
@@ -151,7 +150,7 @@ fun HomeScreen(navController: NavHostController) {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 20.dp, top = 20.dp, end = 20.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Text(
                                     text = displayDate,
@@ -166,19 +165,21 @@ fun HomeScreen(navController: NavHostController) {
                                 )
                             }
                         }
+
                         items(expenses) { expense ->
                             ExpenseCard(expense = expense, navController)
                         }
                     }
-
                 }
+
             }
 
             FloatingActionButton(
                 onClick = {
                     navController.navigate("expense/0")
                 }, modifier = Modifier
-                    .padding(bottom = 75.dp).align(Alignment.BottomCenter),
+                    .padding(bottom = 75.dp)
+                    .align(Alignment.BottomCenter),
                 containerColor = MaterialTheme.colorScheme.tertiary
             ) {
                 Icon(Icons.Filled.Add, "Floating action button.")

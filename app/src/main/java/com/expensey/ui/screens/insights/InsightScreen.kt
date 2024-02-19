@@ -77,7 +77,6 @@ fun InsightsScreen(navController: NavHostController) {
 				fontFamily = FontFamily(Font(R.font.archivo_black_regular))
 			)
 			Spacer(modifier = Modifier.height(16.dp))
-			TotalsProvider()
 
 			// Check if expenses are empty or not and display accordingly
 			if (expenseListFilteredByMonth.isEmpty()) {
@@ -94,58 +93,6 @@ fun InsightsScreen(navController: NavHostController) {
 					color = MaterialTheme.colorScheme.primary
 				)
 			}
-		}
-	}
-}
-
-@Composable
-fun TotalsProvider() {
-	val viewModel: HomeViewModel = viewModel()
-	val insightsViewModel: InsightsViewModel = viewModel()
-
-	val totalExpense by viewModel.getTotalSumOfExpenses().collectAsState(initial = null)
-	val mostSpentCategoryCountList by insightsViewModel.mostSpentCategoryCountList.observeAsState()
-
-	Column(
-		modifier = Modifier.fillMaxWidth(),
-		horizontalAlignment = Alignment.CenterHorizontally
-	) {
-		TotalCard(icon = Icons.Outlined.Wallet, label = "Total Spends", value = totalExpense?.toString())
-		Spacer(modifier = Modifier.height(16.dp))
-		mostSpentCategoryCountList?.let {
-			if (it.isNotEmpty()) {
-				TotalCard(icon = Icons.Default.Category, label = "Most Spent Category", value = it[0].categoryName)
-				Spacer(modifier = Modifier.height(8.dp))
-				TotalCard(icon = Icons.Default.Money, label = "Amount Spent", value = it[0].amountSpent.toString())
-			}
-		}
-	}
-}
-
-@Composable
-fun TotalCard(icon: ImageVector, label: String, value: String?) {
-	Card(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(16.dp)
-			.clickable {}
-	) {
-		Column(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(16.dp),
-			horizontalAlignment = Alignment.CenterHorizontally
-		) {
-			Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-			Spacer(modifier = Modifier.height(8.dp))
-			Text(text = label, style = MaterialTheme.typography.labelLarge)
-			Spacer(modifier = Modifier.height(4.dp))
-			Text(
-				text = value ?: "-",
-				style = MaterialTheme.typography.bodySmall,
-				color = MaterialTheme.colorScheme.primary,
-				fontSize = 20.sp
-			)
 		}
 	}
 }

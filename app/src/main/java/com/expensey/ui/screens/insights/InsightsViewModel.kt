@@ -35,20 +35,4 @@ class InsightsViewModel(application: Application) : AndroidViewModel(application
         mostSpentCategoryCountList = expenseRepository.getMostSpentCategoryCout()
     }
 
-    suspend fun getSpendsByMonth(month: String): List<Expense> {
-        val expenseList = mutableListOf<Expense>()
-        viewModelScope.launch {
-            expenseFlowList.collect { expenses ->
-                val filteredExpenses = expenses.filter { expense ->
-                    val expenseMonth = (expense.date.month + 1).toString()
-                    expenseMonth == month
-                }
-                Log.d(TAG, "getSpendsByMonth: $filteredExpenses")
-                expenseList.addAll(filteredExpenses)
-            }
-        }.join() // Wait for the coroutine to finish
-        Log.d("Hey ", "getSpendsByMonth: $expenseList")
-        return expenseList
-    }
-
 }

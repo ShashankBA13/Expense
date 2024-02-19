@@ -62,7 +62,6 @@ fun InsightsScreen(navController: NavHostController) {
 		val expenseMonth = (expense.date.month + 1).toString()
 		expenseMonth == selectedMonth.toString()
 	}
-	Log.d(TAG, "InsightsScreen: $expenseListFilteredByMonth")
 
 	Surface(
 		modifier = Modifier.fillMaxSize(),

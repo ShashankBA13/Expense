@@ -1,5 +1,7 @@
 package com.expensey.ui.screens.insights
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,8 +40,10 @@ import com.expensey.R
 import com.expensey.data.models.Expense
 import com.expensey.ui.screens.home.HomeViewModel
 import com.expensey.ui.theme.Typography
+import java.time.ZoneId
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InsightsScreen(navController: NavHostController) {
 	val TAG = "Insights Screen"
@@ -48,13 +52,13 @@ fun InsightsScreen(navController: NavHostController) {
 
 	var selectedMonth by remember { mutableIntStateOf(Calendar.getInstance().get(Calendar.MONTH) + 1) }
 
-	var expenseListFlow = insightsViewModel.expenseFlowList
+	val expenseListFlow = insightsViewModel.expenseFlowList
 
-	var expensesList : List<Expense> = emptyList()
-	expensesList = expenseListFlow.collectAsState(initial = emptyList()).value!!
+	var expensesList : List<Expense> = expenseListFlow.collectAsState(initial = emptyList()).value
 
 	var expenseListFilteredByMonth : List<Expense> = expensesList.filter {expense: Expense ->
-		val expenseMonth = (expense.date.month + 1).toString()
+		val expenseLocalDate = expense.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+		val expenseMonth = expenseLocalDate.monthValue.toString()
 		expenseMonth == selectedMonth.toString()
 	}
 

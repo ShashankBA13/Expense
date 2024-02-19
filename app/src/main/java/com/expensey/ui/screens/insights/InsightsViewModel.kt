@@ -34,6 +34,7 @@ class InsightsViewModel(application: Application) : AndroidViewModel(application
     }
 
     suspend fun getSpendsByMonth(month : String): List<Expense> {
+        Log.d("Method called", "getSpendsByMonth: Method called")
         val expenseList = mutableListOf<Expense>()
         expenseFlowList.collect { expenses ->
             val filteredExpenses = expenses.filter { expense ->
@@ -43,6 +44,7 @@ class InsightsViewModel(application: Application) : AndroidViewModel(application
             expenseList.addAll(filteredExpenses)
             Log.d("Insights View Model: ", expenseList.toString())
         }
+        Log.d("Expense List", "getSpendsByMonth: $expenseList")
         return expenseList
     }
 

@@ -55,6 +55,7 @@ import com.expensey.ui.screens.home.HomeViewModel
 import com.expensey.ui.theme.Typography
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import java.util.stream.Collectors
 
 @Composable
 fun InsightsScreen(navController: NavHostController) {
@@ -63,7 +64,7 @@ fun InsightsScreen(navController: NavHostController) {
 
 	val expensesState = remember { mutableStateOf<List<Expense>>(emptyList()) }
 	// Create a MutableState variable to hold the selected month
-	var selectedMonth by remember { mutableStateOf("01") }
+	var selectedMonth by remember { mutableStateOf("02") }
 
 	LaunchedEffect(key1 = insightsViewModel) {
 		val expenses = insightsViewModel.getSpendsByMonth(selectedMonth)
@@ -90,6 +91,23 @@ fun InsightsScreen(navController: NavHostController) {
 			)
 			Spacer(modifier = Modifier.height(16.dp))
 			TotalsProvider()
+
+			// Check if expenses are empty or not and display accordingly
+			if (expenses.isEmpty()) {
+				Text(
+					text = "No expenses available",
+					style = Typography.bodyLarge,
+					color = MaterialTheme.colorScheme.primary
+				)
+			} else {
+				val totalExpensesForTheMonth = expenses.sumOf { it.amount }
+				Text(
+					text = "Total Expenses this month: $totalExpensesForTheMonth",
+					style = Typography.headlineLarge,
+					color = MaterialTheme.colorScheme.primary,
+					fontFamily = FontFamily(Font(R.font.archivo_black_regular))
+				)
+			}
 		}
 	}
 }
@@ -123,7 +141,8 @@ fun TotalCard(icon: ImageVector, label: String, value: String?) {
 	Card(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(16.dp).clickable {}
+			.padding(16.dp)
+			.clickable {}
 	) {
 		Column(
 			modifier = Modifier

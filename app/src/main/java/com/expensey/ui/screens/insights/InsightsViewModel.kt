@@ -12,12 +12,14 @@ import com.expensey.data.models.CategoryCount
 import com.expensey.data.models.Expense
 import com.expensey.data.models.ExpenseSummary
 import com.expensey.data.repository.ExpenseRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class InsightsViewModel(application: Application) : AndroidViewModel(application) {
-
+    val TAG = "Insights View Model"
     private val expenseRepository: ExpenseRepository
     private val _mostSpentCategoryCountList = MutableLiveData<List<ExpenseSummary>>()
     val mostSpentCategoryCountList: LiveData<List<ExpenseSummary>>
@@ -33,18 +35,19 @@ class InsightsViewModel(application: Application) : AndroidViewModel(application
         mostSpentCategoryCountList = expenseRepository.getMostSpentCategoryCout()
     }
 
-    suspend fun getSpendsByMonth(month : String): List<Expense> {
-        Log.d("Method called", "getSpendsByMonth: Method called")
+    suspend fun getSpendsByMonth(month: String): List<Expense> {
         val expenseList = mutableListOf<Expense>()
-        expenseFlowList.collect { expenses ->
-            val filteredExpenses = expenses.filter { expense ->
-                val expenseMonth = expense.date.month.toString().padStart(2, '0')
-                expenseMonth == month
+        viewModelScope.launch {
+            expenseFlowList.collect { expenses ->
+                val filteredExpenses = expenses.filter { expense ->
+                    val expenseMonth = (expense.date.month + 1).toString()
+                    expenseMonth == month
+                }
+                Log.d(TAG, "getSpendsByMonth: $filteredExpenses")
+                expenseList.addAll(filteredExpenses)
             }
-            expenseList.addAll(filteredExpenses)
-            Log.d("Insights View Model: ", expenseList.toString())
-        }
-        Log.d("Expense List", "getSpendsByMonth: $expenseList")
+        }.join() // Wait for the coroutine to finish
+        Log.d("Hey ", "getSpendsByMonth: $expenseList")
         return expenseList
     }
 

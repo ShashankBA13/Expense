@@ -2,19 +2,15 @@ package com.expensey.ui.screens.insights
 
 import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.outlined.FireTruck
 import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -23,7 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,45 +28,41 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.expensey.R
-import com.expensey.data.models.Category
-import com.expensey.data.models.CategoryCount
 import com.expensey.data.models.Expense
-import com.expensey.data.models.ExpenseSummary
-import com.expensey.ui.screens.category.CategoryViewModel
 import com.expensey.ui.screens.home.HomeViewModel
 import com.expensey.ui.theme.Typography
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import java.util.stream.Collectors
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun InsightsScreen(navController: NavHostController) {
+	val TAG = "Insights Screen"
 
 	val insightsViewModel: InsightsViewModel = viewModel()
 
-	val expensesState = remember { mutableStateOf<List<Expense>>(emptyList()) }
-	// Create a MutableState variable to hold the selected month
-	var selectedMonth by remember { mutableStateOf("02") }
+	var selectedMonth by remember { mutableStateOf(Calendar.getInstance().get(Calendar.MONTH) + 1) }
 
-	LaunchedEffect(key1 = insightsViewModel) {
-		val expenses = insightsViewModel.getSpendsByMonth(selectedMonth)
-		expensesState.value = expenses
+	var expenseListFlow = insightsViewModel.expenseFlowList
+
+	var expensesList : List<Expense> = emptyList()
+	expensesList = expenseListFlow.collectAsState(initial = emptyList()).value!!
+
+	var expenseListFilteredByMonth : List<Expense> = expensesList.filter {expense: Expense ->
+		val expenseMonth = (expense.date.month + 1).toString()
+		expenseMonth == selectedMonth.toString()
 	}
-
-	val expenses = expensesState.value
+	Log.d(TAG, "InsightsScreen: $expenseListFilteredByMonth")
 
 	Surface(
 		modifier = Modifier.fillMaxSize(),
@@ -93,19 +84,18 @@ fun InsightsScreen(navController: NavHostController) {
 			TotalsProvider()
 
 			// Check if expenses are empty or not and display accordingly
-			if (expenses.isEmpty()) {
+			if (expenseListFilteredByMonth.isEmpty()) {
 				Text(
 					text = "No expenses available",
 					style = Typography.bodyLarge,
 					color = MaterialTheme.colorScheme.primary
 				)
 			} else {
-				val totalExpensesForTheMonth = expenses.sumOf { it.amount }
+				val totalExpensesForTheMonth = expenseListFilteredByMonth.sumOf { it.amount }
 				Text(
 					text = "Total Expenses this month: $totalExpensesForTheMonth",
 					style = Typography.headlineLarge,
-					color = MaterialTheme.colorScheme.primary,
-					fontFamily = FontFamily(Font(R.font.archivo_black_regular))
+					color = MaterialTheme.colorScheme.primary
 				)
 			}
 		}

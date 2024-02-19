@@ -178,7 +178,7 @@ fun HomeScreen(navController: NavHostController) {
                 onClick = {
                     navController.navigate("expense/0")
                 }, modifier = Modifier
-                    .padding(bottom = 75.dp)
+                    .padding(bottom = 60.dp)
                     .align(Alignment.BottomCenter),
                 containerColor = MaterialTheme.colorScheme.tertiary
             ) {

@@ -122,7 +122,6 @@ fun BottomNavigation(
 	Box(
 		modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 10.dp)
 			.background(NavigationBarDefaults.containerColor),
 
 	) {

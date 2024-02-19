@@ -30,12 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.expensey.R
 import com.expensey.data.models.Expense
 import com.expensey.ui.screens.home.HomeViewModel
@@ -150,10 +148,4 @@ fun TotalCard(icon: ImageVector, label: String, value: String?) {
 			)
 		}
 	}
-}
-
-@Preview
-@Composable
-fun InsightsScreenPreview() {
-	InsightsScreen(navController = rememberNavController())
 }

@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.data.models.BankAccount
@@ -53,7 +53,6 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
     val categoryViewModel: CategoryViewModel = viewModel()
     val expenseViewModel: ExpenseViewModel = viewModel()
     val accountsViewModel: AccountsViewModel = viewModel()
-    val TAG = "Expense Screen"
 
     var bankAccount by remember { mutableStateOf<BankAccount?>(null) }
     var creditCard by remember {
@@ -211,6 +210,13 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         tint = Color.Red)
                 }
             }
+            Divider(
+                color = Color.Gray,
+                thickness = 1.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, bottom = 10.dp, end = 20.dp)
+            )
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(value = dateState,
@@ -266,9 +272,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         .fillMaxWidth()
                         .padding(start = 20.dp, end = 20.dp, bottom = 10.dp),
                     trailingIcon = {
-                        Icon(
-                            Icons.Outlined.Description, contentDescription = "Description Icon"
-                        )
+                        Icon(Icons.Outlined.Description, contentDescription = "Description Icon")
                     })
 
                 ExposedDropdownMenuBox(
@@ -294,11 +298,13 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors())
 
                     ExposedDropdownMenu(
-                        expanded = isCategoryMenuExpanded, onDismissRequest = {
+                        expanded = isCategoryMenuExpanded,
+                        onDismissRequest = {
                             isCategoryMenuExpanded = false
-                        }, modifier = Modifier.fillMaxWidth(),
+                        },
+                        modifier = Modifier.fillMaxWidth(),
 
-                    ) {
+                        ) {
                         categories.forEach { category ->
                             DropdownMenuItem(
                                 onClick = {
@@ -343,7 +349,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                         if (bankAccountsList.isNotEmpty()) {
                             DropdownMenuItem(onClick = {}, text = {
-                                Text("Bank Account", fontWeight = FontWeight.Bold)
+                                Text("Bank Account", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                             })
 
                             Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
@@ -376,7 +382,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                         if (creditCardsList.isNotEmpty()) {
                             DropdownMenuItem(onClick = {}, text = {
-                                Text("Credit Card", fontWeight = FontWeight.Bold)
+                                Text("Credit Card", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                             })
 
                             Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
@@ -407,7 +413,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
                         }
 
                         DropdownMenuItem(onClick = {}, text = {
-                            Text("Cash", fontWeight = FontWeight.Bold)
+                            Text("Cash", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         })
                         Divider(modifier = Modifier.padding(start = 10.dp, end = 10.dp))
 
@@ -471,7 +477,7 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                                 val amountToAddBack: Double = expense?.amount ?: 0.0
                                 val amountToDeduct = amountState.text.toDoubleOrNull() ?: 0.0
-                                val oldPaymentModeState = oldPaymentMethodState.text
+//                                val oldPaymentModeState = oldPaymentMethodState.text
                                 val newPaymentModeState = newPaymentMethodState.text
 
                                 when (oldPaymentMethodState.text) {
@@ -505,15 +511,13 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                                     "Bank Account" -> {
                                         accountsViewModel.updateAccountBalanceById(
-                                            updatedPaymentIdState.text.toInt(),
-                                            amountToDeduct
+                                            updatedPaymentIdState.text.toInt(), amountToDeduct
                                         )
                                     }
 
                                     "Credit Card" -> {
                                         accountsViewModel.updateCurrentBalanceById(
-                                            updatedPaymentIdState.text.toInt(),
-                                            amountToDeduct
+                                            updatedPaymentIdState.text.toInt(), amountToDeduct
                                         )
                                     }
                                 }
@@ -541,15 +545,13 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                                     "Bank Account" -> {
                                         accountsViewModel.updateAccountBalanceById(
-                                            updatedPaymentIdState.text.toInt(),
-                                            amountToDeduct
+                                            updatedPaymentIdState.text.toInt(), amountToDeduct
                                         )
                                     }
 
                                     "Credit Card" -> {
                                         accountsViewModel.updateCurrentBalanceById(
-                                            updatedPaymentIdState.text.toInt(),
-                                            amountToDeduct
+                                            updatedPaymentIdState.text.toInt(), amountToDeduct
                                         )
                                     }
                                 }

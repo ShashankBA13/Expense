@@ -21,9 +21,8 @@ import kotlinx.coroutines.runBlocking
 class InsightsViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = "Insights View Model"
     private val expenseRepository: ExpenseRepository
-    private val _mostSpentCategoryCountList = MutableLiveData<List<ExpenseSummary>>()
     val mostSpentCategoryCountList: LiveData<List<ExpenseSummary>>
-    val expenseFlowList : Flow<List<Expense>>
+    val expenseFlowList: Flow<List<Expense>>
 
 
     init {

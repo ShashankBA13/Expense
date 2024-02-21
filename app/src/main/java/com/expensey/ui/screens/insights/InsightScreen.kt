@@ -1,6 +1,7 @@
 package com.expensey.ui.screens.insights
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.expensey.R
 import com.expensey.data.models.Expense
+import com.expensey.data.models.ExpenseSummary
 import com.expensey.ui.screens.home.HomeViewModel
 import com.expensey.ui.theme.Typography
 import java.time.ZoneId
@@ -58,6 +60,14 @@ fun InsightsScreen(navController: NavHostController) {
 		val expenseLocalDate = expense.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
 		val expenseMonth = expenseLocalDate.monthValue.toString()
 		expenseMonth == selectedMonth.toString()
+	}
+	
+	val mostSpentCategoryCountList : List<ExpenseSummary>? = insightsViewModel.mostSpentCategoryCountList.value
+	if (mostSpentCategoryCountList != null) {
+		Log.d(TAG, "InsightsScreen: Inside the if block")
+		if(mostSpentCategoryCountList.isNotEmpty()) {
+			Log.d(TAG, "InsightsScreen Most Spent Category: $mostSpentCategoryCountList")
+		}
 	}
 
 	Surface(

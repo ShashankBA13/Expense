@@ -477,7 +477,6 @@ fun ExpenseScreen(navHostController: NavHostController, expenseId: Int) {
 
                                 val amountToAddBack: Double = expense?.amount ?: 0.0
                                 val amountToDeduct = amountState.text.toDoubleOrNull() ?: 0.0
-//                                val oldPaymentModeState = oldPaymentMethodState.text
                                 val newPaymentModeState = newPaymentMethodState.text
 
                                 when (oldPaymentMethodState.text) {

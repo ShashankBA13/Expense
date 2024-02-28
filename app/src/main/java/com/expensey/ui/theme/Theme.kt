@@ -61,13 +61,13 @@ fun ExpenseyTheme(
         else -> LightColorScheme
     }
     val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
-    }
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            val window = (view.context as Activity).window
+//            window.statusBarColor = colorScheme.primary.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+//        }
+//    }
 
     val systemUiController = rememberSystemUiController()
     if(darkTheme) {
@@ -79,7 +79,8 @@ fun ExpenseyTheme(
             color = Color.Red
         )
     }
-
+    val window = (view.context as Activity).window
+    window.statusBarColor = colorScheme.background.toArgb()
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
